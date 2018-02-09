@@ -11,16 +11,9 @@ import './post.scss'
 import { Link } from 'react-router'
 // import IconItem from '../../components/icon/icon'
 import {getPostList, setSearchQuery, setPageData} from '../../actions/post.action'
-import {formatDate, axiosAjax, cutString} from '../../public/index'
+import {formatDate, axiosAjax, cutString, channelIdOptions} from '../../public/index'
 const confirm = Modal.confirm
 let columns = []
-const channelIdOptions = [
-    { label: '新闻', value: '1' },
-    { label: '行业', value: '2' },
-    { label: '产品', value: '3' },
-    { label: '观点', value: '4' }
-    // { label: '火星精译', value: '6' }
-]
 class PostIndex extends Component {
     constructor () {
         super()

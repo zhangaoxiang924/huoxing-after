@@ -136,3 +136,15 @@ export const cutString = (str, len) => {
     }
     return s
 }
+
+// 新闻频道
+export const channelIdOptions = [
+    { label: '新闻', value: '1' },
+    { label: '行业', value: '2' },
+    { label: '产品', value: '3' },
+    { label: '观点', value: '4' },
+    { label: '技术', value: '6' },
+    { label: '游戏', value: '7' },
+    { label: '新手入门', value: '5' },
+    { label: '其他', value: '-1' }
+]

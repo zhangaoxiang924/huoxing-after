@@ -11,20 +11,12 @@ import { Radio, Form, Input, Upload, Icon, Modal, Button, Tag, Tooltip, message,
 import moment from 'moment'
 import {getPostItemInfo} from '../../actions/post.action'
 
-import {axiosAjax, URL, formatDate} from '../../public/index'
+import {axiosAjax, URL, formatDate, channelIdOptions} from '../../public/index'
 import './post.scss'
 
 const FormItem = Form.Item
 const { TextArea } = Input
 const RadioGroup = Radio.Group
-
-const channelIdOptions = [
-    { label: '新闻', value: '1' },
-    { label: '行业', value: '2' },
-    { label: '产品', value: '3' },
-    { label: '观点', value: '4' }
-    // { label: '火星编译', value: '5' }
-]
 
 const cateIdOptions = [
     { label: '原创', value: '1' },

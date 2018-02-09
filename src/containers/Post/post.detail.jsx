@@ -9,7 +9,7 @@ import { Row, Col, Button, message, Modal, Tag, Spin } from 'antd'
 import { hashHistory } from 'react-router'
 import IconItem from '../../components/icon/icon'
 import {getPostItemInfo} from '../../actions/post.action'
-import {axiosAjax} from '../../public/index'
+import {axiosAjax, channelIdOptions} from '../../public/index'
 import './post.scss'
 import '../../public/simditor.css'
 const confirm = Modal.confirm
@@ -28,14 +28,6 @@ const json = {
     content: '<p>content</p>'
 }
 */
-
-const channelIdOptions = [
-    { label: '新闻', value: '1' },
-    { label: '行业', value: '2' },
-    { label: '产品', value: '3' },
-    { label: '观点', value: '4' },
-    { label: '暂无', value: '0' }
-]
 
 class PostDetail extends Component {
     constructor () {
