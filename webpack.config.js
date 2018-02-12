@@ -87,7 +87,7 @@ module.exports = {
         hot: true,
         historyApiFallback: true,
         contentBase: ROOT_PATH,
-        host: '192.168.0.52',
+        host: '192.168.43.26',
         // host: '192.168.84.4',
         // host: '127.0.0.1',
         port: '3010',
@@ -97,7 +97,8 @@ module.exports = {
             // target: 'http://wechatstore.linekong.com',
             // target: 'http://192.168.252.69:8380',
             // target: 'http://admin.play.linekong.com',
-            target: 'http://47.52.210.208', // 磊鹏
+            // target: 'http://47.52.210.208', // 磊鹏
+            target: 'http://admin.huoxing24.com', // 磊鹏
             // target: 'http://192.168.10.54:8080',
             changeOrigin: true,
             ws: true,
