@@ -145,6 +145,7 @@ export const channelIdOptions = [
     { label: '人物', value: '4' },
     { label: '技术', value: '6' },
     { label: '游戏', value: '7' },
+    { label: '八点', value: '8' },
     { label: '新手入门', value: '5' },
     { label: '其他', value: '-1' }
 ]

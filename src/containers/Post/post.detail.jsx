@@ -230,6 +230,16 @@ class PostDetail extends Component {
                 </Row>
                 <Row className="news-cover-img">
                     <Col className="section">
+                        <span className="name">PC-推荐位封面：</span>
+                        {(JSON.parse(info.coverPic).pc_recommend && JSON.parse(info.coverPic).pc_recommend !== '') ? <img
+                            className="desc"
+                            onClick={() => this.showModal(JSON.parse(info.coverPic).pc_recommend)}
+                            src={`${JSON.parse(info.coverPic).pc_recommend}`}/> : <span style={{padding: 6}}>暂无推荐位封面</span>
+                        }
+                    </Col>
+                </Row>
+                <Row className="news-cover-img">
+                    <Col className="section">
                         <span className="name" style={{width: '125px', verticalAlign: 'top'}}>M-新闻封面：</span>
                         <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_small)} style={{width: 95, border: '1px solid #eee'}} src={`${JSON.parse(info.coverPic).wap_small}`}/>
                     </Col>

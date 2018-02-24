@@ -55,9 +55,11 @@ class PostSend extends Component {
             newsTitle: '',
             newsContent: '',
             fileList: [],
+            pcfileList: [],
             mfileList: [],
             mcfileList: [],
             coverImgUrl: '',
+            pccoverImgUrl: '',
             mcoverImgUrl: '',
             mccoverImgUrl: '',
             loading: true
@@ -69,6 +71,12 @@ class PostSend extends Component {
         if (location.query.id) {
             dispatch(getPostItemInfo({'id': location.query.id}, (data) => {
                 let coverPic = JSON.parse(data.coverPic)
+                let pcfileList = (coverPic.pc_recommend && coverPic.pc_recommend !== '') ? [{
+                    uid: 0,
+                    name: 'xxx.png',
+                    status: 'done',
+                    url: coverPic.pc_recommend
+                }] : []
                 this.setState({
                     updateOrNot: true,
                     fileList: [{
@@ -77,6 +85,7 @@ class PostSend extends Component {
                         status: 'done',
                         url: coverPic.pc
                     }],
+                    pcfileList: pcfileList,
                     mfileList: [{
                         uid: 0,
                         name: 'xxx.png',
@@ -92,6 +101,7 @@ class PostSend extends Component {
                     tags: data.tags.split(','),
                     newsContent: data.content,
                     coverImgUrl: coverPic.pc,
+                    pccoverImgUrl: coverPic.pc_recommend || '',
                     mcoverImgUrl: coverPic.wap_small,
                     mccoverImgUrl: coverPic.wap_big,
                     loading: false
@@ -186,6 +196,32 @@ class PostSend extends Component {
         }
     }
 
+    handlePcChange = ({ file, fileList }) => {
+        this.setState({
+            pcfileList: fileList
+        })
+
+        if (file.status === 'removed') {
+            this.setState({
+                pccoverImgUrl: ''
+            })
+        }
+
+        if (file.response) {
+            if (file.response.code === 1 && file.status === 'done') {
+                this.setState({
+                    pccoverImgUrl: file.response.obj
+                })
+            } if (file.status === 'error') {
+                message.error('网络错误，上传失败！')
+                this.setState({
+                    pccoverImgUrl: '',
+                    pcfileList: []
+                })
+            }
+        }
+    }
+
     handleMobileChange = ({ file, fileList }) => {
         this.setState({
             mfileList: fileList
@@ -252,6 +288,7 @@ class PostSend extends Component {
         this.props.form.setFieldsValue({
             tags: this.state.tags.join(','),
             content: this.state.newsContent,
+            pc_recommend: this.state.pccoverImgUrl,
             pc: this.state.coverImgUrl,
             wap_small: this.state.mcoverImgUrl,
             wap_big: this.state.mccoverImgUrl
@@ -262,7 +299,7 @@ class PostSend extends Component {
                     loading: true
                 })
                 values.publishTime = Date.parse(values['publishTime'].format('YYYY-MM-DD HH:mm:ss'))
-                values.coverPic = JSON.stringify({pc: values.pc, wap_big: values.wap_big, wap_small: values.wap_small})
+                values.coverPic = JSON.stringify({pc_recommend: values.pc_recommend || '', pc: values.pc, wap_big: values.wap_big, wap_small: values.wap_small})
                 delete values.pc
                 delete values.wap_big
                 delete values.wap_small
@@ -295,7 +332,7 @@ class PostSend extends Component {
     render () {
         const { getFieldDecorator } = this.props.form
         const { newsInfo, location } = this.props
-        const { previewVisible, previewImage, fileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible } = this.state
+        const { previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible } = this.state
         const formItemLayout = {
             labelCol: { span: 1 },
             wrapperCol: { span: 15, offset: 1 }
@@ -477,6 +514,32 @@ class PostSend extends Component {
                                 <img alt="example" style={{ width: '100%' }} src={previewImage} />
                             </Modal>
                             <span className="cover-img-tip">用于 PC 端新闻封面展示, 建议尺寸: <font style={{color: 'red'}}>280px * 205px</font></span>
+                        </div>
+                    </FormItem>
+
+                    <FormItem
+                        {...formItemLayout}
+                        label="PC-推荐位: "
+                    >
+                        <div className="dropbox">
+                            {getFieldDecorator('pc_recommend', {
+                                initialValue: (updateOrNot && newsInfo) ? pcfileList : ''
+                            })(
+                                <Upload
+                                    action={`${URL}/pic/upload`}
+                                    name='uploadFile'
+                                    listType="picture-card"
+                                    fileList={pcfileList}
+                                    onPreview={this.handlePreview}
+                                    onChange={this.handlePcChange}
+                                >
+                                    {pcfileList.length >= 1 ? null : uploadButton}
+                                </Upload>
+                            )}
+                            <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                                <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                            </Modal>
+                            <span className="cover-img-tip">用于 PC 端推荐位新闻封面展示, 建议尺寸: <font style={{color: 'red'}}>232px * 220px</font></span>
                         </div>
                     </FormItem>
 
