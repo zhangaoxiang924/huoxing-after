@@ -6,13 +6,14 @@
 
 import {POST} from '../constants/index'
 
-const postInfo = (state = {search: {'nickName': '', 'title': '', 'type': 'init'}, pageData: {'currPage': 1, 'pageSize': 20, 'totalCount': 0}, query: {}, list: [], userInfo: {'name': '', 'pwd': ''}, info: {}, replyList: []}, action) => {
+const postInfo = (state = {filter: {status: ''}, search: {'nickName': '', 'title': '', 'type': 'init'}, pageData: {'currPage': 1, 'pageSize': 20, 'totalCount': 0}, query: {}, list: [], userInfo: {'name': '', 'pwd': ''}, info: {}, replyList: []}, action) => {
     let _query = state.query
     let _userInfo = state.userInfo
     let _list = state.list
     let _replyList = state.replyList
     let search = state.search
     let pageData = state.pageData
+    let filter = state.filter
     switch (action.type) {
         case POST.ADD_DATA:
             return {...state, ...action.data}
@@ -22,6 +23,8 @@ const postInfo = (state = {search: {'nickName': '', 'title': '', 'type': 'init'}
             return {...state, search: {...search, ...action.data}}
         case POST.SET_PAGE_DATA:
             return {...state, pageData: {...pageData, ...action.data}}
+        case POST.SET_FILTER_DATA:
+            return {...state, filter: {...filter, ...action.data}}
         case POST.EDIT_USER_INFO:
             return {...state, userInfo: {..._userInfo, ...action.data}}
         case POST.EDIT_LIST_ITEM:

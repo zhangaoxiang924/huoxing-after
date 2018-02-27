@@ -6,19 +6,22 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 // import { Input, Row, Col, Button, Table, Modal, message } from 'antd'
-import { Table, Modal, message, Spin, Tag } from 'antd'
+import { Table, Row, Col, Modal, message, Spin, Tag, Select } from 'antd'
 import './post.scss'
 import { Link } from 'react-router'
 // import IconItem from '../../components/icon/icon'
-import {getPostList, setSearchQuery, setPageData} from '../../actions/post.action'
+import {getPostList, setSearchQuery, setPageData, setFilterData} from '../../actions/post.action'
 import {formatDate, axiosAjax, cutString, channelIdOptions} from '../../public/index'
 const confirm = Modal.confirm
+const Option = Select.Option
+
 let columns = []
 class PostIndex extends Component {
     constructor () {
         super()
         this.state = {
-            loading: true
+            loading: true,
+            newsStatus: null
         }
     }
 
@@ -33,8 +36,8 @@ class PostIndex extends Component {
     }
 
     componentWillMount () {
-        const {search} = this.props
-        this.doSearch(!search.type ? 'init' : search.type)
+        const {search, filter} = this.props
+        this.doSearch(!search.type ? 'init' : search.type, filter.status === '' ? {} : {status: filter.status})
         columns = [{
             title: '新闻标题',
             width: '250px',
@@ -50,6 +53,18 @@ class PostIndex extends Component {
                 {!record.pictureUrl ? '' : <img src={record.pictureUrl.split(',')[0]} />}
             </div>)
         }, {
+            title: '新闻状态',
+            key: 'status',
+            render: (record) => {
+                if (record.status === 0) {
+                    return <span className="news-status pre-publish">草稿</span>
+                } else if (record.status === 1) {
+                    return <span className="news-status has-publish">已发表</span>
+                } else {
+                    return <span>暂无</span>
+                }
+            }
+        }, {
             title: '新闻作者',
             dataIndex: 'author',
             key: 'author'
@@ -57,7 +72,7 @@ class PostIndex extends Component {
             title: '新闻摘要 ',
             dataIndex: 'synopsis',
             key: 'synopsis',
-            render: (text, record) => (cutString(record.synopsis, 25))
+            render: (text, record) => (<span title={record.synopsis}>{cutString(record.synopsis, 25)}</span>)
         }, {
             title: '频道 ',
             dataIndex: 'channelId',
@@ -81,24 +96,18 @@ class PostIndex extends Component {
             key: 'createTime',
             render: (record) => (formatDate(record.publishTime))
         }, {
-            title: '新闻状态',
-            key: 'status',
-            render: (record) => {
-                if (record.status === 0) {
-                    return <span className="news-status pre-publish">草稿</span>
-                } else if (record.status === 1) {
-                    return <span className="news-status has-publish">已发表</span>
-                }
-            }
-        }, {
             title: '操作',
             key: 'action',
             render: (item) => (<div>
-                <Link className="mr10 opt-btn" to={{pathname: '/post-detail', query: {id: item.id}}}>详情</Link>
-                <a className="mr10 opt-btn" href="javascript:void(0)" onClick={() => this._isTop(item)}>{item.recommend === 1 ? '取消推荐' : '推荐'}</a>
-                <a className="mr10 opt-btn" href="javascript:void(0)" onClick={() => this._isTop(item)}>{item.status === 1 ? '撤回到草稿箱' : '发表'}</a>
+                <Link className="mr10 opt-btn" to={{pathname: '/post-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>详情</Link>
+                <a className={`mr10 recommend-btn opt-btn ${item.status !== 1 ? 'disabled' : ''}`} href="javascript:void(0)" onClick={() => this._isTop(item)} disabled={item.status !== 1 && true}>
+                    {item.recommend === 1 ? '取消推荐' : '推荐'}
+                </a>
+                <a className="mr10 opt-btn" href="javascript:void(0)" onClick={() => this._isPublish(item)} style={{background: '#00a854'}}>
+                    {item.status === 1 ? '撤回到草稿箱' : '发表'}
+                </a>
                 {/* <a className="mr10" href="javascript:void(0)" onClick={() => this._forbidcomment(item)}>{item.forbidComment === '1' ? '取消禁评' : '禁评'}</a> */}
-                <a onClick={() => this.delPost(item)} className="mr10 opt-btn" href="javascript:void(0)">删除</a>
+                <a onClick={() => this.delPost(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
             </div>)
         }]
     }
@@ -110,9 +119,11 @@ class PostIndex extends Component {
     createMarkup (str) { return {__html: str} }
 
     doSearch (type, data) {
-        const {dispatch, pageData, search} = this.props
+        const {dispatch, pageData, search, filter} = this.props
         let sendDada = {
-            'currentPage': pageData.currPage
+            status: filter.status,
+            pageSize: 20,
+            currentPage: pageData.currPage
             // 'appId': $.cookie('gameId')
         }
         if (type !== 'init') {
@@ -146,10 +157,10 @@ class PostIndex extends Component {
         this.setState({
             loading: true
         })
-        const {dispatch, search} = this.props
+        const {dispatch, search, filter} = this.props
         // this.setState({'currPage': page})
         dispatch(setPageData({'currPage': page}))
-        this.doSearch(search.type, {'currentPage': page})
+        this.doSearch(search.type, {'currentPage': page, status: filter.status})
     }
     // 删除
     delPost (item) {
@@ -167,6 +178,32 @@ class PostIndex extends Component {
                 axiosAjax('POST', '/news/status', {...sendData}, (res) => {
                     if (res.code === 1) {
                         message.success('删除成功')
+                        _this.doSearch('init')
+                        dispatch(setSearchQuery({'type': 'init'}))
+                    } else {
+                        message.error(res.msg)
+                    }
+                })
+            }
+        })
+    }
+
+    // 发表或存草稿
+    _isPublish (item) {
+        const {dispatch} = this.props
+        const _this = this
+        confirm({
+            title: '提示',
+            content: `确认要${item.status === 0 ? '发表' : '撤回到草稿箱'}吗 ?`,
+            onOk () {
+                let sendData = {
+                    // 'appId': $.cookie('gameId'),
+                    id: item.id,
+                    status: item.status === 0 ? 1 : 0
+                }
+                axiosAjax('POST', '/news/status', {...sendData}, (res) => {
+                    if (res.code === 1) {
+                        message.success(`${item.status === 0 ? '发表' : '撤回'}成功`)
                         _this.doSearch('init')
                         dispatch(setSearchQuery({'type': 'init'}))
                     } else {
@@ -213,9 +250,20 @@ class PostIndex extends Component {
             }
         })
     }
+
+    // 筛选新闻状态
+    handleChange = (value) => {
+        const {dispatch} = this.props
+        dispatch(setFilterData({'status': value}))
+        this.setState({
+            newsStatus: value
+        })
+        this.doSearch('init', {status: value})
+    }
+
     render () {
         // const {list, search, pageData, dispatch} = this.props
-        const {list, pageData} = this.props
+        const {list, pageData, filter} = this.props
         return <div className="post-index">
             {/*
             <Row>
@@ -240,6 +288,16 @@ class PostIndex extends Component {
                 </Col>
             </Row>
             */}
+            <Row>
+                <Col>
+                    <span>新闻状态：</span>
+                    <Select defaultValue={`${filter.status}`} style={{ width: 120 }} onChange={this.handleChange}>
+                        <Option value="">全部</Option>
+                        <Option value="1">已发表</Option>
+                        <Option value="0">草稿箱</Option>
+                    </Select>
+                </Col>
+            </Row>
             <div className="mt30">
                 <Spin spinning={this.state.loading} size="large">
                     <Table dataSource={list.map((item, index) => ({...item, key: index}))} columns={columns} bordered pagination={{current: pageData.currPage, total: pageData.totalCount, pageSize: pageData.pageSize, onChange: (page) => this.changePage(page)}} />
@@ -254,6 +312,7 @@ const mapStateToProps = (state) => {
         postInfo: state.postInfo,
         list: state.postInfo.list,
         search: state.postInfo.search,
+        filter: state.postInfo.filter,
         pageData: state.postInfo.pageData
     }
 }

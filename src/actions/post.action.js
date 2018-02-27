@@ -126,6 +126,11 @@ export const delReplyList = (index) => {
 export const setSearchQuery = (data) => {
     return {type: POST.SET_SEARCH_QUERY, data}
 }
+
+export const setFilterData = (data) => {
+    return {type: POST.SET_FILTER_DATA, data}
+}
+
 export const setPageData = (data) => {
     return {type: POST.SET_PAGE_DATA, data}
 }
