@@ -9,7 +9,7 @@ import { hashHistory } from 'react-router'
 import { Form, Radio, Input, Button, message, Spin } from 'antd'
 import {getFlashItemInfo} from '../../actions/flash.action'
 
-import {axiosAjax} from '../../public/index'
+import {axiosAjax, flashIdOptions} from '../../public/index'
 import './flash.scss'
 
 const FormItem = Form.Item
@@ -30,13 +30,6 @@ const json = {
     content: '<p>content</p>'
 }
 */
-
-const channelIdOptions = [
-    { label: '监管动态', value: '1' },
-    { label: '交易所公告', value: '2' },
-    { label: '重大行情', value: '3' },
-    { label: '暂无', value: '0' }
-]
 
 const tagOptions = [
     { label: '普通', value: 1 },
@@ -129,7 +122,7 @@ class FlashSend extends Component {
                             initialValue: (updateOrNot && flashInfo) ? `${flashInfo.channelId}` : '1'
                         })(
                             <RadioGroup
-                                options={channelIdOptions}
+                                options={flashIdOptions}
                                 onChange={this.channelIdChange}
                                 setFieldsValue={this.state.channelId}>
                             </RadioGroup>

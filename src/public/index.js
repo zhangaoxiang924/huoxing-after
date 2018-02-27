@@ -149,3 +149,12 @@ export const channelIdOptions = [
     { label: '新手入门', value: '5' },
     { label: '其他', value: '-1' }
 ]
+
+// 快讯频道
+export const flashIdOptions = [
+    { label: '监管动态', value: '1' },
+    { label: '交易所公告', value: '2' },
+    { label: '重大行情', value: '3' },
+    { label: '观点', value: '4' },
+    { label: '暂无', value: '0' }
+]

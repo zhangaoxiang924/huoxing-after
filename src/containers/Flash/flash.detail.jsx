@@ -9,7 +9,7 @@ import { Row, Col, Button, message, Modal, Spin } from 'antd'
 import { hashHistory } from 'react-router'
 import IconItem from '../../components/icon/icon'
 import {getFlashItemInfo} from '../../actions/flash.action'
-import {axiosAjax, formatDate} from '../../public/index'
+import {axiosAjax, formatDate, flashIdOptions} from '../../public/index'
 import './flash.scss'
 const confirm = Modal.confirm
 
@@ -27,13 +27,6 @@ const json = {
     content: '<p>content</p>'
 }
 */
-
-const channelIdOptions = [
-    { label: '监管动态', value: '1' },
-    { label: '交易所公告', value: '2' },
-    { label: '重大行情', value: '3' },
-    { label: '暂无', value: '0' }
-]
 
 class FlashDetail extends Component {
     constructor () {
@@ -54,7 +47,7 @@ class FlashDetail extends Component {
 
     channelName (id) {
         let name = ''
-        channelIdOptions.map((item, index) => {
+        flashIdOptions.map((item, index) => {
             if (parseInt(item.value) === id) {
                 name = item.label
             }

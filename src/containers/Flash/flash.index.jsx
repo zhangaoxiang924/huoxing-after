@@ -11,15 +11,9 @@ import './flash.scss'
 import { Link } from 'react-router'
 // import IconItem from '../../components/icon/icon'
 import {getFlashList, setSearchQuery, setPageData} from '../../actions/flash.action'
-import {formatDate, axiosAjax, cutString} from '../../public/index'
+import {formatDate, axiosAjax, cutString, flashIdOptions} from '../../public/index'
 const confirm = Modal.confirm
 let columns = []
-const channelIdOptions = [
-    { label: '监管动态', value: '1' },
-    { label: '交易所公告', value: '2' },
-    { label: '重大行情', value: '3' },
-    { label: '暂无', value: '0' }
-]
 class FlashIndex extends Component {
     constructor () {
         super()
@@ -30,7 +24,7 @@ class FlashIndex extends Component {
 
     channelName (id) {
         let name = ''
-        channelIdOptions.map((item, index) => {
+        flashIdOptions.map((item, index) => {
             if (parseInt(item.value) === id) {
                 name = item.label
             }
