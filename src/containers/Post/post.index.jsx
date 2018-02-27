@@ -81,13 +81,24 @@ class PostIndex extends Component {
             key: 'createTime',
             render: (record) => (formatDate(record.publishTime))
         }, {
+            title: '新闻状态',
+            key: 'status',
+            render: (record) => {
+                if (record.status === 0) {
+                    return <span className="news-status pre-publish">草稿</span>
+                } else if (record.status === 1) {
+                    return <span className="news-status has-publish">已发表</span>
+                }
+            }
+        }, {
             title: '操作',
             key: 'action',
             render: (item) => (<div>
-                <Link className="mr10" to={{pathname: '/post-detail', query: {id: item.id}}}>详情</Link>
-                <a className="mr10" href="javascript:void(0)" onClick={() => this._isTop(item)}>{item.recommend === 1 ? '取消推荐' : '推荐'}</a>
+                <Link className="mr10 opt-btn" to={{pathname: '/post-detail', query: {id: item.id}}}>详情</Link>
+                <a className="mr10 opt-btn" href="javascript:void(0)" onClick={() => this._isTop(item)}>{item.recommend === 1 ? '取消推荐' : '推荐'}</a>
+                <a className="mr10 opt-btn" href="javascript:void(0)" onClick={() => this._isTop(item)}>{item.status === 1 ? '撤回到草稿箱' : '发表'}</a>
                 {/* <a className="mr10" href="javascript:void(0)" onClick={() => this._forbidcomment(item)}>{item.forbidComment === '1' ? '取消禁评' : '禁评'}</a> */}
-                <a onClick={() => this.delPost(item)} className="mr10" href="javascript:void(0)">删除</a>
+                <a onClick={() => this.delPost(item)} className="mr10 opt-btn" href="javascript:void(0)">删除</a>
             </div>)
         }]
     }

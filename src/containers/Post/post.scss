@@ -36,6 +36,23 @@
             }
         }
     }
+
+    .news-status {
+        padding: 3px 8px;
+        background: #00a854;
+        border-radius: 4px;
+        color: #fff;
+
+        &.pre-publish {
+            background: #afafaf;
+        }
+    }
+
+    .opt-btn {
+        border: 1px solid #108ee9;
+        padding: 2px 7px;
+        border-radius: 4px;
+    }
 }
 
 .post-detail {
@@ -210,9 +227,7 @@
 
     .cover-img-tip {
         display: inline-block;
-        position: absolute;
-        bottom: 0;
-        margin: auto;
+        margin-top: 70px;
     }
 
     .ant-form-item-label {

@@ -43,7 +43,7 @@ class PostSend extends Component {
         super()
         this.state = {
             updateOrNot: false,
-            tags: ['财经'],
+            tags: ['区块链'],
             inputVisible: false,
             inputValue: '',
             isLogin: false,
@@ -284,6 +284,7 @@ class PostSend extends Component {
 
     // 提交
     handleSubmit = (e) => {
+        let status = e.target.getAttribute('data-status')
         e.preventDefault()
         this.props.form.setFieldsValue({
             tags: this.state.tags.join(','),
@@ -304,6 +305,7 @@ class PostSend extends Component {
                 delete values.wap_big
                 delete values.wap_small
                 values.id = this.props.location.query.id || ''
+                values.status = status || 1
                 !this.state.updateOrNot && delete values.id
                 axiosAjax('post', `${this.state.updateOrNot ? '/news/update' : '/news/add'}`, values, (res) => {
                     if (res.code === 1) {
@@ -601,7 +603,8 @@ class PostSend extends Component {
                         wrapperCol={{ span: 12, offset: 2 }}
                     >
                         <Button type="primary" onClick={this.newsVisibleShow} className="preview" style={{marginRight: '10px'}}>新闻内容预览</Button>
-                        <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}>发表</Button>
+                        <Button type="primary" data-status='1' htmlType="submit" style={{marginRight: '10px'}}>发表</Button>
+                        <Button type="primary" data-status='0' onClick={this.handleSubmit} style={{marginRight: '10px'}}>存草稿</Button>
                         <Button type="primary" className="cancel" onClick={() => { hashHistory.goBack() }}>取消</Button>
                     </FormItem>
                     <Modal visible={newsVisible} footer={null} className="newsModal" onCancel={this.newsVisibleHide} width={1000}>
