@@ -43,6 +43,7 @@ class PostIndex extends Component {
             key: 'title',
             render: (text, record) => (<div className="comment-info clearfix">
                 <div className="news-link">
+                    <a target="_blank" href={`http://www.huoxing24.vip/#/newsdetail/${record.newsId}/${record.channelId}/?tags=${record.tags}`}>
                         <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 40))} />
                     </a>
                 </div>
