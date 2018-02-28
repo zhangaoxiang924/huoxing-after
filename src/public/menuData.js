@@ -40,20 +40,33 @@ const menuData = [
         ]
     }, {
         key: 'flash',
-        icon: 'icon-post',
+        icon: 'icon-flash',
         link: '',
         text: '快讯管理',
         children: [
             {
                 key: 'flash-lists',
-                icon: 'icon-post-list',
+                icon: 'icon-flash-list',
                 link: '/flash-lists',
                 text: '快讯列表'
             }, {
                 key: 'flash-edit',
-                icon: 'icon-post-send',
+                icon: 'icon-flash-send',
                 link: '/flash-edit',
                 text: '编辑快讯'
+            }
+        ]
+    }, {
+        key: 'comment',
+        icon: 'icon-comment',
+        link: '',
+        text: '评论管理',
+        children: [
+            {
+                key: 'comment-list',
+                icon: 'icon-comment-list',
+                link: '/comment-list',
+                text: '评论列表'
             }
         ]
     }
