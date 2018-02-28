@@ -75,6 +75,11 @@ const rootRoutes = <div>
                 callback(null, require('../containers/Flash/flash.send').default)
             }, 'FlashSend')
         }}/>
+        <Route path='/comment-list' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Comment/comment.index').default)
+            }, 'CommentIndex')
+        }}/>
         <Route path='/postUser' getComponent={(nextState, callback) => {
             require.ensure([], (require) => {
                 callback(null, require('../containers/User/user.index').default)

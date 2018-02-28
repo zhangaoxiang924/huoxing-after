@@ -10,6 +10,7 @@ import { routerReducer } from 'react-router-redux'
 import loginInfo from './loginInfo'
 import gameListInfo from './gameListInfo'
 import postInfo from './post.reducer'
+import commentInfo from './comment.reducer'
 import flashInfo from './flash.reducer'
 import userPostInfo from './userPost.reducer'
 import imgsInfo from './imgs.reducer'
@@ -20,6 +21,7 @@ const reducers = Object.assign({
     loginInfo,
     gameListInfo,
     postInfo,
+    commentInfo,
     userPostInfo,
     imgsInfo,
     flashInfo,

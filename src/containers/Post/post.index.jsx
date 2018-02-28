@@ -114,7 +114,7 @@ class PostIndex extends Component {
     componentWillUnmount () {
         const {dispatch} = this.props
         dispatch(setSearchQuery({'type': 'init', 'nickName': '', 'title': ''}))
-        dispatch(setPageData({'currPage': 1, 'pageSize': 20, 'totalCount': 0}))
+        dispatch(setPageData({'pageSize': 20, 'totalCount': 0}))
     }
     createMarkup (str) { return {__html: str} }
 
@@ -258,7 +258,7 @@ class PostIndex extends Component {
         this.setState({
             newsStatus: value
         })
-        this.doSearch('init', {status: value})
+        this.doSearch('init', {'currentPage': 1, status: value})
     }
 
     render () {
