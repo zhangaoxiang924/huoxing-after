@@ -42,8 +42,9 @@ class PostIndex extends Component {
             width: '250px',
             key: 'title',
             render: (text, record) => (<div className="comment-info clearfix">
-                <div>
-                    <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 40))} />
+                <div className="news-link">
+                        <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 40))} />
+                    </a>
                 </div>
             </div>)
         }, {
