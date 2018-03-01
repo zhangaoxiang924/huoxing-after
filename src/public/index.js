@@ -10,6 +10,8 @@ import { message } from 'antd'
 import qs from 'qs'
 
 export const URL = '/mgr'
+// export const site = 'http://www.huoxing24.com'
+export const site = 'http://www.huoxing24.vip'
 
 // export const URL = 'http://wechatstore.linekong.com'
 export const axiosPost = (url, params, fn) => {
@@ -146,6 +148,7 @@ export const channelIdOptions = [
     { label: '技术', value: '6' },
     { label: '游戏', value: '7' },
     { label: '八点', value: '8' },
+    { label: '王峰十问', value: '9' },
     { label: '新手入门', value: '5' },
     { label: '其他', value: '-1' }
 ]

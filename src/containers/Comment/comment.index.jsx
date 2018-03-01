@@ -10,7 +10,7 @@ import './index.scss'
 // import { Link } from 'react-router'
 import IconItem from '../../components/icon/icon'
 import {getCommentList, setSearchQuery, setPageData} from '../../actions/comment.action'
-import {formatDate, axiosAjax, cutString, channelIdOptions} from '../../public/index'
+import {formatDate, axiosAjax, cutString, channelIdOptions, site} from '../../public/index'
 const confirm = Modal.confirm
 // const Option = Select.Option
 
@@ -43,7 +43,7 @@ class PostIndex extends Component {
             key: 'title',
             render: (text, record) => (<div className="comment-info clearfix">
                 <div className="news-link">
-                    <a target="_blank" href={`http://www.huoxing24.vip/#/newsdetail/${record.newsId}/${record.channelId}/?tags=${record.tags}`}>
+                    <a target="_blank" href={`${site}/#/newsdetail/${record.newsId}/${record.channelId}/?tags=${record.tags}`}>
                         <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 40))} />
                     </a>
                 </div>
@@ -52,7 +52,7 @@ class PostIndex extends Component {
             title: '评论内容',
             key: 'content',
             width: 600,
-            render: (record) => (<span title={record.content} className="reply-content">{record.content}</span>)
+            render: (record) => (<span title={record.content} className="reply-content" dangerouslySetInnerHTML={this.createMarkup(record.content)}></span>)
         }, {
             title: '昵称',
             dataIndex: 'userNickName',
