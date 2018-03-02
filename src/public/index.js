@@ -117,26 +117,30 @@ const add0 = (m) => {
 // 超出字数显示省略号
 export const cutString = (str, len) => {
     // length属性读出来的汉字长度为1
-    if (str.length * 2 <= len) {
-        return str
-    }
-    let strlen = 0
-    let s = ''
-    for (let i = 0; i < str.length; i++) {
-        s = s + str.charAt(i)
-        if (str.charCodeAt(i) > 128) {
-            strlen = strlen + 2
-            if (strlen >= len) {
-                return s.substring(0, s.length - 1) + '...'
-            }
-        } else {
-            strlen = strlen + 1
-            if (strlen >= len) {
-                return s.substring(0, s.length - 2) + '...'
+    if (str.length) {
+        if (str.length * 2 <= len) {
+            return str
+        }
+        let strlen = 0
+        let s = ''
+        for (let i = 0; i < str.length; i++) {
+            s = s + str.charAt(i)
+            if (str.charCodeAt(i) > 128) {
+                strlen = strlen + 2
+                if (strlen >= len) {
+                    return s.substring(0, s.length - 1) + '...'
+                }
+            } else {
+                strlen = strlen + 1
+                if (strlen >= len) {
+                    return s.substring(0, s.length - 2) + '...'
+                }
             }
         }
+        return s
+    } else {
+        return ''
     }
-    return s
 }
 
 // 新闻频道
@@ -160,4 +164,17 @@ export const flashIdOptions = [
     { label: '重大行情', value: '3' },
     { label: '观点', value: '4' },
     { label: '暂无', value: '0' }
+]
+
+// PC 端广告位置
+export const pcAdPosition = [
+    { label: 'PC顶部 Banner', value: '1' },
+    { label: 'PC首页右侧', value: '2' },
+    { label: 'PC首页底部', value: '3' }
+]
+
+// 手机端广告位置
+export const mobileAdPosition = [
+    { label: 'Mobile首页', value: '1' },
+    { label: 'Mobile新闻详情页', value: '2' }
 ]

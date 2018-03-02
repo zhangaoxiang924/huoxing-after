@@ -26,10 +26,23 @@ class Left extends Component {
                         key={d.key}
                         title={<span><IconItem type={d.icon}/>{d.text}</span>}>
                         {d.children.map(data => {
-                            return <Item key={data.key}>
-                                <span><IconItem type={data.icon}/><span>{data.text}</span></span>
-                                <Link to = {{'pathname': data.link}}/>
-                            </Item>
+                            if (data.children) {
+                                return <SubMenu
+                                    key={data.key}
+                                    title={<span><IconItem type={data.icon}/>{data.text}</span>}>
+                                    {data.children.map(item => {
+                                        return <Item key={item.key}>
+                                            <span><IconItem type={item.icon}/><span>{item.text}</span></span>
+                                            <Link to = {{'pathname': item.link}}/>
+                                        </Item>
+                                    })}
+                                </SubMenu>
+                            } else {
+                                return <Item key={data.key}>
+                                    <span><IconItem type={data.icon}/><span>{data.text}</span></span>
+                                    <Link to = {{'pathname': data.link}}/>
+                                </Item>
+                            }
                         })}
                     </SubMenu>
                 } else {

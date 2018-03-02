@@ -17,6 +17,7 @@ import imgsInfo from './imgs.reducer'
 import languageInfo from './language.reducer'
 import InitGameInfo from './initGame.reducer'
 import authorityInfo from './authority.reducer'
+import adInfo from './ad.reducer'
 const reducers = Object.assign({
     loginInfo,
     gameListInfo,
@@ -28,6 +29,7 @@ const reducers = Object.assign({
     languageInfo,
     InitGameInfo,
     authorityInfo,
+    adInfo,
     routing: routerReducer
 })
 

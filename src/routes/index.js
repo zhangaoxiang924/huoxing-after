@@ -105,6 +105,26 @@ const rootRoutes = <div>
                 callback(null, require('../containers/Language/language.index').default)
             }, 'LanguageIndex')
         }}/>
+        <Route path='/ad-pc' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Ad/pcAd.index.jsx').default)
+            }, 'AdIndex')
+        }}/>
+        <Route path='/ad-mobile' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Ad/mobileAd.index.jsx').default)
+            }, 'AdIndex')
+        }}/>
+        <Route path='/ad-edit' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Ad/pcAd.send.jsx').default)
+            }, 'AdEdit')
+        }}/>
+        <Route path='/adM-edit' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Ad/mobileAd.send.jsx').default)
+            }, 'MAdEdit')
+        }}/>
     </Route>
     <Route path='/login' getComponent={(nextState, callback) => {
         require.ensure([], (require) => {

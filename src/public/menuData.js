@@ -69,6 +69,41 @@ const menuData = [
                 text: '评论列表'
             }
         ]
+    }, {
+        key: 'ad',
+        icon: 'icon-ad',
+        link: '',
+        text: '广告管理',
+        children: [
+            {
+                key: 'ad-pc',
+                icon: 'icon-pc-list',
+                link: '/ad-pc',
+                text: 'PC端广告'
+                // children: [
+                //     {
+                //         key: 'ad-pc',
+                //         icon: 'icon-ad-list',
+                //         link: '/ad-pc',
+                //         text: 'PC端广告'
+                //     }
+                // ]
+            },
+            {
+                key: 'ad-mobile',
+                icon: 'icon-mobile-list',
+                link: '/ad-mobile',
+                text: '手机端广告'
+                // children: [
+                //     {
+                //         key: 'ad-mobile',
+                //         icon: 'icon-ad-list',
+                //         link: '/ad-mobile',
+                //         text: '手机端广告'
+                //     }
+                // ]
+            }
+        ]
     }
 ]
 export default menuData

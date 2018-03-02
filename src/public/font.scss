@@ -5,8 +5,8 @@
  */
 @font-face {
     font-family: 'iconfont';  /* project id 575565 */
-    src: url('//at.alicdn.com/t/font_575565_o1svij57a85pcik9.eot');
-    src: url('//at.alicdn.com/t/font_575565_o1svij57a85pcik9.eot?#iefix') format('embedded-opentype'), url('//at.alicdn.com/t/font_575565_o1svij57a85pcik9.woff') format('woff'), url('//at.alicdn.com/t/font_575565_o1svij57a85pcik9.ttf') format('truetype'), url('//at.alicdn.com/t/font_575565_o1svij57a85pcik9.svg#iconfont') format('svg');
+    src: url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.eot');
+    src: url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.eot?#iefix') format('embedded-opentype'), url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.woff') format('woff'), url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.ttf') format('truetype'), url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.svg#iconfont') format('svg');
 }
 
 .iconfont {
@@ -31,6 +31,18 @@
 
 .icon-comment:before {
     content: '\e62e';
+}
+
+.icon-ad:before {
+    content: '\e94e';
+}
+
+.icon-pc-list:before {
+    content: '\e64a';
+}
+
+.icon-mobile-list:before {
+    content: '\e650';
 }
 
 .icon-post-list:before {
