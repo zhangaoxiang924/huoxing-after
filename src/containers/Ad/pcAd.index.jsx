@@ -244,7 +244,7 @@ class AdIndex extends Component {
     // 筛选广告状态
     handleChange = (value) => {
         const {dispatch} = this.props
-        dispatch(setFilterData({adPlace: value}))
+        dispatch(setFilterData({adPcPlace: value}))
         this.setState({
             adStatus: value
         })
@@ -303,7 +303,7 @@ class AdIndex extends Component {
              </Row>
              */}
             <Row>
-                <Col span={3}>
+                <Col span={3} className="ad-position">
                     <span>广告位置：</span>
                     <Select defaultValue={`${filter.adPcPlace}`} style={{ width: 120 }} onChange={this.handleChange}>
                         <Option value="">全部</Option>

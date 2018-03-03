@@ -5,6 +5,9 @@
  */
 
 .post-index {
+    min-width: 1640px !important;
+    overflow: auto;
+
     table {
         .post-info {
             & > div {
@@ -247,7 +250,7 @@
     }
 
     .ant-form-item-label {
-        width: 5%;
+        width: 90px;
     }
 
     .simditor-body {

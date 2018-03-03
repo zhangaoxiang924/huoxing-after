@@ -183,6 +183,7 @@ class PostSend extends Component {
                             initialValue: '1'
                         })(
                             <RadioGroup
+                                disabled
                                 options={typeOptions}
                                 onChange={this.typeChange}
                                 setFieldsValue={this.state.type}>

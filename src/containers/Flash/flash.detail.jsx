@@ -156,7 +156,7 @@ class FlashDetail extends Component {
             offset: 1
         }
         const {info} = this.props
-        return <div className="post-detail">
+        return <div className="flash-detail">
             <Spin spinning={this.state.loading} size="large">
                 <Row>
                     <Col span={1}>
@@ -195,8 +195,8 @@ class FlashDetail extends Component {
                 </Row>
                 <Row>
                     <Col style={{fontSize: '15px', fontWeight: 'bolder', padding: '5px', color: '#000'}}>快讯内容: </Col>
-                    <Col className="page-box post-content">
-                        <div className="post-main">
+                    <Col className="page-box flash-content">
+                        <div className="flash-main">
                             <span className="content-text" dangerouslySetInnerHTML={this.createMarkup(info.content)} />
                             {info.url && info.url !== '' && <a href={info.url} target="_blank"> 「查看原文」</a>}
                         </div>

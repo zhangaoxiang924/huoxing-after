@@ -39,7 +39,7 @@ class FlashIndex extends Component {
             title: '快讯内容',
             width: '500px',
             key: 'content',
-            render: (text, record) => (<div className="post-info clearfix">
+            render: (text, record) => (<div className="flash-info clearfix">
                 <div>
                     <h4 dangerouslySetInnerHTML={this.createMarkup(cutString(record.content, 70))} />
                     {/*
@@ -193,7 +193,7 @@ class FlashIndex extends Component {
     render () {
         const {list, pageData} = this.props
         // const {list, search, pageData, dispatch} = this.props
-        return <div className="post-index">
+        return <div className="flash-index">
             {/*
             <Row>
                 <Col span={1} className="form-label">帖子主题:</Col>

@@ -42,7 +42,7 @@ class PostIndex extends Component {
             title: '新闻标题',
             width: '250px',
             key: 'name',
-            render: (text, record) => (<div className="post-info clearfix">
+            render: (text, record) => (record && <div className="post-info clearfix">
                 <div>
                     <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 30))} />
                     <div>
@@ -56,9 +56,9 @@ class PostIndex extends Component {
             title: '新闻状态',
             key: 'status',
             render: (record) => {
-                if (record.status === 0) {
+                if (record && record.status === 0) {
                     return <span className="news-status pre-publish">草稿</span>
-                } else if (record.status === 1) {
+                } else if (record && record.status === 1) {
                     return <span className="news-status has-publish">已发表</span>
                 } else {
                     return <span>暂无</span>
@@ -72,29 +72,29 @@ class PostIndex extends Component {
             title: '新闻摘要 ',
             dataIndex: 'synopsis',
             key: 'synopsis',
-            render: (text, record) => (<span title={record.synopsis}>{cutString(record.synopsis, 25)}</span>)
+            render: (text, record) => (record && <span title={record.synopsis}>{cutString(record.synopsis, 25)}</span>)
         }, {
             title: '频道 ',
             dataIndex: 'channelId',
             key: 'channelId',
-            render: (record) => (this.channelName(record))
+            render: (record) => (record && this.channelName(record))
         }, {
             title: '标签',
             dataIndex: 'tags',
             width: 200,
             key: 'tags',
-            render: (record) => (record.split(',').map((item, index) => {
+            render: (record) => (record && record.split(',').map((item, index) => {
                 return <Tag key={index} color="blue" style={{margin: '5px'}}>{item}</Tag>
             }))
         }, {
             title: '来源 ',
             dataIndex: 'source',
             key: 'source',
-            render: (text, record) => (<span title={record.source}>{cutString(record.source, 30)}</span>)
+            render: (text, record) => (record && <span title={record.source}>{cutString(record.source, 30)}</span>)
         }, {
             title: '发表时间',
             key: 'createTime',
-            render: (record) => (formatDate(record.publishTime))
+            render: (record) => (record && formatDate(record.publishTime))
         }, {
             title: '操作',
             key: 'action',

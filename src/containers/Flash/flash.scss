@@ -4,9 +4,9 @@
  * Description：Description
  */
 
-.post-index {
+.flash-index {
     table {
-        .post-info {
+        .flash-info {
             & > div {
                 float: left;
             }
@@ -38,14 +38,14 @@
     }
 }
 
-.post-detail {
-    .post-content {
+.flash-detail {
+    .flash-content {
         margin-top: 20px;
         padding: 20px 30px;
         display: flex;
         justify-content: space-between;
 
-        .post-main {
+        .flash-main {
             flex: 1;
             margin-right: 30px;
             overflow: hidden;
@@ -55,7 +55,7 @@
             }
         }
 
-        .post-info {
+        .flash-info {
             margin-bottom: 30px;
 
             h3 {
@@ -212,7 +212,7 @@
     }
 
     .ant-form-item-label {
-        width: 5%;
+        width: 90px;
     }
 }
 

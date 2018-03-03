@@ -117,7 +117,7 @@ const add0 = (m) => {
 // 超出字数显示省略号
 export const cutString = (str, len) => {
     // length属性读出来的汉字长度为1
-    if (str.length) {
+    if (str && str.length) {
         if (str.length * 2 <= len) {
             return str
         }
@@ -146,6 +146,7 @@ export const cutString = (str, len) => {
 // 新闻频道
 export const channelIdOptions = [
     { label: '新闻', value: '1' },
+    { label: '两会', value: '10' },
     { label: '产业', value: '2' },
     { label: '项目', value: '3' },
     { label: '人物', value: '4' },
@@ -168,9 +169,13 @@ export const flashIdOptions = [
 
 // PC 端广告位置
 export const pcAdPosition = [
-    { label: 'PC顶部 Banner', value: '1' },
-    { label: 'PC首页右侧', value: '2' },
-    { label: 'PC首页底部', value: '3' }
+    { label: '首页顶部 Banner', value: '1' },
+    { label: '首页中部左侧', value: '2' },
+    { label: '首页中部右侧', value: '3' },
+    { label: '首页底部', value: '4' },
+    { label: '新闻详情顶部', value: '5' },
+    { label: '新闻详情底部', value: '6' },
+    { label: '相关新闻', value: '7' }
 ]
 
 // 手机端广告位置

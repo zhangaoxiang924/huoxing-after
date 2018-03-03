@@ -5,7 +5,14 @@
  */
 
 .ad-index {
+    min-width: 1420px;
+    overflow: auto;
+
     table {
+        .ad-position {
+            width: 190px;
+        }
+
         .ad-info {
             & > div {
                 float: left;

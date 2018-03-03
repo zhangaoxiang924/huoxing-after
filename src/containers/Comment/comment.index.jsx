@@ -51,7 +51,6 @@ class PostIndex extends Component {
         }, {
             title: '评论内容',
             key: 'content',
-            width: 600,
             render: (record) => (<span title={record.content} className="reply-content" dangerouslySetInnerHTML={this.createMarkup(record.content)}></span>)
         }, {
             title: '昵称',
