@@ -260,7 +260,7 @@ class PostSend extends Component {
                             <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
                                 <img alt="example" style={{ width: '100%' }} src={previewImage} />
                             </Modal>
-                            <span className="cover-img-tip">用于广告封面展示, 建议尺寸: <font style={{color: 'red'}}>280px * 205px</font></span>
+                            {/* <span className="cover-img-tip">用于广告封面展示, 建议尺寸: <font style={{color: 'red'}}>280px * 205px</font></span> */}
                         </div>
                     </FormItem>
 
