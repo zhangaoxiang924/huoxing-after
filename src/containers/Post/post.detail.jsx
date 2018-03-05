@@ -169,6 +169,7 @@ class PostDetail extends Component {
             offset: 1
         }
         const {info} = this.props
+        // console.log(info.audio)
         return <Spin spinning={this.state.loading} size="large">
             {info.id ? <div className="post-detail">
                 <Row>
@@ -220,6 +221,15 @@ class PostDetail extends Component {
                     <Col className="section">
                         <span className="name">新闻摘要：</span>
                         <span className="desc">{`${info.synopsis}`} </span>
+                    </Col>
+                </Row>
+                <Row className="news-summary">
+                    <Col className="section">
+                        <span className="name">音频：</span>
+
+                        <span className="desc">
+                            <audio className="audio-v" src='' controls="controls"></audio>
+                        </span>
                     </Col>
                 </Row>
                 {JSON.parse(info.coverPic) ? <div>

@@ -114,8 +114,14 @@
         }
 
         .desc {
+            position: relative;
             margin-left: 10px;
             color: #000;
+
+            .audio-v {
+                position: absolute;
+                top: -10px;
+            }
         }
     }
 
