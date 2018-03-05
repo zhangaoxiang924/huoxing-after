@@ -11,7 +11,7 @@ import { Radio, Form, Input, Upload, Icon, Modal, Button, Tag, Tooltip, message,
 import moment from 'moment'
 import {getPostItemInfo} from '../../actions/post.action'
 
-import {axiosAjax, URL, formatDate, channelIdOptions} from '../../public/index'
+import {axiosAjax, URL, formatDate, channelIdOptions, isJsonString} from '../../public/index'
 import './post.scss'
 
 const FormItem = Form.Item
@@ -70,7 +70,7 @@ class PostSend extends Component {
         const {dispatch, location} = this.props
         if (location.query.id) {
             dispatch(getPostItemInfo({'id': location.query.id}, (data) => {
-                let coverPic = JSON.parse(data.coverPic)
+                let coverPic = isJsonString(data.coverPic) ? JSON.parse(data.coverPic) : {pc_recommend: '', pc: '', wap_big: '', wap_small: ''}
                 let pcfileList = (coverPic.pc_recommend && coverPic.pc_recommend !== '') ? [{
                     uid: 0,
                     name: 'xxx.png',
@@ -406,6 +406,18 @@ class PostSend extends Component {
                             initialValue: (updateOrNot && newsInfo) ? moment(formatDate(newsInfo.publishTime), 'YYYY-MM-DD HH:mm:ss') : moment()
                         })(
                             <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+                        )}
+                    </FormItem>
+
+                    <FormItem
+                        {...formItemLayout}
+                        label="阅读数: "
+                    >
+                        {getFieldDecorator('hotCount', {
+                            initialValue: (updateOrNot && newsInfo) ? `${newsInfo.readCount}` : 0,
+                            rules: [{ required: true, message: '请输入新闻阅读数！' }]
+                        })(
+                            <Input className="news-source" placeholder="请输入新闻阅读数"/>
                         )}
                     </FormItem>
 

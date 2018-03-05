@@ -143,6 +143,18 @@ export const cutString = (str, len) => {
     }
 }
 
+// 判断是否为对象字符串
+export const isJsonString = (str) => {
+    try {
+        if (typeof JSON.parse(str) === 'object') {
+            return true
+        }
+    } catch (e) {
+        console.log(e)
+    }
+    return false
+}
+
 // 新闻频道
 export const channelIdOptions = [
     { label: '新闻', value: '1' },

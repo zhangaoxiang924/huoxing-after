@@ -222,34 +222,42 @@ class PostDetail extends Component {
                         <span className="desc">{`${info.synopsis}`} </span>
                     </Col>
                 </Row>
-                <Row className="news-cover-img">
+                {JSON.parse(info.coverPic) ? <div>
+                    <Row className="news-cover-img">
+                        <Col className="section">
+                            <span className="name">PC-新闻封面：</span>
+                            <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).pc)} src={`${JSON.parse(info.coverPic).pc}`}/>
+                        </Col>
+                    </Row>
+                    <Row className="news-cover-img">
+                        <Col className="section">
+                            <span className="name">PC-推荐位封面：</span>
+                            {(JSON.parse(info.coverPic).pc_recommend && JSON.parse(info.coverPic).pc_recommend !== '') ? <img
+                                className="desc"
+                                onClick={() => this.showModal(JSON.parse(info.coverPic).pc_recommend)}
+                                src={`${JSON.parse(info.coverPic).pc_recommend}`}/> : <span style={{padding: 6}}>暂无推荐位封面</span>
+                            }
+                        </Col>
+                    </Row>
+                    <Row className="news-cover-img">
+                        <Col className="section">
+                            <span className="name" style={{width: '125px', verticalAlign: 'top'}}>M-新闻封面：</span>
+                            <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_small)} style={{width: 95, border: '1px solid #eee'}} src={`${JSON.parse(info.coverPic).wap_small}`}/>
+                        </Col>
+                    </Row>
+                    <Row className="news-cover-img">
+                        <Col className="section">
+                            <span className="name" style={{width: '125px', verticalAlign: 'top'}}>M-推荐：</span>
+                            <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_big)} style={{width: 95, border: '1px solid #eee'}} src={`${JSON.parse(info.coverPic).wap_big}`}/>
+                        </Col>
+                    </Row>
+                </div> : <Row className="news-cover-img">
                     <Col className="section">
-                        <span className="name">PC-新闻封面：</span>
-                        <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).pc)} src={`${JSON.parse(info.coverPic).pc}`}/>
+                        <span className="name">新闻封面：</span>
+                        <span>暂无</span>
                     </Col>
-                </Row>
-                <Row className="news-cover-img">
-                    <Col className="section">
-                        <span className="name">PC-推荐位封面：</span>
-                        {(JSON.parse(info.coverPic).pc_recommend && JSON.parse(info.coverPic).pc_recommend !== '') ? <img
-                            className="desc"
-                            onClick={() => this.showModal(JSON.parse(info.coverPic).pc_recommend)}
-                            src={`${JSON.parse(info.coverPic).pc_recommend}`}/> : <span style={{padding: 6}}>暂无推荐位封面</span>
-                        }
-                    </Col>
-                </Row>
-                <Row className="news-cover-img">
-                    <Col className="section">
-                        <span className="name" style={{width: '125px', verticalAlign: 'top'}}>M-新闻封面：</span>
-                        <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_small)} style={{width: 95, border: '1px solid #eee'}} src={`${JSON.parse(info.coverPic).wap_small}`}/>
-                    </Col>
-                </Row>
-                <Row className="news-cover-img">
-                    <Col className="section">
-                        <span className="name" style={{width: '125px', verticalAlign: 'top'}}>M-推荐：</span>
-                        <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_big)} style={{width: 95, border: '1px solid #eee'}} src={`${JSON.parse(info.coverPic).wap_big}`}/>
-                    </Col>
-                </Row>
+                </Row>}
+
                 <Modal visible={this.state.previewVisible} footer={null} onCancel={this.handleCancel}>
                     <img alt="example" style={{ width: '100%' }} src={this.state.previewImage} />
                 </Modal>
