@@ -3,15 +3,16 @@
  * Time：2017/9/19
  * Description：Description
  */
-import React, { Component } from 'react'
-import { connect } from 'react-redux'
-import { Row, Col, Button, message, Modal, Tag, Spin } from 'antd'
-import { hashHistory } from 'react-router'
+import React, {Component} from 'react'
+import {connect} from 'react-redux'
+import {Row, Col, Button, message, Modal, Tag, Spin} from 'antd'
+import {hashHistory} from 'react-router'
 import IconItem from '../../components/icon/icon'
 import {getPostItemInfo} from '../../actions/post.action'
 import {axiosAjax, channelIdOptions} from '../../public/index'
 import './post.scss'
 import '../../public/simditor.css'
+
 const confirm = Modal.confirm
 
 /*
@@ -39,6 +40,7 @@ class PostDetail extends Component {
             previewImage: ''
         }
     }
+
     componentWillMount () {
         const {dispatch, location} = this.props
         dispatch(getPostItemInfo({'id': location.query.id}, () => {
@@ -47,6 +49,7 @@ class PostDetail extends Component {
             })
         }))
     }
+
     // 删除
     _delPost () {
         const {location} = this.props
@@ -132,7 +135,9 @@ class PostDetail extends Component {
     }
 
     // 内容格式化
-    createMarkup (str) { return {__html: str} }
+    createMarkup (str) {
+        return {__html: str}
+    }
 
     channelName (id) {
         let name = ''
@@ -154,7 +159,7 @@ class PostDetail extends Component {
     }
 
     // 上传图片
-    handleCancel = () => this.setState({ previewVisible: false })
+    handleCancel = () => this.setState({previewVisible: false})
 
     showModal = (src) => {
         this.setState({
@@ -174,10 +179,11 @@ class PostDetail extends Component {
             {info.id ? <div className="post-detail">
                 <Row>
                     <Col span={1}>
-                        <Button shape="circle" icon="arrow-left" onClick={() => hashHistory.goBack()} />
+                        <Button shape="circle" icon="arrow-left" onClick={() => hashHistory.goBack()}/>
                     </Col>
                     <Col className="text-right" span={20} offset={3}>
-                        <Button onClick={this.edit} className="mr10" type="primary" ><IconItem type="icon-edit"/>编辑</Button>
+                        <Button onClick={this.edit} className="mr10" type="primary"><IconItem
+                            type="icon-edit"/>编辑</Button>
                         {/*
                         <Button onClick={() => this._isTop(info.isTop)} className="mr10"><IconItem type={info.isTop === '1' ? 'icon-cancel-top' : 'icon-to-top'}/>{info.isTop === '1' ? '取消置顶' : '置顶'}</Button>
                         <Button onClick={() => this._forbidcomment(info.forbidComment)} className="mr10"><IconItem type={info.forbidComment === '1' ? 'icon-msg' : 'icon-no-msg'}/>{info.forbidComment === '1' ? '取消禁评' : '禁评'}</Button>
@@ -227,38 +233,53 @@ class PostDetail extends Component {
                     <Col className="section">
                         <span className="name">音频：</span>
 
-                        <span className="desc">
-                            <audio className="audio-v" src='' controls="controls"></audio>
-                        </span>
+                        <ul className="desc" style={{
+                            display: 'inline-block'
+                        }}>
+                            {info.audio ? JSON.parse(info.audio).map(function (item, index) {
+                                return <li className="clearfix" key={index} style={{marginBottom: '10px'}}>
+                                    <span>{item.fileName}</span>
+                                    <audio src={item.fileUrl} controls="controls"></audio>
+                                </li>
+                            }) : null}
+                        </ul>
                     </Col>
                 </Row>
                 {JSON.parse(info.coverPic) ? <div>
                     <Row className="news-cover-img">
                         <Col className="section">
                             <span className="name">PC-新闻封面：</span>
-                            <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).pc)} src={`${JSON.parse(info.coverPic).pc}`}/>
+                            <img
+                                className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).pc)}
+                                src={`${JSON.parse(info.coverPic).pc}`}/>
                         </Col>
                     </Row>
                     <Row className="news-cover-img">
                         <Col className="section">
                             <span className="name">PC-推荐位封面：</span>
-                            {(JSON.parse(info.coverPic).pc_recommend && JSON.parse(info.coverPic).pc_recommend !== '') ? <img
-                                className="desc"
-                                onClick={() => this.showModal(JSON.parse(info.coverPic).pc_recommend)}
-                                src={`${JSON.parse(info.coverPic).pc_recommend}`}/> : <span style={{padding: 6}}>暂无推荐位封面</span>
-                            }
+                            {
+                                (JSON.parse(info.coverPic).pc_recommend && JSON.parse(info.coverPic).pc_recommend !== '') ? <img
+                                    className="desc"
+                                    onClick={() => this.showModal(JSON.parse(info.coverPic).pc_recommend)}
+                                    src={`${JSON.parse(info.coverPic).pc_recommend}`}/> : <span style={{padding: 6}}>暂无推荐位封面</span>}
                         </Col>
                     </Row>
                     <Row className="news-cover-img">
                         <Col className="section">
                             <span className="name" style={{width: '125px', verticalAlign: 'top'}}>M-新闻封面：</span>
-                            <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_small)} style={{width: 95, border: '1px solid #eee'}} src={`${JSON.parse(info.coverPic).wap_small}`}/>
+                            <img
+                                className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_small)}
+                                style={{width: 95, border: '1px solid #eee'}}
+                                src={`${JSON.parse(info.coverPic).wap_small}`}/>
                         </Col>
                     </Row>
                     <Row className="news-cover-img">
                         <Col className="section">
                             <span className="name" style={{width: '125px', verticalAlign: 'top'}}>M-推荐：</span>
-                            <img className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_big)} style={{width: 95, border: '1px solid #eee'}} src={`${JSON.parse(info.coverPic).wap_big}`}/>
+                            <img
+                                className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_big)}
+                                style={{width: 95, border: '1px solid #eee'}}
+                                src={`${JSON.parse(info.coverPic).wap_big}`}/>
                         </Col>
                     </Row>
                 </div> : <Row className="news-cover-img">
@@ -269,14 +290,14 @@ class PostDetail extends Component {
                 </Row>}
 
                 <Modal visible={this.state.previewVisible} footer={null} onCancel={this.handleCancel}>
-                    <img alt="example" style={{ width: '100%' }} src={this.state.previewImage} />
+                    <img alt="example" style={{width: '100%'}} src={this.state.previewImage}/>
                 </Modal>
                 {/* 帖子内容 */}
                 <Row>
                     <Col style={{fontSize: '15px', fontWeight: 'bolder', padding: '5px', color: '#000'}}>新闻内容: </Col>
                     <Col className="page-box post-content simditor">
                         <div className="post-main simditor-body">
-                            <div className="content-text" dangerouslySetInnerHTML={this.createMarkup(info.content)} />
+                            <div className="content-text" dangerouslySetInnerHTML={this.createMarkup(info.content)}/>
                         </div>
                     </Col>
                 </Row>

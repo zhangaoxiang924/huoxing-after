@@ -37,6 +37,7 @@ const cateIdOptions = [
  content: '<p>content</p>'
  }
  */
+
 // let mp3List = []
 class PostSend extends Component {
     state = {
@@ -56,7 +57,10 @@ class PostSend extends Component {
         pcfileList: [],
         mfileList: [],
         mcfileList: [],
-        mp3fileList: [{audioName: '', audioUrl: ''}],
+        mp3fileList: [],
+        audioDefalutArr: [
+            // {uid: 123456789, fileName: '', fileUrl: ''}
+        ],
         coverImgUrl: '',
         pccoverImgUrl: '',
         mcoverImgUrl: '',
@@ -65,7 +69,7 @@ class PostSend extends Component {
         loading: true
     }
 
-    componentWillMount() {
+    componentWillMount () {
         const {dispatch, location} = this.props
         if (location.query.id) {
             dispatch(getPostItemInfo({'id': location.query.id}, (data) => {
@@ -97,6 +101,7 @@ class PostSend extends Component {
                         status: 'done',
                         url: coverPic.wap_small
                     }],
+                    audioDefalutArr: data.audio ? JSON.parse(data.audio) : [],
                     mcfileList: '',
                     tags: data.tags.split(','),
                     newsContent: data.content,
@@ -281,27 +286,16 @@ class PostSend extends Component {
 
     handleMp3 = ({file, fileList}) => {
         console.log(fileList)
-        this.setState({
-            mp3fileList: fileList
-        })
-        if (file.status === 'removed') {
-            this.setState({
-                mp3fileList: []
-            })
-        }
         if (file.response) {
             if (file.response.code === 1) {
-                // mp3List.push(file.response.obj)
                 this.setState({
-                    mp3fileList: file.response.obj
+                    mp3fileList: fileList
+                }, function () {
+                    console.log(this.state.mp3fileList)
                 })
             }
             if (file.status === 'error') {
                 message.error('网络错误，上传失败！')
-                this.setState({
-                    mp3Url: '',
-                    mp3fileList: []
-                })
             }
         }
     }
@@ -326,48 +320,61 @@ class PostSend extends Component {
     handleSubmit = (e) => {
         let status = e.target.getAttribute('data-status')
         e.preventDefault()
-        this.props.form.setFieldsValue({
-            tags: this.state.tags.join(','),
-            content: this.state.newsContent,
-            pc_recommend: this.state.pccoverImgUrl,
-            pc: this.state.coverImgUrl,
-            wap_small: this.state.mcoverImgUrl,
-            wap_big: this.state.mccoverImgUrl,
-            audio: this.state.mp3fileList
+
+        let newArr = this.state.audioDefalutArr
+        this.state.mp3fileList.map(function (item, index) {
+            newArr.push({
+                uid: item.uid,
+                fileName: item.name,
+                fileUrl: item.response.obj
+            })
         })
-        this.props.form.validateFieldsAndScroll((err, values) => {
-            console.log(values)
-            if (!err) {
-                this.setState({
-                    loading: true
-                })
-                values.publishTime = Date.parse(values['publishTime'].format('YYYY-MM-DD HH:mm:ss'))
-                values.coverPic = JSON.stringify({
-                    pc_recommend: values.pc_recommend || '',
-                    pc: values.pc,
-                    wap_big: values.wap_big,
-                    wap_small: values.wap_small
-                })
-                delete values.pc
-                delete values.wap_big
-                delete values.wap_small
-                values.id = this.props.location.query.id || ''
-                values.status = status || 1
-                !this.state.updateOrNot && delete values.id
-                axiosAjax('post', `${this.state.updateOrNot ? '/news/update' : '/news/add'}`, values, (res) => {
-                    if (res.code === 1) {
-                        message.success(this.state.updateOrNot ? '修改成功！' : '添加成功！')
-                        hashHistory.push('/post-list')
-                    } else {
-                        message.error(res.msg)
-                    }
-                })
-            }
+        this.setState({
+            audioDefalutArr: newArr
+        }, function () {
+            console.log(this.state.audioDefalutArr)
+            this.props.form.setFieldsValue({
+                tags: this.state.tags.join(','),
+                content: this.state.newsContent,
+                pc_recommend: this.state.pccoverImgUrl,
+                pc: this.state.coverImgUrl,
+                wap_small: this.state.mcoverImgUrl,
+                wap_big: this.state.mccoverImgUrl,
+                audio: JSON.stringify(this.state.audioDefalutArr)
+            })
+            this.props.form.validateFieldsAndScroll((err, values) => {
+                if (!err) {
+                    this.setState({
+                        loading: true
+                    })
+                    values.publishTime = Date.parse(values['publishTime'].format('YYYY-MM-DD HH:mm:ss'))
+                    values.coverPic = JSON.stringify({
+                        pc_recommend: values.pc_recommend || '',
+                        pc: values.pc,
+                        wap_big: values.wap_big,
+                        wap_small: values.wap_small
+                    })
+                    delete values.pc
+                    delete values.wap_big
+                    delete values.wap_small
+                    values.id = this.props.location.query.id || ''
+                    values.status = status || 1
+                    !this.state.updateOrNot && delete values.id
+                    axiosAjax('post', `${this.state.updateOrNot ? '/news/update' : '/news/add'}`, values, (res) => {
+                        if (res.code === 1) {
+                            message.success(this.state.updateOrNot ? '修改成功！' : '添加成功！')
+                            // hashHistory.push('/post-list')
+                        } else {
+                            message.error(res.msg)
+                        }
+                    })
+                }
+            })
         })
     }
 
     // 发布
-    sendPost(sendData) {
+    sendPost = (sendData) => {
         let _data = {
             'newsTitle': sendData.postTitle || '',
             'newsContent': `${sendData.postContent}` || ''
@@ -376,11 +383,11 @@ class PostSend extends Component {
     }
 
     // 内容格式化
-    createMarkup(str) {
+    createMarkup = (str) => {
         return {__html: str}
     }
 
-    render() {
+    render () {
         const {getFieldDecorator} = this.props.form
         const {newsInfo, location} = this.props
         const {previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible, mp3fileList} = this.state
@@ -460,17 +467,10 @@ class PostSend extends Component {
 
                     <FormItem
                         {...formItemLayout}
-                        label="阅读数: "
-                    >
-<<<<<<< HEAD
-                        {getFieldDecorator('hotCounts', {
-                            initialValue: (updateOrNot && newsInfo) ? newsInfo.hotCounts : 0,
-                            rules: [{ required: true, pattern: /^[0-9]+$/, message: '请输入不小于 0 的新闻阅读数量！' }]
-=======
+                        label="阅读数: ">
                         {getFieldDecorator('hotCount', {
                             initialValue: (updateOrNot && newsInfo) ? `${newsInfo.readCount}` : 0,
                             rules: [{required: true, message: '请输入新闻阅读数！'}]
->>>>>>> LIU
                         })(
                             <Input className="news-source" placeholder="请输入新闻阅读数"/>
                         )}
@@ -478,8 +478,7 @@ class PostSend extends Component {
 
                     <FormItem
                         {...formItemLayout}
-                        label="标题: "
-                    >
+                        label="标题: ">
                         {getFieldDecorator('title', {
                             initialValue: (updateOrNot && newsInfo) ? `${newsInfo.title}` : '',
                             rules: [{required: true, message: '请输入新闻标题！'}]
@@ -490,13 +489,19 @@ class PostSend extends Component {
 
                     <FormItem
                         {...formItemLayout}
-                        label="音频"
-                    >
+                        label="音频">
+                        <ul>{this.state.audioDefalutArr.map(function (item, index) {
+                            return <li key={index}>
+                                {item.fileName}
+                                {/* <audio src={item.fileUrl}/> */}
+                            </li>
+                        })}</ul>
                         {getFieldDecorator('audio', {
                             valuePropName: 'mp3fileList',
                             getValueFromEvent: this.normFile
                         })(
                             <Upload
+                                defaultFileList={this.state.mp3fileList}
                                 action={`${URL}/audio/upload`}
                                 name='uploadFile'
                                 filelist={mp3fileList}
@@ -537,8 +542,9 @@ class PostSend extends Component {
                             {tags.map((tag, index) => {
                                 const isLongTag = tag.length > 5
                                 const tagElem = (
-                                    <Tag color="blue" key={tag} closable={index !== -1}
-                                         afterClose={ () => this.handleClose(tag)}>
+                                    <Tag
+                                        color="blue" key={tag} closable={index !== -1}
+                                        afterClose={() => this.handleClose(tag)}>
                                         {isLongTag ? `${tag.slice(0, 5)}` : tag}
                                     </Tag>
                                 )
@@ -663,8 +669,7 @@ class PostSend extends Component {
 
                     <FormItem
                         {...formItemLayout}
-                        label="M-轮播图: "
-                    >
+                        label="M-轮播图: ">
                         <div className="dropbox">
                             {getFieldDecorator('wap_big', {
                                 initialValue: (updateOrNot && newsInfo) ? mcfileList : '',
@@ -691,22 +696,30 @@ class PostSend extends Component {
                     <FormItem
                         wrapperCol={{span: 12, offset: 2}}
                     >
-                        <Button type="primary" onClick={this.newsVisibleShow} className="preview"
-                                style={{marginRight: '10px'}}>新闻内容预览</Button>
-                        <Button type="primary" data-status='1' htmlType="submit"
-                                style={{marginRight: '10px'}}>发表</Button>
-                        <Button type="primary" data-status='0' onClick={this.handleSubmit}
-                                style={{marginRight: '10px'}}>存草稿</Button>
-                        <Button type="primary" className="cancel" onClick={() => {
-                            hashHistory.goBack()
-                        }}>取消</Button>
+                        <Button
+                            type="primary" onClick={this.newsVisibleShow} className="preview"
+                            style={{marginRight: '10px'}}>新闻内容预览</Button>
+                        <Button
+                            type="primary" data-status='1' htmlType="submit"
+                            style={{marginRight: '10px'}}>发表</Button>
+                        <Button
+                            type="primary" data-status='0' onClick={this.handleSubmit}
+                            style={{marginRight: '10px'}}>存草稿</Button>
+                        <Button
+                            type="primary" className="cancel"
+                            onClick={() => {
+                                hashHistory.goBack()
+                            }}>取消</Button>
                     </FormItem>
-                    <Modal visible={newsVisible} footer={null} className="newsModal" onCancel={this.newsVisibleHide}
-                           width={1000}>
+                    <Modal
+                        visible={newsVisible} footer={null} className="newsModal" onCancel={this.newsVisibleHide}
+                        width={1000}>
                         <Row>
-                            <Col className="previewNews simditor">
-                                <p className="simditor-body" style={{padding: 10}}
-                                   dangerouslySetInnerHTML={this.createMarkup(newsContent)}></p>
+                            <Col
+                                className="previewNews simditor">
+                                <p
+                                    className="simditor-body" style={{padding: 10}}
+                                    dangerouslySetInnerHTML={this.createMarkup(newsContent)}></p>
                             </Col>
                         </Row>
                     </Modal>

@@ -18,6 +18,8 @@
         "SwitchCase": 1
       }
     ],
+    "react/jsx-uses-react": "error",
+    "react/jsx-uses-vars": "error",
     "space-before-function-paren": [
       "error",
       {
@@ -25,9 +27,7 @@
         "named": "always",
         "asyncArrow": "always"
       }
-    ],
-    "react/jsx-uses-react": "error",
-    "react/jsx-uses-vars": "error"
+    ]
   },
   "globals": {
     "CONFIG": true,
