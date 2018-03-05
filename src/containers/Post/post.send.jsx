@@ -413,9 +413,9 @@ class PostSend extends Component {
                         {...formItemLayout}
                         label="阅读数: "
                     >
-                        {getFieldDecorator('hotCount', {
-                            initialValue: (updateOrNot && newsInfo) ? `${newsInfo.readCount}` : 0,
-                            rules: [{ required: true, message: '请输入新闻阅读数！' }]
+                        {getFieldDecorator('hotCounts', {
+                            initialValue: (updateOrNot && newsInfo) ? newsInfo.hotCounts : 0,
+                            rules: [{ required: true, pattern: /^[0-9]+$/, message: '请输入不小于 0 的新闻阅读数量！' }]
                         })(
                             <Input className="news-source" placeholder="请输入新闻阅读数"/>
                         )}
