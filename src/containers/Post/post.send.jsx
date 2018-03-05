@@ -5,9 +5,9 @@
  */
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import { hashHistory } from 'react-router'
+import {hashHistory} from 'react-router'
 import PostEditor from '../../components/postEditor'
-import { Radio, Form, Input, Upload, Icon, Modal, Button, Tag, Tooltip, message, Row, Col, Spin, DatePicker } from 'antd'
+import {Radio, Form, Input, Upload, Icon, Modal, Button, Tag, Tooltip, message, Row, Col, Spin, DatePicker} from 'antd'
 import moment from 'moment'
 import {getPostItemInfo} from '../../actions/post.action'
 
@@ -15,62 +15,67 @@ import {axiosAjax, URL, formatDate, channelIdOptions, isJsonString} from '../../
 import './post.scss'
 
 const FormItem = Form.Item
-const { TextArea } = Input
+const {TextArea} = Input
 const RadioGroup = Radio.Group
 
 const cateIdOptions = [
-    { label: '原创', value: '1' },
-    { label: '转载', value: '2' }
+    {label: '原创', value: '1'},
+    {label: '转载', value: '2'}
 ]
 
 /*
-const json = {
-    update: true,
-    author: '作者',
-    channelId: '0',
-    cateId: '0',
-    coverPic: [],
-    title: '标题',
-    source: '新闻来源',
-    synopsis: '摘要',
-    tags: '标签',
-    content: '<p>content</p>'
-}
-*/
-
+ const json = {
+ update: true,
+ author: '作者',
+ channelId: '0',
+ cateId: '0',
+ coverPic: [],
+ title: '标题',
+ source: '新闻来源',
+ synopsis: '摘要',
+ tags: '标签',
+ content: '<p>content</p>'
+ }
+ */
+// let mp3List = []
 class PostSend extends Component {
-    constructor () {
-        super()
-        this.state = {
-            updateOrNot: false,
-            tags: ['区块链'],
-            inputVisible: false,
-            inputValue: '',
-            isLogin: false,
-            channelId: '1',
-            newsVisible: false,
-            cateId: '1',
-            previewVisible: false,
-            previewImage: '',
-            newsTitle: '',
-            newsContent: '',
-            fileList: [],
-            pcfileList: [],
-            mfileList: [],
-            mcfileList: [],
-            coverImgUrl: '',
-            pccoverImgUrl: '',
-            mcoverImgUrl: '',
-            mccoverImgUrl: '',
-            loading: true
-        }
+    state = {
+        updateOrNot: false,
+        tags: ['区块链'],
+        inputVisible: false,
+        inputValue: '',
+        isLogin: false,
+        channelId: '1',
+        newsVisible: false,
+        cateId: '1',
+        previewVisible: false,
+        previewImage: '',
+        newsTitle: '',
+        newsContent: '',
+        fileList: [],
+        pcfileList: [],
+        mfileList: [],
+        mcfileList: [],
+        mp3fileList: [{audioName: '', audioUrl: ''}],
+        coverImgUrl: '',
+        pccoverImgUrl: '',
+        mcoverImgUrl: '',
+        mccoverImgUrl: '',
+        mp3Url: '',
+        loading: true
     }
 
-    componentWillMount () {
+    componentWillMount() {
         const {dispatch, location} = this.props
         if (location.query.id) {
             dispatch(getPostItemInfo({'id': location.query.id}, (data) => {
-                let coverPic = isJsonString(data.coverPic) ? JSON.parse(data.coverPic) : {pc_recommend: '', pc: '', wap_big: '', wap_small: ''}
+                console.log(data)
+                let coverPic = isJsonString(data.coverPic) ? JSON.parse(data.coverPic) : {
+                    pc_recommend: '',
+                    pc: '',
+                    wap_big: '',
+                    wap_small: ''
+                }
                 let pcfileList = (coverPic.pc_recommend && coverPic.pc_recommend !== '') ? [{
                     uid: 0,
                     name: 'xxx.png',
@@ -92,18 +97,14 @@ class PostSend extends Component {
                         status: 'done',
                         url: coverPic.wap_small
                     }],
-                    mcfileList: [{
-                        uid: 0,
-                        name: 'xxx.png',
-                        status: 'done',
-                        url: coverPic.wap_big
-                    }],
+                    mcfileList: '',
                     tags: data.tags.split(','),
                     newsContent: data.content,
                     coverImgUrl: coverPic.pc,
                     pccoverImgUrl: coverPic.pc_recommend || '',
                     mcoverImgUrl: coverPic.wap_small,
                     mccoverImgUrl: coverPic.wap_big,
+                    mp3Url: data.audio,
                     loading: false
                 })
             }))
@@ -131,15 +132,15 @@ class PostSend extends Component {
     // 标签设置
     handleClose = (removedTag) => {
         const tags = this.state.tags.filter(tag => tag !== removedTag)
-        this.setState({ tags })
+        this.setState({tags})
     }
 
     showInput = () => {
-        this.setState({ inputVisible: true }, () => this.input.focus())
+        this.setState({inputVisible: true}, () => this.input.focus())
     }
 
     handleInputChange = (e) => {
-        this.setState({ inputValue: e.target.value })
+        this.setState({inputValue: e.target.value})
     }
 
     handleInputConfirm = () => {
@@ -161,7 +162,7 @@ class PostSend extends Component {
     }
 
     // 上传图片
-    handleCancel = () => this.setState({ previewVisible: false })
+    handleCancel = () => this.setState({previewVisible: false})
 
     handlePreview = (file) => {
         this.setState({
@@ -170,7 +171,7 @@ class PostSend extends Component {
         })
     }
 
-    handleChange = ({ file, fileList }) => {
+    handleChange = ({file, fileList}) => {
         this.setState({
             fileList: fileList
         })
@@ -186,7 +187,8 @@ class PostSend extends Component {
                 this.setState({
                     coverImgUrl: file.response.obj
                 })
-            } if (file.status === 'error') {
+            }
+            if (file.status === 'error') {
                 message.error('网络错误，上传失败！')
                 this.setState({
                     coverImgUrl: '',
@@ -196,7 +198,7 @@ class PostSend extends Component {
         }
     }
 
-    handlePcChange = ({ file, fileList }) => {
+    handlePcChange = ({file, fileList}) => {
         this.setState({
             pcfileList: fileList
         })
@@ -212,7 +214,8 @@ class PostSend extends Component {
                 this.setState({
                     pccoverImgUrl: file.response.obj
                 })
-            } if (file.status === 'error') {
+            }
+            if (file.status === 'error') {
                 message.error('网络错误，上传失败！')
                 this.setState({
                     pccoverImgUrl: '',
@@ -222,7 +225,7 @@ class PostSend extends Component {
         }
     }
 
-    handleMobileChange = ({ file, fileList }) => {
+    handleMobileChange = ({file, fileList}) => {
         this.setState({
             mfileList: fileList
         })
@@ -238,7 +241,8 @@ class PostSend extends Component {
                 this.setState({
                     mcoverImgUrl: file.response.obj
                 })
-            } if (file.status === 'error') {
+            }
+            if (file.status === 'error') {
                 message.error('网络错误，上传失败！')
                 this.setState({
                     mcoverImgUrl: '',
@@ -248,7 +252,7 @@ class PostSend extends Component {
         }
     }
 
-    handleMobileCommentChange = ({ file, fileList }) => {
+    handleMobileCommentChange = ({file, fileList}) => {
         this.setState({
             mcfileList: fileList
         })
@@ -264,7 +268,8 @@ class PostSend extends Component {
                 this.setState({
                     mccoverImgUrl: file.response.obj
                 })
-            } if (file.status === 'error') {
+            }
+            if (file.status === 'error') {
                 message.error('网络错误，上传失败！')
                 this.setState({
                     mccoverImgUrl: '',
@@ -274,12 +279,47 @@ class PostSend extends Component {
         }
     }
 
+    handleMp3 = ({file, fileList}) => {
+        console.log(fileList)
+        this.setState({
+            mp3fileList: fileList
+        })
+        if (file.status === 'removed') {
+            this.setState({
+                mp3fileList: []
+            })
+        }
+        if (file.response) {
+            if (file.response.code === 1) {
+                // mp3List.push(file.response.obj)
+                this.setState({
+                    mp3fileList: file.response.obj
+                })
+            }
+            if (file.status === 'error') {
+                message.error('网络错误，上传失败！')
+                this.setState({
+                    mp3Url: '',
+                    mp3fileList: []
+                })
+            }
+        }
+    }
+
     newsVisibleHide = () => {
-        this.setState({ newsVisible: false })
+        this.setState({newsVisible: false})
     }
 
     newsVisibleShow = () => {
-        this.setState({ newsVisible: true })
+        this.setState({newsVisible: true})
+    }
+
+    // 音频
+    normFile = (e) => {
+        if (Array.isArray(e)) {
+            return e
+        }
+        return e && e.fileList
     }
 
     // 提交
@@ -292,15 +332,22 @@ class PostSend extends Component {
             pc_recommend: this.state.pccoverImgUrl,
             pc: this.state.coverImgUrl,
             wap_small: this.state.mcoverImgUrl,
-            wap_big: this.state.mccoverImgUrl
+            wap_big: this.state.mccoverImgUrl,
+            audio: this.state.mp3fileList
         })
         this.props.form.validateFieldsAndScroll((err, values) => {
+            console.log(values)
             if (!err) {
                 this.setState({
                     loading: true
                 })
                 values.publishTime = Date.parse(values['publishTime'].format('YYYY-MM-DD HH:mm:ss'))
-                values.coverPic = JSON.stringify({pc_recommend: values.pc_recommend || '', pc: values.pc, wap_big: values.wap_big, wap_small: values.wap_small})
+                values.coverPic = JSON.stringify({
+                    pc_recommend: values.pc_recommend || '',
+                    pc: values.pc,
+                    wap_big: values.wap_big,
+                    wap_small: values.wap_small
+                })
                 delete values.pc
                 delete values.wap_big
                 delete values.wap_small
@@ -320,7 +367,7 @@ class PostSend extends Component {
     }
 
     // 发布
-    sendPost (sendData) {
+    sendPost(sendData) {
         let _data = {
             'newsTitle': sendData.postTitle || '',
             'newsContent': `${sendData.postContent}` || ''
@@ -329,19 +376,21 @@ class PostSend extends Component {
     }
 
     // 内容格式化
-    createMarkup (str) { return {__html: str} }
+    createMarkup(str) {
+        return {__html: str}
+    }
 
-    render () {
-        const { getFieldDecorator } = this.props.form
-        const { newsInfo, location } = this.props
-        const { previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible } = this.state
+    render() {
+        const {getFieldDecorator} = this.props.form
+        const {newsInfo, location} = this.props
+        const {previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible, mp3fileList} = this.state
         const formItemLayout = {
-            labelCol: { span: 1 },
-            wrapperCol: { span: 15, offset: 1 }
+            labelCol: {span: 1},
+            wrapperCol: {span: 15, offset: 1}
         }
         const uploadButton = (
             <div>
-                <Icon type="plus" />
+                <Icon type="plus"/>
                 <div className="ant-upload-text">上传图片</div>
             </div>
         )
@@ -357,7 +406,7 @@ class PostSend extends Component {
                     >
                         {getFieldDecorator('author', {
                             initialValue: (updateOrNot && newsInfo) ? `${newsInfo.author}` : '',
-                            rules: [{ required: true, message: '请输入作者！' }]
+                            rules: [{required: true, message: '请输入作者！'}]
                         })(
                             <Input className="news-author" placeholder="请输入作者"/>
                         )}
@@ -368,7 +417,7 @@ class PostSend extends Component {
                     >
                         {getFieldDecorator('source', {
                             initialValue: (updateOrNot && newsInfo) ? `${newsInfo.source}` : '',
-                            rules: [{ required: true, message: '请输入新闻来源！' }]
+                            rules: [{required: true, message: '请输入新闻来源！'}]
                         })(
                             <Input className="news-source" placeholder="请输入新闻来源"/>
                         )}
@@ -405,7 +454,7 @@ class PostSend extends Component {
                             rules: [{required: true, message: '请选择新闻发布时间！'}],
                             initialValue: (updateOrNot && newsInfo) ? moment(formatDate(newsInfo.publishTime), 'YYYY-MM-DD HH:mm:ss') : moment()
                         })(
-                            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss" />
+                            <DatePicker showTime format="YYYY-MM-DD HH:mm:ss"/>
                         )}
                     </FormItem>
 
@@ -415,7 +464,7 @@ class PostSend extends Component {
                     >
                         {getFieldDecorator('hotCount', {
                             initialValue: (updateOrNot && newsInfo) ? `${newsInfo.readCount}` : 0,
-                            rules: [{ required: true, message: '请输入新闻阅读数！' }]
+                            rules: [{required: true, message: '请输入新闻阅读数！'}]
                         })(
                             <Input className="news-source" placeholder="请输入新闻阅读数"/>
                         )}
@@ -427,9 +476,29 @@ class PostSend extends Component {
                     >
                         {getFieldDecorator('title', {
                             initialValue: (updateOrNot && newsInfo) ? `${newsInfo.title}` : '',
-                            rules: [{ required: true, message: '请输入新闻标题！' }]
+                            rules: [{required: true, message: '请输入新闻标题！'}]
                         })(
                             <Input placeholder="新闻标题"/>
+                        )}
+                    </FormItem>
+
+                    <FormItem
+                        {...formItemLayout}
+                        label="音频"
+                    >
+                        {getFieldDecorator('audio', {
+                            valuePropName: 'mp3fileList',
+                            getValueFromEvent: this.normFile
+                        })(
+                            <Upload
+                                action={`${URL}/audio/upload`}
+                                name='uploadFile'
+                                filelist={mp3fileList}
+                                onChange={this.handleMp3}>
+                                <Button>
+                                    <Icon type="upload"/> 点击上传音频
+                                </Button>
+                            </Upload>
                         )}
                     </FormItem>
 
@@ -439,13 +508,13 @@ class PostSend extends Component {
                     >
                         {getFieldDecorator('content', {
                             initialValue: (updateOrNot && newsInfo) ? newsContent : '',
-                            rules: [{ required: true, message: '请输入新闻内容！' }]
+                            rules: [{required: true, message: '请输入新闻内容！'}]
                         })(
                             <Input className="news" style={{display: 'none'}}/>
                         )}
                         <PostEditor
                             info={{'postContent': hxContent}}
-                            subSend={(data) => this.sendPost(data)} />
+                            subSend={(data) => this.sendPost(data)}/>
                     </FormItem>
 
                     <FormItem
@@ -454,7 +523,7 @@ class PostSend extends Component {
                     >
                         {getFieldDecorator('tags', {
                             initialValue: this.state.tags.join(','),
-                            rules: [{ required: true, message: '至少输入一个标签！' }]
+                            rules: [{required: true, message: '至少输入一个标签！'}]
                         })(
                             <Input className="tag-item" style={{display: 'none'}}/>
                         )}
@@ -462,7 +531,8 @@ class PostSend extends Component {
                             {tags.map((tag, index) => {
                                 const isLongTag = tag.length > 5
                                 const tagElem = (
-                                    <Tag color="blue" key={tag} closable={index !== -1} afterClose={() => this.handleClose(tag)}>
+                                    <Tag color="blue" key={tag} closable={index !== -1}
+                                         afterClose={ () => this.handleClose(tag)}>
                                         {isLongTag ? `${tag.slice(0, 5)}` : tag}
                                     </Tag>
                                 )
@@ -473,7 +543,7 @@ class PostSend extends Component {
                                     ref={this.saveInputRef}
                                     type="text"
                                     size="small"
-                                    style={{ width: 78 }}
+                                    style={{width: 78}}
                                     value={inputValue}
                                     onChange={this.handleInputChange}
                                     onBlur={this.handleInputConfirm}
@@ -483,12 +553,13 @@ class PostSend extends Component {
                             {!inputVisible && tags.length < 3 && (
                                 <Tag
                                     onClick={this.showInput}
-                                    style={{ background: '#fff', borderStyle: 'dashed' }}
+                                    style={{background: '#fff', borderStyle: 'dashed'}}
                                 >
-                                    <Icon type="plus" /> New Tag
+                                    <Icon type="plus"/> New Tag
                                 </Tag>
                             )}
-                            <span>建议每篇新闻最多 <font style={{color: 'red'}}>3</font> 个标签, 每个标签最多<font style={{color: 'red'}}> 5 </font>个字</span>
+                            <span>建议每篇新闻最多 <font style={{color: 'red'}}>3</font> 个标签, 每个标签最多<font
+                                style={{color: 'red'}}> 5 </font>个字</span>
                         </div>
                     </FormItem>
 
@@ -498,7 +569,7 @@ class PostSend extends Component {
                     >
                         {getFieldDecorator('synopsis', {
                             initialValue: (updateOrNot && newsInfo) ? `${newsInfo.synopsis}` : '',
-                            rules: [{ max: 120, required: true, message: '请输入新闻内容摘要, 最多120字！' }]
+                            rules: [{max: 120, required: true, message: '请输入新闻内容摘要, 最多120字！'}]
                         })(
                             <TextArea className="news-summary" placeholder="新闻摘要, 最多120字"/>
                         )}
@@ -511,7 +582,7 @@ class PostSend extends Component {
                         <div className="dropbox">
                             {getFieldDecorator('pc', {
                                 initialValue: (updateOrNot && newsInfo) ? fileList : '',
-                                rules: [{ required: true, message: '请上传新闻封面！' }]
+                                rules: [{required: true, message: '请上传新闻封面！'}]
                             })(
                                 <Upload
                                     action={`${URL}/pic/upload`}
@@ -525,7 +596,7 @@ class PostSend extends Component {
                                 </Upload>
                             )}
                             <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                                <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                                <img alt="example" style={{width: '100%'}} src={previewImage}/>
                             </Modal>
                             <span className="cover-img-tip">用于 PC 端新闻封面展示, 建议尺寸: <font style={{color: 'red'}}>280px * 205px</font></span>
                         </div>
@@ -551,7 +622,7 @@ class PostSend extends Component {
                                 </Upload>
                             )}
                             <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                                <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                                <img alt="example" style={{width: '100%'}} src={previewImage}/>
                             </Modal>
                             <span className="cover-img-tip">用于 PC 端推荐位新闻封面展示, 建议尺寸: <font style={{color: 'red'}}>232px * 220px</font></span>
                         </div>
@@ -564,7 +635,7 @@ class PostSend extends Component {
                         <div className="dropbox">
                             {getFieldDecorator('wap_small', {
                                 initialValue: (updateOrNot && newsInfo) ? mfileList : '',
-                                rules: [{ required: true, message: '请上传手机端新闻缩略图！' }]
+                                rules: [{required: true, message: '请上传手机端新闻缩略图！'}]
                             })(
                                 <Upload
                                     action={`${URL}/pic/upload`}
@@ -578,7 +649,7 @@ class PostSend extends Component {
                                 </Upload>
                             )}
                             <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                                <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                                <img alt="example" style={{width: '100%'}} src={previewImage}/>
                             </Modal>
                             <span className="cover-img-tip">用于 M 端新闻封面展示, 建议尺寸: <font style={{color: 'red'}}>145px * 110px</font></span>
                         </div>
@@ -591,7 +662,7 @@ class PostSend extends Component {
                         <div className="dropbox">
                             {getFieldDecorator('wap_big', {
                                 initialValue: (updateOrNot && newsInfo) ? mcfileList : '',
-                                rules: [{ required: true, message: '请上传手机端新闻轮播图！' }]
+                                rules: [{required: true, message: '请上传手机端新闻轮播图！'}]
                             })(
                                 <Upload
                                     action={`${URL}/pic/upload`}
@@ -605,24 +676,31 @@ class PostSend extends Component {
                                 </Upload>
                             )}
                             <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
-                                <img alt="example" style={{ width: '100%' }} src={previewImage} />
+                                <img alt="example" style={{width: '100%'}} src={previewImage}/>
                             </Modal>
                             <span className="cover-img-tip">用于 M 端推荐新闻的滚动展示, 建议尺寸: <font style={{color: 'red'}}>640px * 320px</font></span>
                         </div>
                     </FormItem>
 
                     <FormItem
-                        wrapperCol={{ span: 12, offset: 2 }}
+                        wrapperCol={{span: 12, offset: 2}}
                     >
-                        <Button type="primary" onClick={this.newsVisibleShow} className="preview" style={{marginRight: '10px'}}>新闻内容预览</Button>
-                        <Button type="primary" data-status='1' htmlType="submit" style={{marginRight: '10px'}}>发表</Button>
-                        <Button type="primary" data-status='0' onClick={this.handleSubmit} style={{marginRight: '10px'}}>存草稿</Button>
-                        <Button type="primary" className="cancel" onClick={() => { hashHistory.goBack() }}>取消</Button>
+                        <Button type="primary" onClick={this.newsVisibleShow} className="preview"
+                                style={{marginRight: '10px'}}>新闻内容预览</Button>
+                        <Button type="primary" data-status='1' htmlType="submit"
+                                style={{marginRight: '10px'}}>发表</Button>
+                        <Button type="primary" data-status='0' onClick={this.handleSubmit}
+                                style={{marginRight: '10px'}}>存草稿</Button>
+                        <Button type="primary" className="cancel" onClick={() => {
+                            hashHistory.goBack()
+                        }}>取消</Button>
                     </FormItem>
-                    <Modal visible={newsVisible} footer={null} className="newsModal" onCancel={this.newsVisibleHide} width={1000}>
+                    <Modal visible={newsVisible} footer={null} className="newsModal" onCancel={this.newsVisibleHide}
+                           width={1000}>
                         <Row>
                             <Col className="previewNews simditor">
-                                <p className="simditor-body" style={{padding: 10}} dangerouslySetInnerHTML={this.createMarkup(newsContent)}></p>
+                                <p className="simditor-body" style={{padding: 10}}
+                                   dangerouslySetInnerHTML={this.createMarkup(newsContent)}></p>
                             </Col>
                         </Row>
                     </Modal>
