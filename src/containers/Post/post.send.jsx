@@ -68,7 +68,6 @@ class PostSend extends Component {
         mp3Url: '',
         loading: true
     }
-
     componentWillMount () {
         const {dispatch, location} = this.props
         if (location.query.id) {
@@ -293,7 +292,8 @@ class PostSend extends Component {
             if (file.response.code === 1) {
                 this.setState({
                     mp3fileList: fileList
-                }, function () {})
+                }, function () {
+                })
             }
             if (file.status === 'error') {
                 message.error('网络错误，上传失败！')
@@ -315,6 +315,18 @@ class PostSend extends Component {
             return e
         }
         return e && e.fileList
+    }
+
+    delAudio = (uid) => {
+        let arr = this.state.audioDefalutArr
+        arr.map(function (item, index) {
+            if (item.uid.toString() === uid.toString()) {
+                arr.splice(index, 1)
+            }
+        })
+        this.setState({
+            audioDefalutArr: arr
+        })
     }
 
     // 提交
@@ -388,6 +400,7 @@ class PostSend extends Component {
     }
 
     render () {
+        const This = this
         const {getFieldDecorator} = this.props.form
         const {newsInfo, location} = this.props
         const {previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible, mp3fileList} = this.state
@@ -471,7 +484,7 @@ class PostSend extends Component {
                     >
                         {getFieldDecorator('hotCounts', {
                             initialValue: (updateOrNot && newsInfo) ? newsInfo.hotCounts : 0,
-                            rules: [{ required: true, pattern: /^[0-9]+$/, message: '请输入新闻阅读数(正整数)！' }]
+                            rules: [{required: true, pattern: /^[0-9]+$/, message: '请输入新闻阅读数(正整数)！'}]
                         })(
                             <Input className="news-source" placeholder="请输入新闻阅读数"/>
                         )}
@@ -494,6 +507,9 @@ class PostSend extends Component {
                         <ul>{this.state.audioDefalutArr.map(function (item, index) {
                             return <li key={index}>
                                 {item.fileName}
+                                <span style={{marginLeft: '10px', cursor: 'pointer'}} onClick={() => {
+                                    This.delAudio(item.uid)
+                                }}>删除</span>
                                 {/* <audio src={item.fileUrl}/> */}
                             </li>
                         })}</ul>
