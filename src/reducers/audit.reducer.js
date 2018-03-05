@@ -4,9 +4,29 @@
  * Description：Description
  */
 
-import {POST} from '../constants/index'
+import {AUDIT, SELECTEDDATA} from '../constants/index'
+let init = {
+    selectedData: {
+        'passportid': '暂无',
+        'identityName': '暂无',
+        'identityNum': '暂无',
+        'idFaceUrl': '暂无',
+        'idBackUrl': '暂无',
+        'state': 0,
+        'updateTime': 1519991584000,
+        'createTime': 1519991584000
+    },
+    filter: {status: '', adPcPlace: '', adMobilePlace: ''},
+    search: {'nickName': '', 'title': '', 'type': 'init'},
+    pageData: {'currPage': 1, 'pageSize': 20, 'totalCount': 0},
+    query: {},
+    list: [],
+    userInfo: {'name': '', 'pwd': ''},
+    info: {},
+    replyList: []
+}
 
-const postInfo = (state = {filter: {status: '', recommend: '', channelId: ''}, search: {'nickName': '', 'title': '', 'type': 'init'}, pageData: {'currPage': 1, 'pageSize': 20, 'totalCount': 0}, query: {}, list: [], userInfo: {'name': '', 'pwd': ''}, info: {}, replyList: []}, action) => {
+const auditInfo = (state = init, action) => {
     let _query = state.query
     let _userInfo = state.userInfo
     let _list = state.list
@@ -15,19 +35,19 @@ const postInfo = (state = {filter: {status: '', recommend: '', channelId: ''}, s
     let pageData = state.pageData
     let filter = state.filter
     switch (action.type) {
-        case POST.ADD_DATA:
+        case AUDIT.ADD_DATA:
             return {...state, ...action.data}
-        case POST.ADD_QUERY:
+        case AUDIT.ADD_QUERY:
             return {...state, query: {..._query, ...action.data}}
-        case POST.SET_SEARCH_QUERY:
+        case AUDIT.SET_SEARCH_QUERY:
             return {...state, search: {...search, ...action.data}}
-        case POST.SET_PAGE_DATA:
+        case AUDIT.SET_PAGE_DATA:
             return {...state, pageData: {...pageData, ...action.data}}
-        case POST.SET_FILTER_DATA:
+        case AUDIT.SET_FILTER_DATA:
             return {...state, filter: {...filter, ...action.data}}
-        case POST.EDIT_USER_INFO:
+        case AUDIT.EDIT_USER_INFO:
             return {...state, userInfo: {..._userInfo, ...action.data}}
-        case POST.EDIT_LIST_ITEM:
+        case AUDIT.EDIT_LIST_ITEM:
             let _thisItem = _list[action.index]
             return {
                 ...state,
@@ -38,13 +58,15 @@ const postInfo = (state = {filter: {status: '', recommend: '', channelId: ''}, s
                     },
                     ..._list.slice(action.index + 1)]
             }
-        case POST.DEL_LIST_ITEM:
+        case AUDIT.DEL_LIST_ITEM:
             return {...state, list: [..._list.slice(0, action.index), ..._list.slice(action.index + 1)]}
-        case POST.DEL_REPLY_LIST:
+        case AUDIT.DEL_REPLY_LIST:
             return {...state, replyList: [..._replyList.slice(0, action.index), ..._replyList.slice(action.index + 1)]}
+        case SELECTEDDATA:
+            return {...state, selectedData: action.data}
         default:
             return state
     }
 }
 
-export default postInfo
+export default auditInfo

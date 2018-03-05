@@ -9,7 +9,7 @@ import { hashHistory } from 'react-router'
 import { message } from 'antd'
 import qs from 'qs'
 
-export const URL = '/mgr'
+export let URL = '/mgr'
 // export const site = 'http://www.huoxing24.com'
 export const site = 'http://www.huoxing24.vip'
 
@@ -33,6 +33,7 @@ export const axiosPost = (url, params, fn) => {
     })
 }
 export const axiosAjax = (type, url, params, fn, headers) => {
+    URL = url.split('/')[1] === 'passport' ? '' : '/mgr'
     let _url = URL + url
     // let _url = `/mgr${url}`
     // let _url = url
@@ -194,4 +195,13 @@ export const pcAdPosition = [
 export const mobileAdPosition = [
     { label: 'Mobile首页', value: '1' },
     { label: 'Mobile新闻详情页', value: '2' }
+]
+
+// 认证状态
+export const auditStatus = [
+    { label: '全部', value: '' },
+    { label: '认证通过', value: '1' },
+    { label: '待认证', value: '0' },
+    { label: '认证不通过', value: '-1' },
+    { label: '未认证', value: '-2' }
 ]

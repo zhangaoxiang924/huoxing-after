@@ -7,16 +7,16 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 // import { Input, Row, Col, Button, Table, Modal, message } from 'antd'
 import { Table, Row, Col, Modal, message, Spin, Tag, Select } from 'antd'
-import './post.scss'
+import './checkArticle.scss'
 import { Link } from 'react-router'
 // import IconItem from '../../components/icon/icon'
-import {getPostList, setSearchQuery, setPageData, setFilterData} from '../../actions/post.action'
+import {getArticleList, setSearchQuery, setPageData, setFilterData} from '../../actions/articleAudit.action'
 import {formatDate, axiosAjax, cutString, channelIdOptions} from '../../public/index'
 const confirm = Modal.confirm
 const Option = Select.Option
 
 let columns = []
-class PostIndex extends Component {
+class ArticleAuditIndex extends Component {
     constructor () {
         super()
         this.state = {
@@ -39,7 +39,7 @@ class PostIndex extends Component {
         const {search, filter} = this.props
         this.doSearch(!search.type ? 'init' : search.type, filter.status === '' ? {} : {status: filter.status})
         columns = [{
-            title: '新闻标题',
+            title: '文章标题',
             width: '250px',
             key: 'name',
             render: (text, record) => (record && <div className="post-info clearfix">
@@ -47,29 +47,31 @@ class PostIndex extends Component {
                     <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 30))} />
                     <div>
                         {!parseInt(record.recommend) ? '' : <div style={{'display': 'inline-block'}}><span className="org-bg mr10">推荐</span></div>}
-                        {!parseInt(record.forbidComment) ? '' : <span className="pre-bg">禁评</span>}
+                        {/* !parseInt(record.status) === 0 ? '' : <span className="pre-bg">草稿状态</span> */}
                     </div>
                 </div>
                 {!record.pictureUrl ? '' : <img src={record.pictureUrl.split(',')[0]} />}
             </div>)
         }, {
-            title: '新闻状态',
+            title: '文章状态',
             key: 'status',
             render: (record) => {
                 if (record && record.status === 0) {
-                    return <span className="news-status pre-publish">草稿</span>
+                    return <span className="news-status pre-publish">草稿状态</span>
                 } else if (record && record.status === 1) {
-                    return <span className="news-status has-publish">已发表</span>
+                    return <span className="news-status has-publish">审核通过，已发表</span>
+                } else if (record && record.status === 2) {
+                    return <span className="news-status has-forbidden">审核未通过</span>
                 } else {
                     return <span>暂无</span>
                 }
             }
         }, {
-            title: '新闻作者',
+            title: '文章作者',
             dataIndex: 'author',
             key: 'author'
         }, {
-            title: '新闻摘要 ',
+            title: '文章摘要 ',
             dataIndex: 'synopsis',
             key: 'synopsis',
             render: (text, record) => (record && <span title={record.synopsis}>{cutString(record.synopsis, 25)}</span>)
@@ -99,11 +101,21 @@ class PostIndex extends Component {
             title: '操作',
             key: 'action',
             render: (item) => (<div>
-                <Link className="mr10 opt-btn" to={{pathname: '/post-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>详情</Link>
+                {item.status === 0 ? <Link
+                    className="mr10 opt-btn"
+                    to={{pathname: '/checkArticle-detail', query: {id: item.id}}}
+                    style={{background: '#108ee9'}}>
+                    审核
+                </Link> : <Link
+                    className="mr10 opt-btn"
+                    to={{pathname: '/checkArticle-detail', query: {id: item.id}}}
+                    style={{background: '#2e55a3'}}>
+                    重新审核
+                </Link>}
                 <a className={`mr10 recommend-btn opt-btn ${item.status !== 1 ? 'disabled' : ''}`} href="javascript:void(0)" onClick={() => this._isTop(item)} disabled={item.status !== 1 && true}>
                     {item.recommend === 1 ? '取消推荐' : '推荐'}
                 </a>
-                <a className="mr10 opt-btn" href="javascript:void(0)" onClick={() => this._isPublish(item)} style={{background: '#00a854'}}>
+                <a className={`mr10 opt-btn publish-btn ${item.status === 2 ? 'disabled' : ''}`} href="javascript:void(0)" onClick={() => this._isPublish(item)} disabled={item.status === 2 && true}>
                     {item.status === 1 ? '撤回到草稿箱' : '发表'}
                 </a>
                 {/* <a className="mr10" href="javascript:void(0)" onClick={() => this._forbidcomment(item)}>{item.forbidComment === '1' ? '取消禁评' : '禁评'}</a> */}
@@ -135,7 +147,7 @@ class PostIndex extends Component {
         }
         sendDada = {...sendDada, ...data}
         // let sendDada = !data ? {searchQuery: this.state.searchQuery} : {searchQuery: this.state.searchQuery, ...data}
-        dispatch(getPostList(type, sendDada, () => {
+        dispatch(getArticleList(type, sendDada, () => {
             this.setState({
                 loading: false
             })
@@ -251,7 +263,7 @@ class PostIndex extends Component {
         })
     }
 
-    // 筛选新闻状态
+    // 筛选文章状态
     handleChange = (value) => {
         const {dispatch} = this.props
         dispatch(setFilterData({'status': value}))
@@ -305,14 +317,15 @@ class PostIndex extends Component {
             <Row>
                 <Col style={{margin: '0 0 20px'}}>
                     <span>文章来源：</span>
-                    <span> 火星财经官方</span>
+                    <span> 火星号</span>
                 </Col>
                 <Col>
-                    <span>新闻状态：</span>
+                    <span>文章状态：</span>
                     <Select defaultValue={`${filter.status}`} style={{ width: 120 }} onChange={this.handleChange}>
                         <Option value="">全部</Option>
-                        <Option value="1">已发表</Option>
-                        <Option value="0">草稿箱</Option>
+                        <Option value="1">审核通过已发表</Option>
+                        <Option value="0">草稿状态</Option>
+                        <Option value="2">审核未通过</Option>
                     </Select>
                     <span style={{marginLeft: 15}}>推荐：</span>
                     <Select defaultValue={`${filter.recommend}`} style={{ width: 120 }} onChange={this.handleChange1}>
@@ -338,12 +351,12 @@ class PostIndex extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        postInfo: state.postInfo,
-        list: state.postInfo.list,
-        search: state.postInfo.search,
-        filter: state.postInfo.filter,
-        pageData: state.postInfo.pageData
+        articleAudit: state.articleAudit,
+        list: state.articleAudit.list,
+        search: state.articleAudit.search,
+        filter: state.articleAudit.filter,
+        pageData: state.articleAudit.pageData
     }
 }
 
-export default connect(mapStateToProps)(PostIndex)
+export default connect(mapStateToProps)(ArticleAuditIndex)

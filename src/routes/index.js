@@ -120,6 +120,31 @@ const rootRoutes = <div>
                 callback(null, require('../containers/Ad/pcAd.send.jsx').default)
             }, 'AdEdit')
         }}/>
+        <Route path='/audit-identify' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Audit/audit.index.jsx').default)
+            }, 'AuditIndex')
+        }}/>
+        <Route path='/audit-details' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Audit/audit.detail.jsx').default)
+            }, 'AuditDetails')
+        }}/>
+        <Route path='/audit-list' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Audit/checkArticle.index.jsx').default)
+            }, 'ArticleIndex')
+        }}/>
+        <Route path='/checkArticle-edit' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Audit/checkArticle.send.jsx').default)
+            }, 'ArticleSend')
+        }}/>
+        <Route path='/checkArticle-detail' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Audit/checkArticle.detail.jsx').default)
+            }, 'ArticleDetail')
+        }}/>
         <Route path='/adM-edit' getComponent={(nextState, callback) => {
             require.ensure([], (require) => {
                 callback(null, require('../containers/Ad/mobileAd.send.jsx').default)
