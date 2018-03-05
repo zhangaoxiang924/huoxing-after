@@ -73,7 +73,6 @@ class PostSend extends Component {
         const {dispatch, location} = this.props
         if (location.query.id) {
             dispatch(getPostItemInfo({'id': location.query.id}, (data) => {
-                console.log(data)
                 let coverPic = isJsonString(data.coverPic) ? JSON.parse(data.coverPic) : {
                     pc_recommend: '',
                     pc: '',
@@ -102,7 +101,12 @@ class PostSend extends Component {
                         url: coverPic.wap_small
                     }],
                     audioDefalutArr: data.audio ? JSON.parse(data.audio) : [],
-                    mcfileList: '',
+                    mcfileList: [{
+                        uid: 0,
+                        name: 'xxx.png',
+                        status: 'done',
+                        url: coverPic.wap_big
+                    }],
                     tags: data.tags.split(','),
                     newsContent: data.content,
                     coverImgUrl: coverPic.pc,
@@ -285,14 +289,11 @@ class PostSend extends Component {
     }
 
     handleMp3 = ({file, fileList}) => {
-        console.log(fileList)
         if (file.response) {
             if (file.response.code === 1) {
                 this.setState({
                     mp3fileList: fileList
-                }, function () {
-                    console.log(this.state.mp3fileList)
-                })
+                }, function () {})
             }
             if (file.status === 'error') {
                 message.error('网络错误，上传失败！')
@@ -332,7 +333,6 @@ class PostSend extends Component {
         this.setState({
             audioDefalutArr: newArr
         }, function () {
-            console.log(this.state.audioDefalutArr)
             this.props.form.setFieldsValue({
                 tags: this.state.tags.join(','),
                 content: this.state.newsContent,
@@ -363,7 +363,7 @@ class PostSend extends Component {
                     axiosAjax('post', `${this.state.updateOrNot ? '/news/update' : '/news/add'}`, values, (res) => {
                         if (res.code === 1) {
                             message.success(this.state.updateOrNot ? '修改成功！' : '添加成功！')
-                            // hashHistory.push('/post-list')
+                            hashHistory.push('/post-list')
                         } else {
                             message.error(res.msg)
                         }
@@ -467,10 +467,11 @@ class PostSend extends Component {
 
                     <FormItem
                         {...formItemLayout}
-                        label="阅读数: ">
-                        {getFieldDecorator('hotCount', {
-                            initialValue: (updateOrNot && newsInfo) ? `${newsInfo.readCount}` : 0,
-                            rules: [{required: true, message: '请输入新闻阅读数！'}]
+                        label="阅读数: "
+                    >
+                        {getFieldDecorator('hotCounts', {
+                            initialValue: (updateOrNot && newsInfo) ? newsInfo.hotCounts : 0,
+                            rules: [{ required: true, pattern: /^[0-9]+$/, message: '请输入新闻阅读数(正整数)！' }]
                         })(
                             <Input className="news-source" placeholder="请输入新闻阅读数"/>
                         )}
