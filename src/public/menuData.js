@@ -106,7 +106,7 @@ const menuData = [
         ]
     }, {
         key: 'audit',
-        icon: 'icon-ad',
+        icon: 'icon-post',
         link: '',
         text: '审核管理',
         children: [

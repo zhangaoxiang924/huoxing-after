@@ -47,7 +47,7 @@ class ArticleAuditIndex extends Component {
                     <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 30))} />
                     <div>
                         {!parseInt(record.recommend) ? '' : <div style={{'display': 'inline-block'}}><span className="org-bg mr10">推荐</span></div>}
-                        {!parseInt(record.forbidComment) ? '' : <span className="pre-bg">禁评</span>}
+                        {/* !parseInt(record.status) === 0 ? '' : <span className="pre-bg">草稿状态</span> */}
                     </div>
                 </div>
                 {!record.pictureUrl ? '' : <img src={record.pictureUrl.split(',')[0]} />}
@@ -57,9 +57,9 @@ class ArticleAuditIndex extends Component {
             key: 'status',
             render: (record) => {
                 if (record && record.status === 0) {
-                    return <span className="news-status pre-publish">草稿</span>
+                    return <span className="news-status pre-publish">草稿状态</span>
                 } else if (record && record.status === 1) {
-                    return <span className="news-status has-publish">已发表</span>
+                    return <span className="news-status has-publish">审核通过，已发表</span>
                 } else if (record && record.status === 2) {
                     return <span className="news-status has-forbidden">审核未通过</span>
                 } else {
@@ -101,11 +101,21 @@ class ArticleAuditIndex extends Component {
             title: '操作',
             key: 'action',
             render: (item) => (<div>
-                <Link className="mr10 opt-btn" to={{pathname: '/checkArticle-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>审核</Link>
+                {item.status === 0 ? <Link
+                    className="mr10 opt-btn"
+                    to={{pathname: '/checkArticle-detail', query: {id: item.id}}}
+                    style={{background: '#108ee9'}}>
+                    审核
+                </Link> : <Link
+                    className="mr10 opt-btn"
+                    to={{pathname: '/checkArticle-detail', query: {id: item.id}}}
+                    style={{background: '#2e55a3'}}>
+                    重新审核
+                </Link>}
                 <a className={`mr10 recommend-btn opt-btn ${item.status !== 1 ? 'disabled' : ''}`} href="javascript:void(0)" onClick={() => this._isTop(item)} disabled={item.status !== 1 && true}>
                     {item.recommend === 1 ? '取消推荐' : '推荐'}
                 </a>
-                <a className="mr10 opt-btn" href="javascript:void(0)" onClick={() => this._isPublish(item)} style={{background: '#00a854'}}>
+                <a className={`mr10 opt-btn publish-btn ${item.status === 2 ? 'disabled' : ''}`} href="javascript:void(0)" onClick={() => this._isPublish(item)} disabled={item.status === 2 && true}>
                     {item.status === 1 ? '撤回到草稿箱' : '发表'}
                 </a>
                 {/* <a className="mr10" href="javascript:void(0)" onClick={() => this._forbidcomment(item)}>{item.forbidComment === '1' ? '取消禁评' : '禁评'}</a> */}
@@ -123,7 +133,7 @@ class ArticleAuditIndex extends Component {
     doSearch (type, data) {
         const {dispatch, pageData, search, filter} = this.props
         let sendDada = {
-            status: filter.status,
+            ...filter,
             pageSize: 20,
             currentPage: pageData.currPage
             // 'appId': $.cookie('gameId')
@@ -162,7 +172,7 @@ class ArticleAuditIndex extends Component {
         const {dispatch, search, filter} = this.props
         // this.setState({'currPage': page})
         dispatch(setPageData({'currPage': page}))
-        this.doSearch(search.type, {'currentPage': page, status: filter.status})
+        this.doSearch(search.type, {'currentPage': page, ...filter})
     }
     // 删除
     delPost (item) {
@@ -263,6 +273,20 @@ class ArticleAuditIndex extends Component {
         this.doSearch('init', {'currentPage': 1, status: value})
     }
 
+    // 筛选推荐状态
+    handleChange1 = (value) => {
+        const {dispatch} = this.props
+        dispatch(setFilterData({'recommend': value}))
+        this.doSearch('init', {'currentPage': 1, recommend: value})
+    }
+
+    // 筛选新闻类别
+    handleChange2 = (value) => {
+        const {dispatch} = this.props
+        dispatch(setFilterData({'channelId': value}))
+        this.doSearch('init', {'currentPage': 1, channelId: value})
+    }
+
     render () {
         // const {list, search, pageData, dispatch} = this.props
         const {list, pageData, filter} = this.props
@@ -291,12 +315,28 @@ class ArticleAuditIndex extends Component {
             </Row>
             */}
             <Row>
+                <Col style={{margin: '0 0 20px'}}>
+                    <span>文章来源：</span>
+                    <span> 火星号</span>
+                </Col>
                 <Col>
                     <span>文章状态：</span>
                     <Select defaultValue={`${filter.status}`} style={{ width: 120 }} onChange={this.handleChange}>
                         <Option value="">全部</Option>
-                        <Option value="1">已发表</Option>
-                        <Option value="0">草稿箱</Option>
+                        <Option value="1">审核通过已发表</Option>
+                        <Option value="0">草稿状态</Option>
+                        <Option value="2">审核未通过</Option>
+                    </Select>
+                    <span style={{marginLeft: 15}}>推荐：</span>
+                    <Select defaultValue={`${filter.recommend}`} style={{ width: 120 }} onChange={this.handleChange1}>
+                        <Option value="">全部</Option>
+                        <Option value="0">未推荐</Option>
+                        <Option value="1">推荐</Option>
+                    </Select>
+                    <span style={{marginLeft: 15}}>新闻类别：</span>
+                    <Select defaultValue={`${filter.channelId}`} style={{ width: 120 }} onChange={this.handleChange2}>
+                        <Option value="">全部</Option>
+                        {channelIdOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
                     </Select>
                 </Col>
             </Row>

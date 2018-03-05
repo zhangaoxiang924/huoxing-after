@@ -55,7 +55,8 @@
         }
     }
 
-    .opt-btn {
+    .opt-btn,
+    .state-btns {
         user-select: none;
         color: #fff;
         padding: 2px 7px;
@@ -65,6 +66,10 @@
 
         &.recommend-btn {
             background: #f56a00;
+        }
+
+        &.publish-btn {
+            background: #00a854;
         }
 
         &.disabled {

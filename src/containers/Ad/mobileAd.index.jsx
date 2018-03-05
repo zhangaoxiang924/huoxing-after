@@ -303,14 +303,14 @@ class mobileAdIndex extends Component {
              </Row>
              */}
             <Row>
-                <Col span={3} className="ad-position">
+                <Col span={4} className="ad-position">
                     <span>广告位置：</span>
                     <Select defaultValue={`${filter.adMobilePlace}`} style={{ width: 120 }} onChange={this.handleChange}>
                         <Option value="">全部</Option>
                         {mobileAdPosition.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
                     </Select>
                 </Col>
-                <Col span={1} offset={1}>
+                <Col span={1}>
                     <Button type="primary" onClick={this.incAd} className="editBtn" style={{marginRight: '10px'}}>新增广告</Button>
                 </Col>
             </Row>

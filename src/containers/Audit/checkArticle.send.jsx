@@ -83,20 +83,20 @@ class ArticleAuditSend extends Component {
                         uid: 0,
                         name: 'xxx.png',
                         status: 'done',
-                        url: coverPic.pc
+                        url: coverPic.pc || ''
                     }],
                     pcfileList: pcfileList,
                     mfileList: [{
                         uid: 0,
                         name: 'xxx.png',
                         status: 'done',
-                        url: coverPic.wap_small
+                        url: coverPic.wap_small || ''
                     }],
                     mcfileList: [{
                         uid: 0,
                         name: 'xxx.png',
                         status: 'done',
-                        url: coverPic.wap_big
+                        url: coverPic.wap_big || ''
                     }],
                     tags: data.tags.split(','),
                     newsContent: data.content,
@@ -309,7 +309,7 @@ class ArticleAuditSend extends Component {
                 !this.state.updateOrNot && delete values.id
                 axiosAjax('post', `${this.state.updateOrNot ? '/news/update' : '/news/add'}`, values, (res) => {
                     if (res.code === 1) {
-                        message.success(this.state.updateOrNot ? '修改成功！' : '添加成功！')
+                        message.success(this.state.updateOrNot ? '操作成功！' : '添加成功！')
                         hashHistory.push('/audit-list')
                     } else {
                         message.error(res.msg)
@@ -615,8 +615,9 @@ class ArticleAuditSend extends Component {
                         wrapperCol={{ span: 12, offset: 2 }}
                     >
                         <Button type="primary" onClick={this.newsVisibleShow} className="preview" style={{marginRight: '10px'}}>新闻内容预览</Button>
-                        <Button type="primary" data-status='1' htmlType="submit" style={{marginRight: '10px'}}>发表</Button>
-                        <Button type="primary" data-status='0' onClick={this.handleSubmit} style={{marginRight: '10px'}}>存草稿</Button>
+                        <Button type="primary" data-status='1' htmlType="submit" style={{marginRight: '10px'}}>审核通过并发表</Button>
+                        <Button type="primary" data-status='0' onClick={this.handleSubmit} style={{marginRight: '10px'}}>暂存为草稿</Button>
+                        <Button type="primary" data-status='2' onClick={this.handleSubmit} style={{marginRight: '10px'}}>审核不通过</Button>
                         <Button type="primary" className="cancel" onClick={() => { hashHistory.goBack() }}>取消</Button>
                     </FormItem>
                     <Modal visible={newsVisible} footer={null} className="newsModal" onCancel={this.newsVisibleHide} width={1000}>

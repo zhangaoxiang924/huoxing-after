@@ -163,6 +163,46 @@ class ArticleAuditDetail extends Component {
         })
     }
 
+    handleSubmit = (e) => {
+        let status = e.target.getAttribute('data-status')
+        let statusText = '审核通过'
+        switch (status) {
+            case '1':
+                statusText = '审核通过并发表'
+                break
+            case '0':
+                statusText = '暂存草稿箱'
+                break
+            case '2':
+                statusText = '不通过审核'
+                break
+            default:
+                statusText = '审核通过'
+                break
+        }
+
+        e.preventDefault()
+        const {info} = this.props
+        confirm({
+            title: '提示',
+            content: `确认要${statusText}吗 ?`,
+            onOk () {
+                let sendData = {
+                    id: info.id,
+                    status: status
+                }
+                axiosAjax('POST', '/news/status', {...sendData}, (res) => {
+                    if (res.code === 1) {
+                        message.success('操作成功')
+                        hashHistory.goBack()
+                    } else {
+                        message.error(res.msg)
+                    }
+                })
+            }
+        })
+    }
+
     render () {
         const col = {
             span: 5,
@@ -270,6 +310,12 @@ class ArticleAuditDetail extends Component {
                         </div>
                     </Col>
                 </Row>
+                <div className="btns" style={{margin: '20px 0'}}>
+                    <Button type="primary" data-status='1' onClick={this.handleSubmit} style={{marginRight: '10px'}}>审核通过并发表</Button>
+                    <Button type="primary" data-status='0' onClick={this.handleSubmit} style={{marginRight: '10px'}}>暂存为草稿</Button>
+                    <Button type="primary" data-status='2' onClick={this.handleSubmit} style={{marginRight: '10px'}}>审核不通过</Button>
+                    <Button type="primary" className="cancel" onClick={() => { hashHistory.goBack() }}>取消</Button>
+                </div>
             </div> : <div style={{height: 300}}>加载中...</div>}
         </Spin>
     }

@@ -201,7 +201,7 @@ class AuditDetail extends Component {
                         {this.auditStatus(selectData.state)}
                     </Col>
                 </Row>
-                <Row className="audit-title" style={{margin: '20px 0 0'}}>
+                <Row className="audit-title" style={{margin: '20px 0 0', borderTop: '1px solid #eee'}}>
                     <Col className="section" {...col}>
                         <span className="name">姓名：</span>
                         <span className="desc">{`${selectData.identityName}`} </span>
@@ -217,7 +217,7 @@ class AuditDetail extends Component {
                         <img className="desc" onClick={() => this.showModal(selectData.idFaceUrl)} src={selectData.idFaceUrl}/>
                     </Col>
                 </Row>
-                <Row className="audit-cover-img" style={{margin: '0 0 20px'}}>
+                <Row className="audit-cover-img" style={{margin: '0 0 20px', borderBottom: '1px solid #eee'}}>
                     <Col className="section">
                         <span className="name">身份证反面：</span>
                         <img className="desc" onClick={() => this.showModal(selectData.idBackUrl)} src={selectData.idBackUrl}/>

@@ -44,7 +44,15 @@ class AuditIndex extends Component {
             title: '审核状态',
             dataIndex: 'state',
             key: 'state',
-            render: (text) => (this.auditStatus(text))
+            render: (text) => {
+                if (text === 0) {
+                    return <span className="state-btns pre-identify">{this.auditStatus(text)}</span>
+                } else if (text === 1) {
+                    return <span className="state-btns pass-identify">{this.auditStatus(text)}</span>
+                } else if (text === -1) {
+                    return <span className="state-btns cant-identify">{this.auditStatus(text)}</span>
+                }
+            }
         }, {
             title: '身份证号 ',
             dataIndex: 'identityNum',
@@ -69,7 +77,17 @@ class AuditIndex extends Component {
             key: 'action',
             render: (item) => (<div>
                 {/* <a className="mr10 opt-btn" onClick={() => { this.detailModal(item) }} style={{background: '#2b465f'}}>查看</a> */}
-                <a className="mr10 opt-btn" onClick={() => { this.detailModal(item) }} style={{background: '#108ee9'}}>开始审核</a>
+                {item.state !== 0 ? <a
+                    className="mr10 opt-btn"
+                    onClick={() => { this.detailModal(item) }}
+                    style={{background: '#E95D01'}}>
+                    重新审核
+                </a> : <a
+                    className="mr10 opt-btn"
+                    onClick={() => { this.detailModal(item) }}
+                    style={{background: '#108ee9'}}>
+                    开始审核
+                </a>}
                 {/* <a className={`mr10 recommend-btn opt-btn ${item.status !== 1 ? 'disabled' : ''}`} href="javascript:void(0)" onClick={() => this._isTop(item)} disabled={item.status !== 1 && true}>
                     {item.recommend === 1 ? '取消推荐' : '推荐'}
                 </a><a className="mr10" href="javascript:void(0)" onClick={() => this._forbidcomment(item)}>{item.forbidComment === '1' ? '取消禁评' : '禁评'}</a> */}
@@ -291,7 +309,7 @@ class AuditIndex extends Component {
              </Row>
              */}
             <Row>
-                <Col span={3} className="audit-position">
+                <Col span={4} className="audit-position">
                     <span>认证状态：</span>
                     <Select defaultValue={`${filter.status}`} style={{ width: 120 }} onChange={this.handleChange}>
                         {auditStatus.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}

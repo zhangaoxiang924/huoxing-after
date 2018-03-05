@@ -121,7 +121,7 @@ class PostIndex extends Component {
     doSearch (type, data) {
         const {dispatch, pageData, search, filter} = this.props
         let sendDada = {
-            status: filter.status,
+            ...filter,
             pageSize: 20,
             currentPage: pageData.currPage
             // 'appId': $.cookie('gameId')
@@ -160,7 +160,7 @@ class PostIndex extends Component {
         const {dispatch, search, filter} = this.props
         // this.setState({'currPage': page})
         dispatch(setPageData({'currPage': page}))
-        this.doSearch(search.type, {'currentPage': page, status: filter.status})
+        this.doSearch(search.type, {'currentPage': page, ...filter})
     }
     // 删除
     delPost (item) {
@@ -261,6 +261,20 @@ class PostIndex extends Component {
         this.doSearch('init', {'currentPage': 1, status: value})
     }
 
+    // 筛选推荐状态
+    handleChange1 = (value) => {
+        const {dispatch} = this.props
+        dispatch(setFilterData({'recommend': value}))
+        this.doSearch('init', {'currentPage': 1, recommend: value})
+    }
+
+    // 筛选新闻类别
+    handleChange2 = (value) => {
+        const {dispatch} = this.props
+        dispatch(setFilterData({'channelId': value}))
+        this.doSearch('init', {'currentPage': 1, channelId: value})
+    }
+
     render () {
         // const {list, search, pageData, dispatch} = this.props
         const {list, pageData, filter} = this.props
@@ -289,12 +303,27 @@ class PostIndex extends Component {
             </Row>
             */}
             <Row>
+                <Col style={{margin: '0 0 20px'}}>
+                    <span>文章来源：</span>
+                    <span> 火星财经官方</span>
+                </Col>
                 <Col>
                     <span>新闻状态：</span>
                     <Select defaultValue={`${filter.status}`} style={{ width: 120 }} onChange={this.handleChange}>
                         <Option value="">全部</Option>
                         <Option value="1">已发表</Option>
                         <Option value="0">草稿箱</Option>
+                    </Select>
+                    <span style={{marginLeft: 15}}>推荐：</span>
+                    <Select defaultValue={`${filter.recommend}`} style={{ width: 120 }} onChange={this.handleChange1}>
+                        <Option value="">全部</Option>
+                        <Option value="0">未推荐</Option>
+                        <Option value="1">推荐</Option>
+                    </Select>
+                    <span style={{marginLeft: 15}}>新闻类别：</span>
+                    <Select defaultValue={`${filter.channelId}`} style={{ width: 120 }} onChange={this.handleChange2}>
+                        <Option value="">全部</Option>
+                        {channelIdOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
                     </Select>
                 </Col>
             </Row>

@@ -55,13 +55,26 @@
         }
     }
 
-    .opt-btn {
+    .opt-btn,
+    .state-btns {
         user-select: none;
         color: #fff;
         padding: 2px 7px;
         border-radius: 4px;
         opacity: 0.8;
         transition: all 0.1s;
+
+        &.pre-identify {
+            background: #379dfc;
+        }
+
+        &.pass-identify {
+            background: #0bbf57;
+        }
+
+        &.cant-identify {
+            background: #ee250a;
+        }
 
         &.recommend-btn {
             background: #f56a00;
