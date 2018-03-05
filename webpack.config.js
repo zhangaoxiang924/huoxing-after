@@ -98,7 +98,8 @@ module.exports = {
             // target: 'http://wechatstore.linekong.com',
             // target: 'http://192.168.252.69:8380',
             // target: 'http://admin.play.linekong.com',
-            target: 'http://47.52.210.208', // 磊鹏
+            target: 'http://www.huoxing24.vip', // 磊鹏
+            // target: 'http://47.52.210.208', // 磊鹏
             // target: 'http://admin.huoxing24.com', // 磊鹏
             // target: 'http://192.168.10.54:8080',
             changeOrigin: true,

@@ -104,6 +104,41 @@ const menuData = [
                 // ]
             }
         ]
+    }, {
+        key: 'audit',
+        icon: 'icon-ad',
+        link: '',
+        text: '审核管理',
+        children: [
+            {
+                key: 'audit-identify',
+                icon: 'icon-pc-list',
+                link: '/audit-identify',
+                text: '身份认证'
+                // children: [
+                //     {
+                //         key: 'ad-pc',
+                //         icon: 'icon-ad-list',
+                //         link: '/ad-pc',
+                //         text: 'PC端广告'
+                //     }
+                // ]
+            },
+            {
+                key: 'audit-list',
+                icon: 'icon-mobile-list',
+                link: '/audit-list',
+                text: '文章审核'
+                // children: [
+                //     {
+                //         key: 'ad-mobile',
+                //         icon: 'icon-ad-list',
+                //         link: '/ad-mobile',
+                //         text: '手机端广告'
+                //     }
+                // ]
+            }
+        ]
     }
 ]
 export default menuData

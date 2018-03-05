@@ -5,17 +5,17 @@
  */
 
 import {axiosAjax} from '../public/index'
-import {POST} from '../constants/index'
+import {ARTICLEAUDIT} from '../constants/index'
 import { message } from 'antd'
 
 // 帖子列表
-export const getPostList = (type, sendData, fn) => {
+export const getArticleList = (type, sendData, fn) => {
     return (dispatch) => {
         let _url = type === 'init' ? '/news/shownews' : '/post/search'
-        axiosAjax('get', _url, !sendData ? {} : {...sendData, createrType: 0}, function (res) {
+        axiosAjax('get', _url, !sendData ? {} : {...sendData, createrType: 1}, function (res) {
             if (res.code === 1) {
                 const actionData = res.obj
-                dispatch(addPostData({'list': actionData.inforList}))
+                dispatch(addArticleData({'list': actionData.inforList}))
                 dispatch(setPageData({'totalCount': actionData.recordCount, 'pageSize': actionData.pageSize, 'currPage': actionData.currentPage}))
                 if (fn) {
                     fn(actionData)
@@ -28,12 +28,12 @@ export const getPostList = (type, sendData, fn) => {
 }
 
 // 帖子详情
-export const getPostItemInfo = (sendData, fn) => {
+export const getArticleItemInfo = (sendData, fn) => {
     return (dispatch) => {
         axiosAjax('post', '/news/getbyid', {...sendData}, function (res) {
             if (res.code === 1) {
                 const actionData = res.obj
-                dispatch(addPostData({'info': actionData}))
+                dispatch(addArticleData({'info': actionData}))
                 if (fn) {
                     fn(actionData)
                 }
@@ -45,12 +45,12 @@ export const getPostItemInfo = (sendData, fn) => {
 }
 
 // 回复分页
-export const getPostReplyList = (sendData, fn) => {
+export const getArticleReplyList = (sendData, fn) => {
     return (dispatch) => {
         axiosAjax('post', '/reply/list', {...sendData, 'appId': $.cookie('gameId')}, function (res) {
             if (res.status === 200) {
                 const actionData = res.data
-                dispatch(addPostData({'replyList': actionData.datas}))
+                dispatch(addArticleData({'replyList': actionData.datas}))
                 if (fn) {
                     fn(actionData)
                 }
@@ -62,7 +62,7 @@ export const getPostReplyList = (sendData, fn) => {
 }
 
 // 删除回复
-export const delPostReplyList = (sendData, index, fn) => {
+export const delArticleReplyList = (sendData, index, fn) => {
     return (dispatch) => {
         axiosAjax('post', '/reply/del', {...sendData, 'appId': $.cookie('gameId')}, function (res) {
             if (res.status === 200) {
@@ -80,14 +80,14 @@ export const delPostReplyList = (sendData, index, fn) => {
 // 快速发帖登录
 export const _login = (sendData, fn) => {
     return (dispatch) => {
-        dispatch(addPostData({'userInfo': {...sendData}}))
+        dispatch(addArticleData({'userInfo': {...sendData}}))
         if (fn) {
             fn()
         }
         /* axiosAjax('post', '/api_game_list', {...sendData}, function (res) {
             if (res.status === 200) {
                 const actionData = res.data
-                dispatch(addPostData({'userInfo': {...sendData, ...actionData}}))
+                dispatch(addArticleData({'userInfo': {...sendData, ...actionData}}))
                 if (fn) {
                     fn()
                 }
@@ -99,38 +99,38 @@ export const _login = (sendData, fn) => {
     }
 }
 
-export const addPostData = (data) => {
-    return {type: POST.ADD_DATA, data}
+export const addArticleData = (data) => {
+    return {type: ARTICLEAUDIT.ADD_DATA, data}
 }
 
-export const addPostQuery = (data) => {
-    return {type: POST.ADD_QUERY, data}
+export const addArticleQuery = (data) => {
+    return {type: ARTICLEAUDIT.ADD_QUERY, data}
 }
 
-export const editPostUserInfo = (data) => {
-    return {type: POST.EDIT_USER_INFO, data}
+export const editArticleUserInfo = (data) => {
+    return {type: ARTICLEAUDIT.EDIT_USER_INFO, data}
 }
 
-export const editPostList = (data, index) => {
-    return {type: POST.EDIT_LIST_ITEM, data, index}
+export const editArticleList = (data, index) => {
+    return {type: ARTICLEAUDIT.EDIT_LIST_ITEM, data, index}
 }
 
-export const delPostData = (index) => {
-    return {type: POST.DEL_LIST_ITEM, index}
+export const delArticleData = (index) => {
+    return {type: ARTICLEAUDIT.DEL_LIST_ITEM, index}
 }
 
 export const delReplyList = (index) => {
-    return {type: POST.DEL_REPLY_LIST, index}
+    return {type: ARTICLEAUDIT.DEL_REPLY_LIST, index}
 }
 
 export const setSearchQuery = (data) => {
-    return {type: POST.SET_SEARCH_QUERY, data}
+    return {type: ARTICLEAUDIT.SET_SEARCH_QUERY, data}
 }
 
 export const setFilterData = (data) => {
-    return {type: POST.SET_FILTER_DATA, data}
+    return {type: ARTICLEAUDIT.SET_FILTER_DATA, data}
 }
 
 export const setPageData = (data) => {
-    return {type: POST.SET_PAGE_DATA, data}
+    return {type: ARTICLEAUDIT.SET_PAGE_DATA, data}
 }
