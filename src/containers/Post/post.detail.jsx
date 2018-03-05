@@ -9,7 +9,7 @@ import {Row, Col, Button, message, Modal, Tag, Spin} from 'antd'
 import {hashHistory} from 'react-router'
 import IconItem from '../../components/icon/icon'
 import {getPostItemInfo} from '../../actions/post.action'
-import {axiosAjax, channelIdOptions} from '../../public/index'
+import {axiosAjax, channelIdOptions, isJsonString} from '../../public/index'
 import './post.scss'
 import '../../public/simditor.css'
 
@@ -236,16 +236,16 @@ class PostDetail extends Component {
                         <ul className="desc" style={{
                             display: 'inline-block'
                         }}>
-                            {info.audio ? JSON.parse(info.audio).map(function (item, index) {
+                            {isJsonString(info.audio) ? JSON.parse(info.audio).map(function (item, index) {
                                 return <li className="clearfix" key={index} style={{marginBottom: '10px'}}>
                                     <span>{item.fileName}</span>
                                     <audio src={item.fileUrl} controls="controls"></audio>
                                 </li>
-                            }) : null}
+                            }) : <span>暂无</span>}
                         </ul>
                     </Col>
                 </Row>
-                {JSON.parse(info.coverPic) ? <div>
+                {isJsonString(info.coverPic) ? <div>
                     <Row className="news-cover-img">
                         <Col className="section">
                             <span className="name">PC-新闻封面：</span>
