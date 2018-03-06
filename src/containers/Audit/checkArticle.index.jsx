@@ -69,7 +69,8 @@ class ArticleAuditIndex extends Component {
         }, {
             title: '文章作者',
             dataIndex: 'author',
-            key: 'author'
+            key: 'author',
+            render: (text, record) => (record.author.trim() !== '' ? <span title={record.author}>{cutString(record.author, 25)}</span> : '无')
         }, {
             title: '文章摘要 ',
             dataIndex: 'synopsis',
@@ -85,14 +86,14 @@ class ArticleAuditIndex extends Component {
             dataIndex: 'tags',
             width: 200,
             key: 'tags',
-            render: (record) => (record && record.split(',').map((item, index) => {
+            render: (record) => ((record && record.trim()) !== '' ? record.split(',').map((item, index) => {
                 return <Tag key={index} color="blue" style={{margin: '5px'}}>{item}</Tag>
-            }))
+            }) : '无')
         }, {
             title: '来源 ',
             dataIndex: 'source',
             key: 'source',
-            render: (text, record) => (record && <span title={record.source}>{cutString(record.source, 30)}</span>)
+            render: (text) => ((text && text.trim()) !== '' ? <span title={text}>{cutString(text, 30)}</span> : '无')
         }, {
             title: '发表时间',
             key: 'createTime',

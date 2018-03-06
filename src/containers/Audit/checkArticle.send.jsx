@@ -77,27 +77,30 @@ class ArticleAuditSend extends Component {
                     status: 'done',
                     url: coverPic.pc_recommend
                 }] : []
+                let fileList = (coverPic.pc && coverPic.pc !== '') ? [{
+                    uid: 0,
+                    name: 'xxx.png',
+                    status: 'done',
+                    url: coverPic.pc
+                }] : []
+                let mfileList = (coverPic.wap_small && coverPic.wap_small !== '') ? [{
+                    uid: 0,
+                    name: 'xxx.png',
+                    status: 'done',
+                    url: coverPic.wap_small
+                }] : []
+                let mcfileList = (coverPic.wap_big && coverPic.wap_big !== '') ? [{
+                    uid: 0,
+                    name: 'xxx.png',
+                    status: 'done',
+                    url: coverPic.wap_big
+                }] : []
                 this.setState({
                     updateOrNot: true,
-                    fileList: [{
-                        uid: 0,
-                        name: 'xxx.png',
-                        status: 'done',
-                        url: coverPic.pc || ''
-                    }],
+                    fileList: fileList,
                     pcfileList: pcfileList,
-                    mfileList: [{
-                        uid: 0,
-                        name: 'xxx.png',
-                        status: 'done',
-                        url: coverPic.wap_small || ''
-                    }],
-                    mcfileList: [{
-                        uid: 0,
-                        name: 'xxx.png',
-                        status: 'done',
-                        url: coverPic.wap_big || ''
-                    }],
+                    mfileList: mfileList,
+                    mcfileList: mcfileList,
                     tags: data.tags.split(','),
                     newsContent: data.content,
                     coverImgUrl: coverPic.pc,
@@ -367,7 +370,7 @@ class ArticleAuditSend extends Component {
                         label="来源: "
                     >
                         {getFieldDecorator('source', {
-                            initialValue: (updateOrNot && newsInfo) ? `${newsInfo.source}` : '',
+                            initialValue: (updateOrNot && newsInfo) ? `${newsInfo.source || ''}` : '',
                             rules: [{ required: true, message: '请输入新闻来源！' }]
                         })(
                             <Input className="news-source" placeholder="请输入新闻来源"/>
@@ -375,7 +378,7 @@ class ArticleAuditSend extends Component {
                     </FormItem>
                     <FormItem {...formItemLayout} label="频道: ">
                         {getFieldDecorator('channelId', {
-                            initialValue: (updateOrNot && newsInfo) ? `${newsInfo.channelId}` : '1'
+                            initialValue: (updateOrNot && newsInfo) ? `${newsInfo.channelId || '1'}` : '1'
                         })(
                             <RadioGroup
                                 options={channelIdOptions}

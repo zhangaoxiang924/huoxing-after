@@ -51,6 +51,10 @@ class AuditIndex extends Component {
                     return <span className="state-btns pass-identify">{this.auditStatus(text)}</span>
                 } else if (text === -1) {
                     return <span className="state-btns cant-identify">{this.auditStatus(text)}</span>
+                } else if (text === -2) {
+                    return <span className="state-btns hasnot-identify">{this.auditStatus(text)}</span>
+                } else {
+                    return this.auditStatus(text)
                 }
             }
         }, {

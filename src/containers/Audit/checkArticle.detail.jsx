@@ -9,7 +9,7 @@ import { Row, Col, Button, message, Modal, Tag, Spin } from 'antd'
 import { hashHistory } from 'react-router'
 import IconItem from '../../components/icon/icon'
 import {getArticleItemInfo} from '../../actions/articleAudit.action'
-import {axiosAjax, channelIdOptions} from '../../public/index'
+import {axiosAjax, channelIdOptions, isJsonString} from '../../public/index'
 import './checkArticle.scss'
 import '../../public/simditor.css'
 const confirm = Modal.confirm
@@ -227,15 +227,15 @@ class ArticleAuditDetail extends Component {
                 <Row className="news-detail-info">
                     <Col className="section" span={3} offset={1}>
                         <span className="name">作者：</span>
-                        <span className="desc">{`${info.author}`} </span>
+                        <span className="desc">{`${info.author || '无'}`} </span>
                     </Col>
                     <Col className="section" {...col}>
                         <span className="name">文章来源：</span>
-                        <span className="desc">{`${info.source}`} </span>
+                        <span className="desc">{`${info.source || '无'}`} </span>
                     </Col>
                     <Col className="section" {...col}>
                         <span className="name">频道：</span>
-                        <span className="desc">{`${this.channelName(info.channelId)}`} </span>
+                        <span className="desc">{`${this.channelName(info.channelId) || '无'}`} </span>
                     </Col>
                     <Col className="section" {...col}>
                         <span className="name">类别：</span>
@@ -245,9 +245,9 @@ class ArticleAuditDetail extends Component {
                 <Row className="news-tags">
                     <Col className="section">
                         <span className="name">标签：</span>
-                        {info.tags && info.tags.split(',').map((item, index) => {
+                        {info.tags && info.tags !== '' ? info.tags.split(',').map((item, index) => {
                             return <Tag key={index} color="blue" style={{marginLeft: 5}}>{item}</Tag>
-                        })}
+                        }) : '无'}
                     </Col>
                 </Row>
                 <Row className="news-title">
@@ -262,7 +262,7 @@ class ArticleAuditDetail extends Component {
                         <span className="desc">{`${info.synopsis}`} </span>
                     </Col>
                 </Row>
-                {JSON.parse(info.coverPic) ? <div>
+                {isJsonString(info.coverPic) ? <div>
                     <Row className="news-cover-img">
                         <Col className="section">
                             <span className="name">PC-文章封面：</span>
@@ -294,7 +294,7 @@ class ArticleAuditDetail extends Component {
                 </div> : <Row className="news-cover-img">
                     <Col className="section">
                         <span className="name">文章封面：</span>
-                        <span>暂无</span>
+                        <span style={{paddingTop: '6px'}}>暂无</span>
                     </Col>
                 </Row>}
 
