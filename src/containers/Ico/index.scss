@@ -4,12 +4,12 @@
  * Description：Description
  */
 
-.post-index {
+.ico-index {
     min-width: 1600px !important;
     overflow: auto;
 
     table {
-        .post-info {
+        .ico-info {
             & > div {
                 float: left;
             }
@@ -40,7 +40,7 @@
         }
     }
 
-    .news-status {
+    .ico-status {
         padding: 3px 8px;
         background: #00a854;
         border-radius: 4px;
@@ -49,14 +49,9 @@
         &.pre-publish {
             background: #afafaf;
         }
-
-        &.has-forbidden {
-            background: #ee250a;
-        }
     }
 
-    .opt-btn,
-    .state-btns {
+    .opt-btn {
         user-select: none;
         color: #fff;
         padding: 2px 7px;
@@ -66,10 +61,6 @@
 
         &.recommend-btn {
             background: #f56a00;
-        }
-
-        &.publish-btn {
-            background: #00a854;
         }
 
         &.disabled {
@@ -83,14 +74,14 @@
     }
 }
 
-.post-detail {
-    .post-content {
+.ico-detail {
+    .ico-content {
         margin-top: 20px;
         padding: 20px 30px;
         display: flex;
         justify-content: center;
 
-        .post-main {
+        .ico-main {
             overflow: hidden;
 
             img {
@@ -98,7 +89,7 @@
             }
         }
 
-        .post-info {
+        .ico-info {
             margin-bottom: 30px;
 
             h3 {
@@ -123,12 +114,18 @@
         }
 
         .desc {
+            position: relative;
             margin-left: 10px;
             color: #000;
+
+            .audio-v {
+                position: absolute;
+                top: -10px;
+            }
         }
     }
 
-    .news-detail-info {
+    .ico-detail-info {
         position: relative;
         margin: 30px 0 10px;
     }
@@ -208,7 +205,7 @@
         margin-top: 30px;
     }
 
-    .news-cover-img {
+    .ico-cover-img {
         span {
             display: inline-block;
             width: 125px;
@@ -226,7 +223,14 @@
     }
 }
 
-.post-send {
+.ico-send {
+    .upload-div,
+    .description {
+        .ant-form-item-control-wrapper {
+            margin-left: 1%;
+        }
+    }
+
     .send-info {
         width: 500px;
         padding: 20px;
@@ -248,7 +252,7 @@
         color: #666;
     }
 
-    .news-summary {
+    .ico-summary {
         min-height: 30px;
         max-height: 70px;
     }
@@ -274,7 +278,7 @@
     box-shadow: 2px 2px 5px #e9e9e9;
 }
 
-.previewNews {
+.previewico {
     img {
         max-width: 640px;
         width: auto;

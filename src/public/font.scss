@@ -5,8 +5,8 @@
  */
 @font-face {
     font-family: 'iconfont';  /* project id 575565 */
-    src: url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.eot');
-    src: url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.eot?#iefix') format('embedded-opentype'), url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.woff') format('woff'), url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.ttf') format('truetype'), url('//at.alicdn.com/t/font_575565_yhlmk2qeqnbnvcxr.svg#iconfont') format('svg');
+    src: url('//at.alicdn.com/t/font_575565_qnm23z1r3jfko6r.eot');
+    src: url('//at.alicdn.com/t/font_575565_qnm23z1r3jfko6r.eot?#iefix') format('embedded-opentype'), url('//at.alicdn.com/t/font_575565_qnm23z1r3jfko6r.woff') format('woff'), url('//at.alicdn.com/t/font_575565_qnm23z1r3jfko6r.ttf') format('truetype'), url('//at.alicdn.com/t/font_575565_qnm23z1r3jfko6r.svg#iconfont') format('svg');
 }
 
 .iconfont {
@@ -47,6 +47,26 @@
 
 .icon-post-list:before {
     content: '\e88f';
+}
+
+.icon-ico:before {
+    content: '\e73a';
+}
+
+.icon-ico-edit:before {
+    content: '\e639';
+}
+
+.icon-audit:before {
+    content: '\e63a';
+}
+
+.icon-identify:before {
+    content: '\e63f';
+}
+
+.icon-article:before {
+    content: '\e687';
 }
 
 .icon-flash-list:before {

@@ -7,21 +7,21 @@ import React, { Component } from 'react'
 import { connect } from 'react-redux'
 // import { Input, Row, Col, Button, Table, Modal, message } from 'antd'
 import { Table, Row, Col, Modal, message, Spin, Tag, Select, Input, Button } from 'antd'
-import './checkArticle.scss'
+import './index.scss'
 import { Link } from 'react-router'
 import IconItem from '../../components/icon/icon'
-import {getArticleList, setSearchQuery, setPageData, setFilterData} from '../../actions/articleAudit.action'
+import {getIcoList, setSearchQuery, setPageData, setFilterData} from '../../actions/ico.action'
 import {formatDate, axiosAjax, cutString, channelIdOptions} from '../../public/index'
 const confirm = Modal.confirm
 const Option = Select.Option
 
 let columns = []
-class ArticleAuditIndex extends Component {
+class IcoIndex extends Component {
     constructor () {
         super()
         this.state = {
             loading: true,
-            newsStatus: null
+            icoStatus: null
         }
     }
 
@@ -39,40 +39,37 @@ class ArticleAuditIndex extends Component {
         const {search, filter} = this.props
         this.doSearch('init', {...filter, title: search.title})
         columns = [{
-            title: '文章标题',
+            title: 'Ico标题',
             width: '250px',
             key: 'name',
-            render: (text, record) => (record && <div className="post-info clearfix">
+            render: (text, record) => (record && <div className="ico-info clearfix">
                 <div>
                     <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 30))} />
                     <div>
                         {!parseInt(record.recommend) ? '' : <div style={{'display': 'inline-block'}}><span className="org-bg mr10">推荐</span></div>}
-                        {/* !parseInt(record.status) === 0 ? '' : <span className="pre-bg">草稿状态</span> */}
+                        {!parseInt(record.forbidComment) ? '' : <span className="pre-bg">禁评</span>}
                     </div>
                 </div>
                 {!record.pictureUrl ? '' : <img src={record.pictureUrl.split(',')[0]} />}
             </div>)
         }, {
-            title: '文章状态',
+            title: 'Ico状态',
             key: 'status',
             render: (record) => {
                 if (record && record.status === 0) {
-                    return <span className="news-status pre-publish">审核中</span>
+                    return <span className="ico-status pre-publish">草稿</span>
                 } else if (record && record.status === 1) {
-                    return <span className="news-status has-publish">审核通过，已发表</span>
-                } else if (record && record.status === 2) {
-                    return <span className="news-status has-forbidden">审核未通过</span>
+                    return <span className="ico-status has-publish">已发表</span>
                 } else {
                     return <span>暂无</span>
                 }
             }
         }, {
-            title: '文章作者',
+            title: 'Ico作者',
             dataIndex: 'author',
-            key: 'author',
-            render: (text, record) => (record.author.trim() !== '' ? <span title={record.author}>{cutString(record.author, 25)}</span> : '无')
+            key: 'author'
         }, {
-            title: '文章摘要 ',
+            title: 'Ico摘要 ',
             dataIndex: 'synopsis',
             key: 'synopsis',
             render: (text, record) => (record && <span title={record.synopsis}>{cutString(record.synopsis, 25)}</span>)
@@ -86,14 +83,14 @@ class ArticleAuditIndex extends Component {
             dataIndex: 'tags',
             width: 200,
             key: 'tags',
-            render: (record) => ((record && record.trim()) !== '' ? record.split(',').map((item, index) => {
+            render: (record) => (record && record.split(',').map((item, index) => {
                 return <Tag key={index} color="blue" style={{margin: '5px'}}>{item}</Tag>
-            }) : '无')
+            }))
         }, {
             title: '来源 ',
             dataIndex: 'source',
             key: 'source',
-            render: (text) => ((text && text.trim()) !== '' ? <span title={text}>{cutString(text, 30)}</span> : '无')
+            render: (text, record) => (record && <span title={record.source}>{cutString(record.source, 30)}</span>)
         }, {
             title: '发表时间',
             key: 'createTime',
@@ -102,25 +99,15 @@ class ArticleAuditIndex extends Component {
             title: '操作',
             key: 'action',
             render: (item) => (<div>
-                {item.status === 0 ? <Link
-                    className="mr10 opt-btn"
-                    to={{pathname: '/checkArticle-detail', query: {id: item.id}}}
-                    style={{background: '#108ee9'}}>
-                    审核
-                </Link> : <Link
-                    className="mr10 opt-btn"
-                    to={{pathname: '/checkArticle-detail', query: {id: item.id}}}
-                    style={{background: '#2e55a3'}}>
-                    重新审核
-                </Link>}
+                <Link className="mr10 opt-btn" to={{pathname: '/ico-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>详情</Link>
                 <a className={`mr10 recommend-btn opt-btn ${item.status !== 1 ? 'disabled' : ''}`} href="javascript:void(0)" onClick={() => this._isTop(item)} disabled={item.status !== 1 && true}>
                     {item.recommend === 1 ? '取消推荐' : '推荐'}
                 </a>
-                <a className={`mr10 opt-btn publish-btn ${item.status === 2 ? 'disabled' : ''}`} href="javascript:void(0)" onClick={() => this._isPublish(item)} disabled={item.status === 2 && true}>
-                    {item.status === 1 ? '撤回到审核' : '发表'}
+                <a className="mr10 opt-btn" href="javascript:void(0)" onClick={() => this._isPublish(item)} style={{background: '#00a854'}}>
+                    {item.status === 1 ? '撤回到草稿箱' : '发表'}
                 </a>
                 {/* <a className="mr10" href="javascript:void(0)" onClick={() => this._forbidcomment(item)}>{item.forbidComment === '1' ? '取消禁评' : '禁评'}</a> */}
-                <a onClick={() => this.delPost(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
+                <a onClick={() => this.delIco(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
             </div>)
         }]
     }
@@ -135,8 +122,8 @@ class ArticleAuditIndex extends Component {
         const {dispatch, pageData, search, filter} = this.props
         let sendDada = {
             ...filter,
-            pageSize: 20,
             title: search.title,
+            pageSize: 20,
             currentPage: pageData.currPage
             // 'appId': $.cookie('gameId')
         }
@@ -149,7 +136,7 @@ class ArticleAuditIndex extends Component {
         }
         sendDada = {...sendDada, ...data}
         // let sendDada = !data ? {searchQuery: this.state.searchQuery} : {searchQuery: this.state.searchQuery, ...data}
-        dispatch(getArticleList(type, sendDada, () => {
+        dispatch(getIcoList(type, sendDada, () => {
             this.setState({
                 loading: false
             })
@@ -177,7 +164,7 @@ class ArticleAuditIndex extends Component {
         this.doSearch(search.type, {'currentPage': page, ...filter})
     }
     // 删除
-    delPost (item) {
+    delIco (item) {
         const {dispatch} = this.props
         const _this = this
         confirm({
@@ -254,7 +241,7 @@ class ArticleAuditIndex extends Component {
             'id': item.id,
             'recommend': item.recommend === 1 ? 0 : 1
         }
-        axiosAjax('post', '/news/recommend', sendData, (res) => {
+        axiosAjax('post', '/ico/recommend', sendData, (res) => {
             if (res.code === 1) {
                 // this.doSearch(search.type)
                 this.doSearch('init')
@@ -265,12 +252,12 @@ class ArticleAuditIndex extends Component {
         })
     }
 
-    // 筛选文章状态
+    // 筛选Ico状态
     handleChange = (value) => {
         const {dispatch} = this.props
         dispatch(setFilterData({'status': value}))
         this.setState({
-            newsStatus: value
+            icoStatus: value
         })
         this.doSearch('init', {'currentPage': 1, status: value})
     }
@@ -282,7 +269,7 @@ class ArticleAuditIndex extends Component {
         this.doSearch('init', {'currentPage': 1, recommend: value})
     }
 
-    // 筛选新闻类别
+    // 筛选Ico类别
     handleChange2 = (value) => {
         const {dispatch} = this.props
         dispatch(setFilterData({'channelId': value}))
@@ -290,9 +277,8 @@ class ArticleAuditIndex extends Component {
     }
 
     render () {
-        // const {list, search, pageData, dispatch} = this.props
         const {list, pageData, filter, search, dispatch} = this.props
-        return <div className="post-index">
+        return <div className="ico-index">
             {/*
             <Row>
                 <Col span={1} className="form-label">帖子主题:</Col>
@@ -319,15 +305,14 @@ class ArticleAuditIndex extends Component {
             <Row>
                 <Col style={{margin: '0 0 20px'}}>
                     <span>文章来源：</span>
-                    <span> 火星号</span>
+                    <span> 火星财经官方</span>
                 </Col>
                 <Col>
-                    <span>文章状态：</span>
+                    <span>Ico状态：</span>
                     <Select defaultValue={`${filter.status}`} style={{ width: 120 }} onChange={this.handleChange}>
                         <Option value="">全部</Option>
-                        <Option value="1">审核通过已发表</Option>
-                        <Option value="0">审核中</Option>
-                        <Option value="2">审核未通过</Option>
+                        <Option value="1">已发表</Option>
+                        <Option value="0">草稿箱</Option>
                     </Select>
                     <span style={{marginLeft: 15}}>推荐：</span>
                     <Select defaultValue={`${filter.recommend}`} style={{ width: 120 }} onChange={this.handleChange1}>
@@ -335,17 +320,17 @@ class ArticleAuditIndex extends Component {
                         <Option value="0">未推荐</Option>
                         <Option value="1">推荐</Option>
                     </Select>
-                    <span style={{marginLeft: 15}}>新闻类别：</span>
+                    <span style={{marginLeft: 15}}>Ico类别：</span>
                     <Select defaultValue={`${filter.channelId}`} style={{ width: 120 }} onChange={this.handleChange2}>
                         <Option value="">全部</Option>
                         {channelIdOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
                     </Select>
-                    <span style={{marginLeft: 15}}>新闻标题: </span>
+                    <span style={{marginLeft: 15}}>Ico标题: </span>
                     <Input
                         value={search.title}
                         style={{width: 200, marginRight: 15}}
                         onChange={(e) => dispatch(setSearchQuery({title: e.target.value}))}
-                        placeholder="请输入新闻标题"
+                        placeholder="请输入Ico标题"
                     />
                     <span>
                         <Button type="primary" onClick={() => { this._search() }}><IconItem type="icon-search"/>搜索</Button>
@@ -363,12 +348,12 @@ class ArticleAuditIndex extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        articleAudit: state.articleAudit,
-        list: state.articleAudit.list,
-        search: state.articleAudit.search,
-        filter: state.articleAudit.filter,
-        pageData: state.articleAudit.pageData
+        icoInfo: state.icoInfo,
+        list: state.icoInfo.list,
+        search: state.icoInfo.search,
+        filter: state.icoInfo.filter,
+        pageData: state.icoInfo.pageData
     }
 }
 
-export default connect(mapStateToProps)(ArticleAuditIndex)
+export default connect(mapStateToProps)(IcoIndex)

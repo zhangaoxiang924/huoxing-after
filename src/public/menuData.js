@@ -35,7 +35,7 @@ const menuData = [
                 key: 'post-send',
                 icon: 'icon-post-send',
                 link: '/post-send',
-                text: '编辑新闻'
+                text: '新闻添加/编辑'
             }
         ]
     }, {
@@ -53,7 +53,7 @@ const menuData = [
                 key: 'flash-edit',
                 icon: 'icon-flash-send',
                 link: '/flash-edit',
-                text: '编辑快讯'
+                text: '快讯添加/编辑'
             }
         ]
     }, {
@@ -106,37 +106,39 @@ const menuData = [
         ]
     }, {
         key: 'audit',
-        icon: 'icon-post',
+        icon: 'icon-audit',
         link: '',
         text: '审核管理',
         children: [
             {
                 key: 'audit-identify',
-                icon: 'icon-pc-list',
+                icon: 'icon-identify',
                 link: '/audit-identify',
                 text: '身份认证'
-                // children: [
-                //     {
-                //         key: 'ad-pc',
-                //         icon: 'icon-ad-list',
-                //         link: '/ad-pc',
-                //         text: 'PC端广告'
-                //     }
-                // ]
             },
             {
                 key: 'audit-list',
-                icon: 'icon-mobile-list',
+                icon: 'icon-article',
                 link: '/audit-list',
                 text: '文章审核'
-                // children: [
-                //     {
-                //         key: 'ad-mobile',
-                //         icon: 'icon-ad-list',
-                //         link: '/ad-mobile',
-                //         text: '手机端广告'
-                //     }
-                // ]
+            }
+        ]
+    }, {
+        key: 'ico',
+        icon: 'icon-ico',
+        link: '',
+        text: 'ICO 管理',
+        children: [
+            {
+                key: 'ico-list',
+                icon: 'icon-post-list',
+                link: '/ico-list',
+                text: 'ICO 列表'
+            }, {
+                key: 'ico-edit',
+                icon: 'icon-ico-edit',
+                link: '/ico-edit',
+                text: 'ICO 添加/编辑'
             }
         ]
     }

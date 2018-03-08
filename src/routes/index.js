@@ -150,6 +150,21 @@ const rootRoutes = <div>
                 callback(null, require('../containers/Ad/mobileAd.send.jsx').default)
             }, 'MAdEdit')
         }}/>
+        <Route path='/ico-list' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Ico/ico.index.jsx').default)
+            }, 'IcoIndex')
+        }}/>
+        <Route path='/ico-edit' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Ico/ico.edit.jsx').default)
+            }, 'IcoEdit')
+        }}/>
+        <Route path='/ico-detail' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Ico/ico.detail.jsx').default)
+            }, 'IcoDetail')
+        }}/>
     </Route>
     <Route path='/login' getComponent={(nextState, callback) => {
         require.ensure([], (require) => {
