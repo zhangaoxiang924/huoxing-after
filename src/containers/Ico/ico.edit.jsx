@@ -10,7 +10,7 @@ import {Row, Col, Form, Input, Upload, Icon, Modal, Button, message, Spin, DateP
 import moment from 'moment'
 import {getIcoItemInfo} from '../../actions/ico.action'
 
-import {axiosAjax, URL, formatDate, isJsonString} from '../../public/index'
+import {axiosPost, URL, formatDate} from '../../public/index'
 import DynamicFieldSet from '../../components/DynamicField/index'
 import './index.scss'
 
@@ -38,7 +38,8 @@ const {TextArea} = Input
  */
 
 // let mp3List = []
-let fieldsData = []
+let icoTeam = []
+let icoLink = []
 class IcoSend extends Component {
     state = {
         updateOrNot: false,
@@ -57,22 +58,16 @@ class IcoSend extends Component {
         const {dispatch, location} = this.props
         if (location.query.id) {
             dispatch(getIcoItemInfo({'id': location.query.id}, (data) => {
-                let coverPic = isJsonString(data.coverPic) ? JSON.parse(data.coverPic) : {
-                    pc_recommend: '',
-                    pc: '',
-                    wap_big: '',
-                    wap_small: ''
-                }
                 this.setState({
                     updateOrNot: true,
                     fileList: [{
                         uid: 0,
                         name: 'xxx.png',
                         status: 'done',
-                        url: coverPic.pc
+                        url: data.img
                     }],
-                    description: data.content,
-                    coverImgUrl: coverPic.pc,
+                    description: data.description,
+                    coverImgUrl: data.img,
                     loading: false
                 })
             }))
@@ -132,25 +127,44 @@ class IcoSend extends Component {
         e.preventDefault()
 
         this.props.form.setFieldsValue({
-            pc: this.state.coverImgUrl
+            img: this.state.coverImgUrl
         })
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
                 this.setState({
                     loading: true
                 })
+                let params = {}
                 values.startTime = Date.parse(values['startTime'].format('YYYY-MM-DD HH:mm:ss'))
                 values.endTime = Date.parse(values['endTime'].format('YYYY-MM-DD HH:mm:ss'))
-                values.coverPic = JSON.stringify({
-                    pc_recommend: values.pc_recommend || '',
-                    pc: values.pc,
-                    wap_big: values.wap_big,
-                    wap_small: values.wap_small
-                })
+                params.icoTeam = icoTeam
+                params.icoLink = icoLink
+                params.icoBase = {
+                    assignment: values.assignment,
+                    chainType: values.chainType,
+                    description: values.description,
+                    endTime: values.endTime,
+                    img: values.img,
+                    jurisdiction: values.jurisdiction,
+                    legalForm: values.legalForm,
+                    name: values.name,
+                    raised: values.raised,
+                    securityAudit: values.securityAudit,
+                    startTime: values.startTime,
+                    supply: values.supply,
+                    symbol: values.symbol
+                }
+                params.icoPrice = []
+
+                for (let i = 0; i < icoTeam.length; i++) {
+                    delete values[`job_${i}`]
+                    delete values[`name_${i}`]
+                }
                 values.id = this.props.location.query.id || ''
                 values.status = status || 1
                 !this.state.updateOrNot && delete values.id
-                axiosAjax('post', `${this.state.updateOrNot ? '/news/update' : '/news/add'}`, values, (res) => {
+                console.log(values)
+                axiosPost(`${this.state.updateOrNot ? '/news/update' : '/news/add'}`, values, (res) => {
                     if (res.code === 1) {
                         message.success(this.state.updateOrNot ? '修改成功！' : '添加成功！')
                         hashHistory.push('/ico-list')
@@ -162,32 +176,42 @@ class IcoSend extends Component {
         })
     }
 
-    // 发布
-    sendPost = (sendData) => {
-        let _data = {
-            'icoTitle': sendData.postTitle || '',
-            'description': `${sendData.postContent}` || ''
-        }
-        this.setState({...this.state, ..._data})
-    }
-
     // 内容格式化
     createMarkup = (str) => {
         return {__html: str}
     }
 
-    setFieldData (data) {
-        fieldsData = data
+    setIcoTeam (data) {
+        icoTeam = data
+    }
+
+    setIcoLink (data) {
+        icoLink = data
     }
 
     render () {
-        console.log(fieldsData)
+        console.log(icoTeam)
+        console.log(icoLink)
         const {getFieldDecorator} = this.props.form
         const {icoInfo} = this.props
         const {previewVisible, previewImage, fileList, description, updateOrNot} = this.state
         const formItemLayout = {
             labelCol: {span: 1},
             wrapperCol: {span: 15, offset: 1}
+        }
+        const teamProps = {
+            title: '团队信息',
+            member: '团队成员',
+            desc: '职位',
+            params1: 'name',
+            params2: 'job'
+        }
+        const linkProps = {
+            title: '媒体与链接',
+            member: '网站',
+            desc: '网址',
+            params1: 'name',
+            params2: 'url'
         }
         const uploadButton = (
             <div>
@@ -260,7 +284,7 @@ class IcoSend extends Component {
                         className='upload-div'
                     >
                         <div className="dropbox">
-                            {getFieldDecorator('pc', {
+                            {getFieldDecorator('img', {
                                 initialValue: (updateOrNot && icoInfo) ? fileList : '',
                                 rules: [{required: true, message: '请上传ICO 图标！'}]
                             })(
@@ -380,7 +404,8 @@ class IcoSend extends Component {
                             </FormItem>
                         </Col>
                     </Row>
-                    <DynamicFieldSet form={this.props.form} update={this.state.updateOrNot} selectGood={icoInfo} setFieldData={(data) => this.setFieldData(data)} />
+                    <DynamicFieldSet {...teamProps} form={this.props.form} update={this.state.updateOrNot} selectGood={icoInfo} setFieldData={(data) => this.setIcoTeam(data)} />
+                    <DynamicFieldSet {...linkProps} form={this.props.form} update={this.state.updateOrNot} selectGood={icoInfo} setFieldData={(data) => this.setIcoLink(data)} />
 
                     <FormItem
                         wrapperCol={{span: 12, offset: 1}}

@@ -480,13 +480,13 @@ class PostSend extends Component {
 
                     <FormItem
                         {...formItemLayout}
-                        label="阅读数: "
+                        label="热度: "
                     >
                         {getFieldDecorator('hotCounts', {
                             initialValue: (updateOrNot && newsInfo) ? newsInfo.hotCounts : 0,
-                            rules: [{required: true, pattern: /^[0-9]+$/, message: '请输入新闻阅读数(正整数)！'}]
+                            rules: [{required: true, pattern: /^[0-9]+$/, message: '请输入新闻热度值(正整数)！'}]
                         })(
-                            <Input className="news-source" placeholder="请输入新闻阅读数"/>
+                            <Input className="news-source" placeholder="请输入新闻热度值"/>
                         )}
                     </FormItem>
 

@@ -29,7 +29,7 @@ export const NavKey = {
     'ico': 'ICO 管理',
     'ico-list': 'ICO 列表',
     'ico-detail': 'ICO 详情',
-    'ico-send': 'ICO 编辑',
+    'ico-edit': 'ICO 编辑',
     'postUser': '用户管理',
     'postUser-list': '用户列表',
     'postUser-detail': '用户详情',

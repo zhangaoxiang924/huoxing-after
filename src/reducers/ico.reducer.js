@@ -6,7 +6,7 @@
 
 import {ICO} from '../constants/index'
 
-const postInfo = (state = {filter: {status: '', recommend: '', channelId: ''}, search: {'nickName': '', 'title': '', 'type': 'init'}, pageData: {'currPage': 1, 'pageSize': 20, 'totalCount': 0}, query: {}, list: [], userInfo: {'name': '', 'pwd': ''}, info: {}, replyList: []}, action) => {
+const postInfo = (state = {filter: {status: '', recommend: '', channelId: ''}, search: {'nickName': '', 'title': '', 'type': 'init'}, pageData: {'page': 1, 'pageSize': 10, 'totalCount': 0}, query: {}, list: [], userInfo: {'name': '', 'pwd': ''}, info: {}, replyList: []}, action) => {
     let _query = state.query
     let _userInfo = state.userInfo
     let _list = state.list

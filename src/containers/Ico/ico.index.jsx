@@ -6,12 +6,12 @@
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
 // import { Input, Row, Col, Button, Table, Modal, message } from 'antd'
-import { Table, Row, Col, Modal, message, Spin, Tag, Select, Input, Button } from 'antd'
+import { Table, Row, Col, Modal, message, Spin, Select, Input, Button } from 'antd'
 import './index.scss'
 import { Link } from 'react-router'
 import IconItem from '../../components/icon/icon'
 import {getIcoList, setSearchQuery, setPageData, setFilterData} from '../../actions/ico.action'
-import {formatDate, axiosAjax, cutString, channelIdOptions} from '../../public/index'
+import {formatDate, axiosAjax, cutString, icoStatusOptions} from '../../public/index'
 const confirm = Modal.confirm
 const Option = Select.Option
 
@@ -27,7 +27,7 @@ class IcoIndex extends Component {
 
     channelName (id) {
         let name = ''
-        channelIdOptions.map((item, index) => {
+        icoStatusOptions.map((item, index) => {
             if (parseInt(item.value) === id) {
                 name = item.label
             }
@@ -39,74 +39,52 @@ class IcoIndex extends Component {
         const {search, filter} = this.props
         this.doSearch('init', {...filter, title: search.title})
         columns = [{
-            title: 'Ico标题',
+            title: 'ICO名称',
             width: '250px',
             key: 'name',
             render: (text, record) => (record && <div className="ico-info clearfix">
                 <div>
-                    <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 30))} />
-                    <div>
-                        {!parseInt(record.recommend) ? '' : <div style={{'display': 'inline-block'}}><span className="org-bg mr10">推荐</span></div>}
-                        {!parseInt(record.forbidComment) ? '' : <span className="pre-bg">禁评</span>}
-                    </div>
+                    <h4 title={record.name} dangerouslySetInnerHTML={this.createMarkup(cutString(record.name, 30))} />
                 </div>
-                {!record.pictureUrl ? '' : <img src={record.pictureUrl.split(',')[0]} />}
             </div>)
+        }, {
+            title: 'ICO简称 ',
+            dataIndex: 'symbol',
+            key: 'symbol'
+        }, {
+            title: 'ICO 图标',
+            width: 140,
+            key: 'img',
+            render: (record) => (<img style={{width: 100}} src={record.img} alt=""/>)
         }, {
             title: 'Ico状态',
             key: 'status',
             render: (record) => {
-                if (record && record.status === 0) {
-                    return <span className="ico-status pre-publish">草稿</span>
-                } else if (record && record.status === 1) {
-                    return <span className="ico-status has-publish">已发表</span>
+                if (record && record.status === 'past') {
+                    return <span className="ico-status pre-publish">已结束</span>
+                } else if (record && record.status === 'ongoing') {
+                    return <span className="ico-status has-publish">进行中</span>
+                } else if (record && record.status === 'upcoming') {
+                    return <span className="ico-status will-publish">即将开始</span>
                 } else {
                     return <span>暂无</span>
                 }
             }
         }, {
-            title: 'Ico作者',
-            dataIndex: 'author',
-            key: 'author'
+            title: '开始时间',
+            dataIndex: 'startTime',
+            key: 'startTime',
+            render: (record) => (record && formatDate(record))
         }, {
-            title: 'Ico摘要 ',
-            dataIndex: 'synopsis',
-            key: 'synopsis',
-            render: (text, record) => (record && <span title={record.synopsis}>{cutString(record.synopsis, 25)}</span>)
-        }, {
-            title: '频道 ',
-            dataIndex: 'channelId',
-            key: 'channelId',
-            render: (record) => (record && this.channelName(record))
-        }, {
-            title: '标签',
-            dataIndex: 'tags',
-            width: 200,
-            key: 'tags',
-            render: (record) => (record && record.split(',').map((item, index) => {
-                return <Tag key={index} color="blue" style={{margin: '5px'}}>{item}</Tag>
-            }))
-        }, {
-            title: '来源 ',
-            dataIndex: 'source',
-            key: 'source',
-            render: (text, record) => (record && <span title={record.source}>{cutString(record.source, 30)}</span>)
-        }, {
-            title: '发表时间',
-            key: 'createTime',
-            render: (record) => (record && formatDate(record.publishTime))
+            title: '结束时间 ',
+            dataIndex: 'endTime',
+            key: 'endTime',
+            render: (record) => (record && formatDate(record))
         }, {
             title: '操作',
             key: 'action',
             render: (item) => (<div>
                 <Link className="mr10 opt-btn" to={{pathname: '/ico-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>详情</Link>
-                <a className={`mr10 recommend-btn opt-btn ${item.status !== 1 ? 'disabled' : ''}`} href="javascript:void(0)" onClick={() => this._isTop(item)} disabled={item.status !== 1 && true}>
-                    {item.recommend === 1 ? '取消推荐' : '推荐'}
-                </a>
-                <a className="mr10 opt-btn" href="javascript:void(0)" onClick={() => this._isPublish(item)} style={{background: '#00a854'}}>
-                    {item.status === 1 ? '撤回到草稿箱' : '发表'}
-                </a>
-                {/* <a className="mr10" href="javascript:void(0)" onClick={() => this._forbidcomment(item)}>{item.forbidComment === '1' ? '取消禁评' : '禁评'}</a> */}
                 <a onClick={() => this.delIco(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
             </div>)
         }]
@@ -114,7 +92,7 @@ class IcoIndex extends Component {
     componentWillUnmount () {
         const {dispatch} = this.props
         dispatch(setSearchQuery({'type': 'init', 'nickName': ''}))
-        dispatch(setPageData({'pageSize': 20, 'totalCount': 0}))
+        dispatch(setPageData({'pageSize': 10, 'totalCount': 0}))
     }
     createMarkup (str) { return {__html: str} }
 
@@ -123,8 +101,8 @@ class IcoIndex extends Component {
         let sendDada = {
             ...filter,
             title: search.title,
-            pageSize: 20,
-            currentPage: pageData.currPage
+            pageSize: 10,
+            page: pageData.page
             // 'appId': $.cookie('gameId')
         }
         if (type !== 'init') {
@@ -150,18 +128,18 @@ class IcoIndex extends Component {
         } else {
             type = 'init'
         }
-        this.doSearch(type, {'currentPage': 1})
+        this.doSearch(type, {'page': 1})
         dispatch(setSearchQuery({'type': type}))
-        dispatch(setPageData({'currPage': 1}))
+        dispatch(setPageData({'page': 1}))
     }
     changePage (page) {
         this.setState({
             loading: true
         })
         const {dispatch, search, filter} = this.props
-        // this.setState({'currPage': page})
-        dispatch(setPageData({'currPage': page}))
-        this.doSearch(search.type, {'currentPage': page, ...filter})
+        // this.setState({'page': page})
+        dispatch(setPageData({'page': page}))
+        this.doSearch(search.type, {'page': page, ...filter})
     }
     // 删除
     delIco (item) {
@@ -259,21 +237,21 @@ class IcoIndex extends Component {
         this.setState({
             icoStatus: value
         })
-        this.doSearch('init', {'currentPage': 1, status: value})
+        this.doSearch('init', {'page': 1, status: value})
     }
 
     // 筛选推荐状态
     handleChange1 = (value) => {
         const {dispatch} = this.props
         dispatch(setFilterData({'recommend': value}))
-        this.doSearch('init', {'currentPage': 1, recommend: value})
+        this.doSearch('init', {'page': 1, recommend: value})
     }
 
     // 筛选Ico类别
     handleChange2 = (value) => {
         const {dispatch} = this.props
         dispatch(setFilterData({'channelId': value}))
-        this.doSearch('init', {'currentPage': 1, channelId: value})
+        this.doSearch('init', {'page': 1, channelId: value})
     }
 
     render () {
@@ -323,7 +301,7 @@ class IcoIndex extends Component {
                     <span style={{marginLeft: 15}}>Ico类别：</span>
                     <Select defaultValue={`${filter.channelId}`} style={{ width: 120 }} onChange={this.handleChange2}>
                         <Option value="">全部</Option>
-                        {channelIdOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
+                        {icoStatusOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
                     </Select>
                     <span style={{marginLeft: 15}}>Ico标题: </span>
                     <Input
@@ -339,7 +317,7 @@ class IcoIndex extends Component {
             </Row>
             <div className="mt30">
                 <Spin spinning={this.state.loading} size="large">
-                    <Table dataSource={list.map((item, index) => ({...item, key: index}))} columns={columns} bordered pagination={{current: pageData.currPage, total: pageData.totalCount, pageSize: pageData.pageSize, onChange: (page) => this.changePage(page)}} />
+                    <Table dataSource={list.map((item, index) => ({...item, key: index}))} columns={columns} bordered pagination={{current: pageData.page, total: pageData.totalCount, pageSize: pageData.pageSize, onChange: (page) => this.changePage(page)}} />
                 </Spin>
             </div>
         </div>

@@ -18,7 +18,10 @@ class DynamicFieldSet extends Component {
         let _thiskeys = [] // 处理后的keys
         if (!props.update) {
             itemCode = []
-            _data.push({'id': '', 'num': ''})
+            let item = {}
+            item[props.params1] = ''
+            item[props.params2] = ''
+            _data.push(item)
             _thiskeys = [1]
         } else {
             let _keys = !props.selectGood.keys ? [] : props.selectGood.keys.split(',')
@@ -72,7 +75,7 @@ class DynamicFieldSet extends Component {
     }
 
     add = () => {
-        const {form} = this.props
+        const {form, params1, params2} = this.props
         uuid++
         const keys = form.getFieldValue('keys')
         const nextKeys = keys.concat(uuid)
@@ -80,7 +83,10 @@ class DynamicFieldSet extends Component {
             keys: nextKeys
         })
         let _data = this.state.data
-        _data = [..._data, {'id': '', 'num': ''}]
+        let item = {}
+        item[params1] = ''
+        item[params2] = ''
+        _data = [..._data, item]
         this.setState({data: _data})
         this.props.setFieldData(_data)
     }
@@ -114,13 +120,13 @@ class DynamicFieldSet extends Component {
         }
 
         const {formItemGood, formItemNum, formItemLayout} = FieldsProps
-        const { update, form } = this.props
+        const { update, form, title, member, desc, params1, params2 } = this.props
         const {getFieldDecorator, getFieldValue} = form
         const keys = getFieldValue('keys')
         return <div>
-            <FormItem label="商品道具ID" {...formItemLayout}>
+            <FormItem label={title} {...formItemLayout}>
                 <Button disabled={keys.length === 10} type="dashed" onClick={this.add} style={{ width: '43%' }}>
-                    <Icon type="plus" /> 增加道具
+                    <Icon type="plus" />{` 添加${title}`}
                 </Button>
             </FormItem>
             {
@@ -129,31 +135,30 @@ class DynamicFieldSet extends Component {
                     return (
                         <Row key={k}>
                             <Col span="5" offset={1}>
-                                <FormItem label={`子道具 ${index + 1} ID`} {...formItemGood} required={false}>
-                                    {getFieldDecorator(`id_${k}`, {
+                                <FormItem label={`${member} ${index + 1}`} {...formItemGood} required={false}>
+                                    {getFieldDecorator(`${params1}_${k}`, {
                                         initialValue: !update || !itemCode.length ? '' : itemCode[0],
                                         validateTrigger: ['onChange', 'onBlur'],
                                         rules: [{
                                             required: true,
                                             whitespace: true,
-                                            message: '请输入ID'
+                                            message: '字段不能为空'
                                         }]
                                     })(
-                                        <Input onChange={(e) => this.changeData('id', e.target.value, index, k)} placeholder="请输入ID" style={{ marginRight: 8 }} />
+                                        <Input onChange={(e) => this.changeData(params1, e.target.value, index, k)} placeholder="请输入相关内容" />
                                     )}
                                 </FormItem>
                             </Col>
-                            <Col span="5" offset={1}>
-                                <FormItem label={`子道具 ${index + 1} 个数`} {...formItemNum} required={false}>
-                                    {getFieldDecorator(`num_${k}`, {
+                            <Col span="5">
+                                <FormItem label={`${desc}`} {...formItemNum} required={false}>
+                                    {getFieldDecorator(`${params2}_${k}`, {
                                         initialValue: !update ? '' : itemCode[1],
                                         validateTrigger: ['onChange', 'onBlur'],
                                         rules: [
-                                            {required: true, whitespace: true, message: '请输入道具个数'},
-                                            {pattern: /^[0-9]*$/, message: '请输入正整数'}
+                                            {required: true, whitespace: true, message: '字段不能为空'}
                                         ]
                                     })(
-                                        <Input onChange={(e) => this.changeData('num', e.target.value, index, k)} placeholder="请输入道具个数" />
+                                        <Input onChange={(e) => this.changeData(params2, e.target.value, index, k)} placeholder="请输入相关内容" />
                                     )}
                                 </FormItem>
                             </Col>

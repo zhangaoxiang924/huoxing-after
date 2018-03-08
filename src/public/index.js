@@ -19,7 +19,7 @@ export const axiosPost = (url, params, fn) => {
     // let _url = `/mgr${url}`
     // let _url = url
     // let _url = `/lk-mars-news${url}` // 冯阳
-    axios.post(_url, qs.stringify(params)).then(function (response) {
+    axios.post(_url, params).then(function (response) {
         const data = response.data
         if (data.status === 401) {
             message.warning(data.msg)
@@ -204,4 +204,11 @@ export const auditStatus = [
     { label: '待认证', value: '0' },
     { label: '认证不通过', value: '-1' },
     { label: '未认证', value: '-2' }
+]
+
+// 认证状态
+export const icoStatusOptions = [
+    { label: '已结束', value: 'past' },
+    { label: '进行中', value: 'ongoing' },
+    { label: '即将开始', value: 'upcoming' }
 ]

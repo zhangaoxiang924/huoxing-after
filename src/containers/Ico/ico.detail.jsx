@@ -5,15 +5,15 @@
  */
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
-import {Row, Col, Button, message, Modal, Tag, Spin} from 'antd'
+import {Row, Col, Button, Modal, Spin, Table} from 'antd'
 import {hashHistory} from 'react-router'
 import IconItem from '../../components/icon/icon'
 import {getIcoItemInfo} from '../../actions/ico.action'
-import {axiosAjax, channelIdOptions, isJsonString} from '../../public/index'
+import {formatDate} from '../../public/index'
 import './index.scss'
 import '../../public/simditor.css'
 
-const confirm = Modal.confirm
+// const confirm = Modal.confirm
 
 /*
 const json = {
@@ -39,6 +39,40 @@ class IcoDetail extends Component {
             previewVisible: false,
             previewImage: ''
         }
+        this.teamColumns = [{
+            width: '50%',
+            title: '姓名',
+            key: 'name',
+            render: (text, record) => (record && <div className="ico-info clearfix">
+                <div>
+                    <h4 title={record.name} dangerouslySetInnerHTML={this.createMarkup(record.name)} />
+                </div>
+            </div>)
+        }, {
+            width: '50%',
+            title: '职位',
+            key: 'job',
+            render: (text, record) => (record && <div className="ico-info clearfix">
+                <div>
+                    <h4 title={record.job} dangerouslySetInnerHTML={this.createMarkup(record.job)} />
+                </div>
+            </div>)
+        }]
+        this.urlColumns = [{
+            width: '50%',
+            title: '姓名',
+            key: 'name',
+            render: (text, record) => (record && <div className="ico-info clearfix">
+                <div>
+                    <h4 title={record.name} dangerouslySetInnerHTML={this.createMarkup(record.name)} />
+                </div>
+            </div>)
+        }, {
+            width: '50%',
+            title: '职位',
+            key: 'url',
+            render: (text, record) => (record && <a title={record.url} href={record.url}>{record.url}</a>)
+        }]
     }
 
     componentWillMount () {
@@ -50,116 +84,29 @@ class IcoDetail extends Component {
         }))
     }
 
-    // 删除
-    _delIco () {
-        const {location} = this.props
-        // const _this = this
-        confirm({
-            title: '提示',
-            content: `确认要删除吗 ?`,
-            onOk () {
-                let sendData = {
-                    status: -1,
-                    'id': location.query.id
-                }
-                axiosAjax('POST', '/news/status', {...sendData}, (res) => {
-                    if (res.code === 1) {
-                        message.success('删除成功')
-                        hashHistory.goBack()
-                    } else {
-                        message.error(res.msg)
-                    }
-                })
-            }
-        })
-    }
-
-    // 禁评、取消禁评
-    _forbidcomment (forbidcomment) {
-        const {location, dispatch} = this.props
-        let sendData = {
-            'appId': $.cookie('gameId'),
-            'id': location.query.id,
-            'operate': !parseInt(forbidcomment) ? '1' : '0'
-        }
-        axiosAjax('post', '/post/forbidcomment', sendData, (res) => {
-            if (res.status === 200) {
-                // this.doSearch(this.state.type)
-                dispatch(getIcoItemInfo({'id': location.query.id}))
-            } else {
-                message.error(res.msg)
-            }
-        })
-    }
-
-    // 置顶
-    _isTop (istop) {
-        const {location, dispatch} = this.props
-        let sendData = {
-            'appId': $.cookie('gameId'),
-            'id': location.query.id,
-            'operate': !parseInt(istop) ? '1' : '0'
-        }
-        axiosAjax('post', '/post/top', sendData, (res) => {
-            if (res.status === 200) {
-                // this.doSearch(this.state.type)
-                dispatch(getIcoItemInfo({'id': location.query.id}))
-            } else {
-                message.error(res.msg)
-            }
-        })
-    }
-
-    // 发布
-    sendIco (sendData) {
-        const {location} = this.props
-        let _data = {
-            'appId': $.cookie('gameId'),
-            'id': location.query.id,
-            'title': sendData.postTitle,
-            'content': `${sendData.postContent}`
-        }
-        console.log(_data)
-        /*
-        axiosAjax('post', '/post/update', _data, (res) => {
-            if (res.status === 200) {
-                message.success('修改成功！')
-                // hashHistory.push('/post-list')
-                dispatch(getIcoItemInfo({'id': location.query.id}))
-                this.setState({'isEdit': false})
-            } else {
-                message.error(res.msg)
-            }
-        })
-        */
-    }
-
     // 内容格式化
     createMarkup (str) {
         return {__html: str}
     }
 
     channelName (id) {
-        let name = ''
-        channelIdOptions.map((item, index) => {
-            if (parseInt(item.value) === id) {
-                name = item.label
-            }
-        })
-        return name
+        if (id === 'past') {
+            return <span className="ico-status pre-publish">已结束</span>
+        } else if (id === 'ongoing') {
+            return <span className="ico-status has-publish">进行中</span>
+        } else if (id === 'upcoming') {
+            return <span className="ico-status will-publish">即将开始</span>
+        } else {
+            return <span>暂无</span>
+        }
     }
 
     edit = () => {
-        const {info} = this.props
         hashHistory.push({
             pathname: '/ico-edit',
-            query: {id: info.id}
+            query: {id: this.props.location.query.id}
         })
-        sessionStorage.setItem('hx_content', JSON.stringify(info))
     }
-
-    // 上传图片
-    handleCancel = () => this.setState({previewVisible: false})
 
     showModal = (src) => {
         this.setState({
@@ -173,10 +120,9 @@ class IcoDetail extends Component {
             span: 5,
             offset: 1
         }
-        const {info} = this.props
-        // console.log(info.audio)
+        const {info, icoBase, icoTeam, icoLink} = this.props
         return <Spin spinning={this.state.loading} size="large">
-            {info.id ? <div className="ico-detail">
+            {info.icoBase ? <div className="ico-detail">
                 <Row>
                     <Col span={1}>
                         <Button shape="circle" icon="arrow-left" onClick={() => hashHistory.goBack()}/>
@@ -184,121 +130,86 @@ class IcoDetail extends Component {
                     <Col className="text-right" span={20} offset={3}>
                         <Button onClick={this.edit} className="mr10" type="primary"><IconItem
                             type="icon-edit"/>编辑</Button>
-                        {/*
-                        <Button onClick={() => this._isTop(info.isTop)} className="mr10"><IconItem type={info.isTop === '1' ? 'icon-cancel-top' : 'icon-to-top'}/>{info.isTop === '1' ? '取消置顶' : '置顶'}</Button>
-                        <Button onClick={() => this._forbidcomment(info.forbidComment)} className="mr10"><IconItem type={info.forbidComment === '1' ? 'icon-msg' : 'icon-no-msg'}/>{info.forbidComment === '1' ? '取消禁评' : '禁评'}</Button>
-                        */}
-                        <Button onClick={() => this._delIco()}><IconItem type="icon-clear"/>删除</Button>
                     </Col>
                 </Row>
                 <Row className="ico-detail-info">
                     <Col className="section" {...col}>
-                        <span className="name">作者：</span>
-                        <span className="desc">{`${info.author}`} </span>
+                        <span className="name">ICO名称：</span>
+                        <span className="desc">{`${icoBase.name}`} </span>
                     </Col>
                     <Col className="section" {...col}>
-                        <span className="name">Ico来源：</span>
-                        <span className="desc">{`${info.source}`} </span>
+                        <span className="name">ICO简称：</span>
+                        <span className="desc">{`${icoBase.symbol}`} </span>
                     </Col>
                     <Col className="section" {...col}>
-                        <span className="name">频道：</span>
-                        <span className="desc">{`${this.channelName(info.channelId)}`} </span>
+                        <span className="name">开始时间：</span>
+                        <span className="desc">{formatDate(icoBase.startTime)} </span>
                     </Col>
                     <Col className="section" {...col}>
-                        <span className="name">类别：</span>
-                        <span className="desc">{`${info.cateId === 1 ? '原创' : '转载'}`} </span>
+                        <span className="name">结束时间：</span>
+                        <span className="desc">{formatDate(icoBase.endTime)} </span>
                     </Col>
                 </Row>
                 <Row className="ico-tags">
-                    <Col className="section">
-                        <span className="name">标签：</span>
-                        {info.tags && info.tags.split(',').map((item, index) => {
-                            return <Tag key={index} color="blue" style={{marginLeft: 5}}>{item}</Tag>
-                        })}
+                    <Col className="section" {...col}>
+                        <span className="name">ICO状态：</span>
+                        <span className="desc">{this.channelName(icoBase.status)} </span>
+                    </Col>
+                    <Col className="section" span={20}>
+                        <span className="name">ICO简介：</span>
+                        <span className="desc" dangerouslySetInnerHTML={this.createMarkup(icoBase.description)} />
                     </Col>
                 </Row>
-                <Row className="ico-title">
+                <Row className="ico-cover-img">
                     <Col className="section">
-                        <span className="name">Ico标题：</span>
-                        <span className="desc">{`${info.title}`} </span>
+                        <span className="name">ICO 图标：</span>
+                        <img
+                            alt={icoBase.name}
+                            className="desc" onClick={() => this.showModal(icoBase.img.indexOf('http') !== -1 ? icoBase.img : `${location.href.split('#')[0] + icoBase.img}`)}
+                            src={icoBase.img.indexOf('http') !== -1 ? icoBase.img : `${location.href.split('#')[0] + icoBase.img}`}/>
                     </Col>
                 </Row>
-                <Row className="ico-summary">
-                    <Col className="section">
-                        <span className="name">Ico摘要：</span>
-                        <span className="desc">{`${info.synopsis}`} </span>
-                    </Col>
-                </Row>
-                <Row className="ico-summary">
-                    <Col className="section">
-                        <span className="name">音频：</span>
-
-                        <ul className="desc" style={{
-                            display: 'inline-block'
-                        }}>
-                            {isJsonString(info.audio) ? JSON.parse(info.audio).map(function (item, index) {
-                                return <li className="clearfix" key={index} style={{marginBottom: '10px'}}>
-                                    <span>{item.fileName}</span>
-                                    <audio src={item.fileUrl} controls="controls"></audio>
-                                </li>
-                            }) : <span>暂无</span>}
-                        </ul>
-                    </Col>
-                </Row>
-                {isJsonString(info.coverPic) ? <div>
-                    <Row className="ico-cover-img">
-                        <Col className="section">
-                            <span className="name">PC-Ico封面：</span>
-                            <img
-                                className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).pc)}
-                                src={`${JSON.parse(info.coverPic).pc}`}/>
-                        </Col>
-                    </Row>
-                    <Row className="ico-cover-img">
-                        <Col className="section">
-                            <span className="name">PC-推荐位封面：</span>
-                            {
-                                (JSON.parse(info.coverPic).pc_recommend && JSON.parse(info.coverPic).pc_recommend !== '') ? <img
-                                    className="desc"
-                                    onClick={() => this.showModal(JSON.parse(info.coverPic).pc_recommend)}
-                                    src={`${JSON.parse(info.coverPic).pc_recommend}`}/> : <span style={{padding: 6}}>暂无推荐位封面</span>}
-                        </Col>
-                    </Row>
-                    <Row className="ico-cover-img">
-                        <Col className="section">
-                            <span className="name" style={{width: '125px', verticalAlign: 'top'}}>M-Ico封面：</span>
-                            <img
-                                className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_small)}
-                                style={{width: 95, border: '1px solid #eee'}}
-                                src={`${JSON.parse(info.coverPic).wap_small}`}/>
-                        </Col>
-                    </Row>
-                    <Row className="ico-cover-img">
-                        <Col className="section">
-                            <span className="name" style={{width: '125px', verticalAlign: 'top'}}>M-推荐：</span>
-                            <img
-                                className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).wap_big)}
-                                style={{width: 95, border: '1px solid #eee'}}
-                                src={`${JSON.parse(info.coverPic).wap_big}`}/>
-                        </Col>
-                    </Row>
-                </div> : <Row className="ico-cover-img">
-                    <Col className="section">
-                        <span className="name">Ico封面：</span>
-                        <span>暂无</span>
-                    </Col>
-                </Row>}
-
                 <Modal visible={this.state.previewVisible} footer={null} onCancel={this.handleCancel}>
                     <img alt="example" style={{width: '100%'}} src={this.state.previewImage}/>
                 </Modal>
-                {/* 帖子内容 */}
+                <Row className="ico-detail-info">
+                    <Col className="section" {...col}>
+                        <span className="name">已众筹数量：</span>
+                        <span className="desc">{`${icoBase.raised && icoBase.raised.trim() !== '' ? icoBase.raised : '暂无'}`} </span>
+                    </Col>
+                    <Col className="section" {...col}>
+                        <span className="name">信息总量：</span>
+                        <span className="desc">{`${icoBase.supply && icoBase.supply.trim() !== '' ? icoBase.supply : '暂无'}`} </span>
+                    </Col>
+                    <Col className="section" {...col}>
+                        <span className="name">法律形式：</span>
+                        <span className="desc">{`${icoBase.legalForm && icoBase.legalForm.trim() !== '' ? icoBase.legalForm : '暂无'}`} </span>
+                    </Col>
+                    <Col className="section" {...col}>
+                        <span className="name">代币平台：</span>
+                        <span className="desc">{`${icoBase.chainType && icoBase.chainType.trim() !== '' ? icoBase.chainType : '暂无'}`} </span>
+                    </Col>
+                    <Col className="section" {...col}>
+                        <span className="name">管辖区域：</span>
+                        <span className="desc">{`${icoBase.jurisdiction && icoBase.jurisdiction.trim() !== '' ? icoBase.jurisdiction : '暂无'}`} </span>
+                    </Col>
+                    <Col className="section" {...col}>
+                        <span className="name">安全审计：</span>
+                        <span className="desc">{`${icoBase.securityAudit && icoBase.securityAudit.trim() !== '' ? icoBase.securityAudit : '暂无'}`} </span>
+                    </Col>
+                    <Col className="section" {...col}>
+                        <span className="name">ICO分配：</span>
+                        <span className="desc">{`${icoBase.assignment && icoBase.assignment.trim() !== '' ? icoBase.assignment : '暂无'}`} </span>
+                    </Col>
+                </Row>
                 <Row>
-                    <Col style={{fontSize: '15px', fontWeight: 'bolder', padding: '5px', color: '#000'}}>Ico内容: </Col>
-                    <Col className="page-box ico-content simditor">
-                        <div className="ico-main simditor-body">
-                            <div className="content-text" dangerouslySetInnerHTML={this.createMarkup(info.content)}/>
-                        </div>
+                    <Col className="section" span={10}>
+                        <span className="name" style={{display: 'inline-block'}}>团队信息：</span>
+                        <Table dataSource={icoTeam.map((item, index) => ({...item, key: index}))} pagination={false} columns={this.teamColumns} bordered />
+                    </Col>
+                    <Col className="section" span={10} style={{marginLeft: 40}}>
+                        <span className="name" style={{display: 'inline-block'}}>媒体与链接：</span>
+                        <Table dataSource={icoLink.map((item, index) => ({...item, key: index}))} pagination={false} columns={this.urlColumns} bordered />
                     </Col>
                 </Row>
             </div> : <div style={{height: 300}}>加载中...</div>}
@@ -308,7 +219,10 @@ class IcoDetail extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        info: state.icoInfo.info
+        info: state.icoInfo.info,
+        icoBase: state.icoInfo.info.icoBase,
+        icoLink: state.icoInfo.info.icoLink,
+        icoTeam: state.icoInfo.info.icoTeam
     }
 }
 
