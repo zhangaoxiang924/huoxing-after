@@ -5,11 +5,10 @@
  */
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-// import { Input, Row, Col, Button, Table, Modal, message } from 'antd'
 import { Table, Row, Col, Modal, message, Spin, Select, Input, Button } from 'antd'
 import './index.scss'
-import { Link } from 'react-router'
-import IconItem from '../../components/icon/icon'
+import { Link, hashHistory } from 'react-router'
+// import IconItem from '../../components/icon/icon'
 import {getIcoList, setSearchQuery, setPageData, setFilterData} from '../../actions/live.action'
 import {formatDate, axiosAjax, cutString, icoStatusOptions} from '../../public/index'
 const confirm = Modal.confirm
@@ -25,21 +24,11 @@ class LiveIndex extends Component {
         }
     }
 
-    channelName (id) {
-        let name = ''
-        icoStatusOptions.map((item, index) => {
-            if (parseInt(item.value) === id) {
-                name = item.label
-            }
-        })
-        return name
-    }
-
     componentWillMount () {
         const {search, filter} = this.props
         this.doSearch('init', {...filter, symbol: search.symbol})
         columns = [{
-            title: 'ICO名称',
+            title: '直播标题',
             width: '250px',
             key: 'name',
             render: (text, record) => (record && <div className="live-info clearfix">
@@ -48,16 +37,20 @@ class LiveIndex extends Component {
                 </div>
             </div>)
         }, {
-            title: 'ICO简称 ',
+            title: '嘉宾名称 ',
             dataIndex: 'symbol',
             key: 'symbol'
         }, {
-            title: 'ICO 图标',
-            width: 140,
-            key: 'img',
-            render: (record) => (<img style={{width: 100}} src={record.img} alt=""/>)
+            title: '主持人名称 ',
+            dataIndex: 'endTime',
+            key: 'endTime',
+            render: (record) => ('董卿')
         }, {
-            title: 'Ico状态',
+            title: '直播 ID',
+            key: 'img',
+            render: (record) => (123)
+        }, {
+            title: '直播状态',
             key: 'status',
             render: (record) => {
                 if (record && record.status === 'past') {
@@ -71,14 +64,9 @@ class LiveIndex extends Component {
                 }
             }
         }, {
-            title: '开始时间',
+            title: '直播时间',
             dataIndex: 'startTime',
             key: 'startTime',
-            render: (record) => (record && formatDate(record))
-        }, {
-            title: '结束时间 ',
-            dataIndex: 'endTime',
-            key: 'endTime',
             render: (record) => (record && formatDate(record))
         }, {
             title: '操作',
@@ -89,13 +77,27 @@ class LiveIndex extends Component {
             </div>)
         }]
     }
+
     componentWillUnmount () {
         const {dispatch} = this.props
         dispatch(setSearchQuery({'type': 'init', 'nickName': ''}))
         dispatch(setPageData({'pageSize': 10, 'totalCount': 0}))
     }
+
     createMarkup (str) { return {__html: str} }
 
+    // 状态改变
+    channelName (id) {
+        let name = ''
+        icoStatusOptions.map((item, index) => {
+            if (parseInt(item.value) === id) {
+                name = item.label
+            }
+        })
+        return name
+    }
+
+    // 列表展示
     doSearch (type, data) {
         const {dispatch, pageData, search, filter} = this.props
         let sendDada = {
@@ -103,44 +105,32 @@ class LiveIndex extends Component {
             symbol: search.symbol,
             pageSize: 10,
             page: pageData.page
-            // 'appId': $.cookie('gameId')
-        }
-        if (type !== 'init') {
-            sendDada = {
-                ...sendDada,
-                'nickName': search.nickName,
-                'symbol': search.symbol
-            }
         }
         sendDada = {...sendDada, ...data}
-        // let sendDada = !data ? {searchQuery: this.state.searchQuery} : {searchQuery: this.state.searchQuery, ...data}
         dispatch(getIcoList(type, sendDada, () => {
             this.setState({
                 loading: false
             })
         }))
     }
+
+    // 点击搜索
     _search () {
-        const {dispatch, search} = this.props
-        let type = 'init'
-        if (!search.nickName && !search.symbol) {
-            type = 'init'
-        } else {
-            type = 'init'
-        }
-        this.doSearch(type, {'page': 1})
-        dispatch(setSearchQuery({'type': type}))
+        const {dispatch} = this.props
+        this.doSearch('init', {'page': 1})
         dispatch(setPageData({'page': 1}))
     }
+
+    // 改变页数
     changePage (page) {
         this.setState({
             loading: true
         })
         const {dispatch, search, filter} = this.props
-        // this.setState({'page': page})
         dispatch(setPageData({'page': page}))
         this.doSearch(search.type, {'page': page, ...filter})
     }
+
     // 删除
     delIco (item) {
         const {dispatch} = this.props
@@ -169,22 +159,19 @@ class LiveIndex extends Component {
 
     // 发表或存草稿
     _isPublish (item) {
-        const {dispatch} = this.props
         const _this = this
         confirm({
             title: '提示',
-            content: `确认要${item.status === 0 ? '发表' : '撤回到草稿箱'}吗 ?`,
+            content: `确认要${item.status === 0 ? '开启直播' : '结束直播'}吗 ?`,
             onOk () {
                 let sendData = {
-                    // 'appId': $.cookie('gameId'),
                     id: item.id,
                     status: item.status === 0 ? 1 : 0
                 }
                 axiosAjax('POST', '/news/status', {...sendData}, (res) => {
                     if (res.code === 1) {
-                        message.success(`${item.status === 0 ? '发表' : '撤回'}成功`)
+                        message.success(`操作成功！`)
                         _this.doSearch('init')
-                        dispatch(setSearchQuery({'type': 'init'}))
                     } else {
                         message.error(res.msg)
                     }
@@ -230,7 +217,7 @@ class LiveIndex extends Component {
         })
     }
 
-    // 筛选Ico状态
+    // 筛选直播状态
     handleChange = (value) => {
         const {dispatch} = this.props
         dispatch(setFilterData({'status': value}))
@@ -240,80 +227,25 @@ class LiveIndex extends Component {
         this.doSearch('init', {'page': 1, status: value})
     }
 
-    // 筛选推荐状态
-    handleChange1 = (value) => {
-        const {dispatch} = this.props
-        dispatch(setFilterData({'recommend': value}))
-        this.doSearch('init', {'page': 1, recommend: value})
-    }
-
-    // 筛选Ico类别
-    handleChange2 = (value) => {
-        const {dispatch} = this.props
-        dispatch(setFilterData({'channelId': value}))
-        this.doSearch('init', {'page': 1, channelId: value})
-    }
-
     render () {
         const {list, pageData, filter, search, dispatch} = this.props
         return <div className="live-index">
-            {/*
             <Row>
-                <Col span={1} className="form-label">帖子主题:</Col>
-                <Col span={3}>
-                    <Input
-                        value={search.title}
-                        onChange={(e) => dispatch(setSearchQuery({title: e.target.value}))}
-                        placeholder="请输入帖子主题"
-                    />
-                </Col>
-                <Col span={1} className="form-label">发帖人:</Col>
-                <Col span={3}>
-                    <Input
-                        value={search.nickName}
-                        onChange={(e) => dispatch(setSearchQuery({nickName: e.target.value}))}
-                        placeholder="请输入发帖人"
-                    />
-                </Col>
-                <Col offset={1} span={2}>
-                    <Button type="primary" onClick={() => { this._search() }}><IconItem type="icon-search"/>搜索</Button>
-                </Col>
-            </Row>
-            */}
-            <Row>
-                <Col style={{margin: '0 0 20px'}}>
-                    <span>文章来源：</span>
-                    <span> 火星财经官方</span>
-                </Col>
                 <Col>
-                    <span>Ico状态：</span>
+                    <span>直播状态：</span>
                     <Select defaultValue={`${filter.status}`} style={{ width: 120 }} onChange={this.handleChange}>
                         <Option value="">全部</Option>
                         {icoStatusOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
                     </Select>
-                    {/*
-                    <span style={{marginLeft: 15}}>推荐：</span>
-                    <Select defaultValue={`${filter.recommend}`} style={{ width: 120 }} onChange={this.handleChange1}>
-                        <Option value="">全部</Option>
-                        <Option value="0">未推荐</Option>
-                        <Option value="1">推荐</Option>
-                    </Select>
-                    <span style={{marginLeft: 15}}>Ico类别：</span>
-                    <Select defaultValue={`${filter.channelId}`} style={{ width: 120 }} onChange={this.handleChange2}>
-                        <Option value="">全部</Option>
-                        {icoStatusOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
-                    </Select>
-                    */}
-                    <span style={{marginLeft: 15}}>Ico简称: </span>
+                    <span style={{marginLeft: 15}}>直播标题： </span>
                     <Input
                         value={search.symbol}
                         style={{width: 200, marginRight: 15}}
                         onChange={(e) => dispatch(setSearchQuery({symbol: e.target.value}))}
-                        placeholder="请输入Ico简称"
+                        placeholder="请输入直播标题搜索"
                     />
-                    <span>
-                        <Button type="primary" onClick={() => { this._search() }}><IconItem type="icon-search"/>搜索</Button>
-                    </span>
+                    <Button type="primary" onClick={() => { this._search() }}>搜索</Button>
+                    <Button type="primary" style={{margin: '0 15px'}} onClick={() => hashHistory.push('/live-edit')}>创建直播</Button>
                 </Col>
             </Row>
             <div className="mt30">

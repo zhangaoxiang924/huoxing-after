@@ -201,20 +201,6 @@ class LiveSend extends Component {
             labelCol: {span: 1},
             wrapperCol: {span: 15, offset: 1}
         }
-        const teamProps = {
-            title: '团队信息',
-            member: '团队成员',
-            desc: '职位',
-            params1: 'name',
-            params2: 'job'
-        }
-        const linkProps = {
-            title: '媒体与链接',
-            member: '网站',
-            desc: '网址',
-            params1: 'name',
-            params2: 'url'
-        }
         const uploadButton = (
             <div>
                 <Icon type="plus"/>

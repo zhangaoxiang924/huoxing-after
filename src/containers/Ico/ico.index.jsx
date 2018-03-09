@@ -281,10 +281,6 @@ class IcoIndex extends Component {
             </Row>
             */}
             <Row>
-                <Col style={{margin: '0 0 20px'}}>
-                    <span>文章来源：</span>
-                    <span> 火星财经官方</span>
-                </Col>
                 <Col>
                     <span>Ico状态：</span>
                     <Select defaultValue={`${filter.status}`} style={{ width: 120 }} onChange={this.handleChange}>
