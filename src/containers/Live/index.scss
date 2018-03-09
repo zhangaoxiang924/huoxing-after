@@ -4,12 +4,12 @@
  * Description：Description
  */
 
-.ico-index {
+.live-index {
     min-width: 1600px !important;
     overflow: auto;
 
     table {
-        .ico-info {
+        .live-info {
             & > div {
                 float: left;
             }
@@ -40,7 +40,7 @@
         }
     }
 
-    .ico-status {
+    .live-status {
         padding: 3px 8px;
         background: #00a854;
         border-radius: 4px;
@@ -78,8 +78,8 @@
     }
 }
 
-.ico-detail {
-    .ico-status {
+.live-detail {
+    .live-status {
         padding: 3px 8px;
         border-radius: 4px;
         color: #fff;
@@ -97,13 +97,13 @@
         }
     }
 
-    .ico-content {
+    .live-content {
         margin-top: 20px;
         padding: 20px 30px;
         display: flex;
         justify-content: center;
 
-        .ico-main {
+        .live-main {
             overflow: hidden;
 
             img {
@@ -111,7 +111,7 @@
             }
         }
 
-        .ico-info {
+        .live-info {
             margin-bottom: 30px;
 
             h3 {
@@ -134,7 +134,7 @@
             color: #000;
             font-weight: bold;
 
-            &.ico-desc {
+            &.live-desc {
                 width: 85px;
             }
         }
@@ -151,7 +151,7 @@
         }
     }
 
-    .ico-detail-info {
+    .live-detail-info {
         position: relative;
         margin: 30px 0 10px;
     }
@@ -231,7 +231,7 @@
         margin-top: 30px;
     }
 
-    .ico-cover-img {
+    .live-cover-img {
         span {
             display: inline-block;
             width: 125px;
@@ -249,10 +249,10 @@
     }
 }
 
-.ico-send {
+.live-send {
     .upload-div,
     .description,
-    .ico-status {
+    .live-status {
         .ant-form-item-control-wrapper {
             margin-left: 1%;
         }
@@ -279,7 +279,7 @@
         color: #666;
     }
 
-    .ico-summary {
+    .live-summary {
         min-height: 30px;
         max-height: 70px;
     }

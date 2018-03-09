@@ -5,7 +5,7 @@
  */
 
 import {axiosAjax} from '../public/index'
-import {ICO, SELECTEDDATA} from '../constants/index'
+import {LIVE, SELECTEDDATA} from '../constants/index'
 import { message } from 'antd'
 
 // 选中数据
@@ -50,33 +50,33 @@ export const getIcoItemInfo = (sendData, fn) => {
 }
 
 export const addIcoData = (data) => {
-    return {type: ICO.ADD_DATA, data}
+    return {type: LIVE.ADD_DATA, data}
 }
 
 export const addIcoQuery = (data) => {
-    return {type: ICO.ADD_QUERY, data}
+    return {type: LIVE.ADD_QUERY, data}
 }
 
 export const editIcoUserInfo = (data) => {
-    return {type: ICO.EDIT_USER_INFO, data}
+    return {type: LIVE.EDIT_USER_INFO, data}
 }
 
 export const editIcoList = (data, index) => {
-    return {type: ICO.EDIT_LIST_ITEM, data, index}
+    return {type: LIVE.EDIT_LIST_ITEM, data, index}
 }
 
 export const delIcoData = (index) => {
-    return {type: ICO.DEL_LIST_ITEM, index}
+    return {type: LIVE.DEL_LIST_ITEM, index}
 }
 
 export const setSearchQuery = (data) => {
-    return {type: ICO.SET_SEARCH_QUERY, data}
+    return {type: LIVE.SET_SEARCH_QUERY, data}
 }
 
 export const setFilterData = (data) => {
-    return {type: ICO.SET_FILTER_DATA, data}
+    return {type: LIVE.SET_FILTER_DATA, data}
 }
 
 export const setPageData = (data) => {
-    return {type: ICO.SET_PAGE_DATA, data}
+    return {type: LIVE.SET_PAGE_DATA, data}
 }

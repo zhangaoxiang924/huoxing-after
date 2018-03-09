@@ -8,10 +8,9 @@ import {connect} from 'react-redux'
 import {Row, Col, Button, Modal, Spin, Table} from 'antd'
 import {hashHistory} from 'react-router'
 import IconItem from '../../components/icon/icon'
-import {getIcoItemInfo, selectedData} from '../../actions/ico.action'
+import {getIcoItemInfo, selectedData} from '../../actions/live.action'
 import {formatDate} from '../../public/index'
 import './index.scss'
-import '../../public/simditor.css'
 
 // const confirm = Modal.confirm
 
@@ -30,7 +29,7 @@ const json = {
 }
 */
 
-class IcoDetail extends Component {
+class LiveDetail extends Component {
     constructor () {
         super()
         this.state = {
@@ -43,7 +42,7 @@ class IcoDetail extends Component {
             width: '50%',
             title: '姓名',
             key: 'name',
-            render: (text, record) => (record && <div className="ico-info clearfix">
+            render: (text, record) => (record && <div className="live-info clearfix">
                 <div>
                     <h4 title={record.name} dangerouslySetInnerHTML={this.createMarkup(record.name)} />
                 </div>
@@ -52,7 +51,7 @@ class IcoDetail extends Component {
             width: '50%',
             title: '职位',
             key: 'job',
-            render: (text, record) => (record && <div className="ico-info clearfix">
+            render: (text, record) => (record && <div className="live-info clearfix">
                 <div>
                     <h4 title={record.job} dangerouslySetInnerHTML={this.createMarkup(record.job)} />
                 </div>
@@ -62,7 +61,7 @@ class IcoDetail extends Component {
             width: '50%',
             title: '姓名',
             key: 'name',
-            render: (text, record) => (record && <div className="ico-info clearfix">
+            render: (text, record) => (record && <div className="live-info clearfix">
                 <div>
                     <h4 title={record.name} dangerouslySetInnerHTML={this.createMarkup(record.name)} />
                 </div>
@@ -91,11 +90,11 @@ class IcoDetail extends Component {
 
     channelName (id) {
         if (id === 'past') {
-            return <span className="ico-status pre-publish">已结束</span>
+            return <span className="live-status pre-publish">已结束</span>
         } else if (id === 'ongoing') {
-            return <span className="ico-status has-publish">进行中</span>
+            return <span className="live-status has-publish">进行中</span>
         } else if (id === 'upcoming') {
-            return <span className="ico-status will-publish">即将开始</span>
+            return <span className="live-status will-publish">即将开始</span>
         } else {
             return <span>暂无</span>
         }
@@ -104,7 +103,7 @@ class IcoDetail extends Component {
     edit = () => {
         this.props.dispatch(selectedData(this.props.info))
         hashHistory.push({
-            pathname: '/ico-edit',
+            pathname: '/live-edit',
             query: {id: this.props.location.query.id}
         })
     }
@@ -135,7 +134,7 @@ class IcoDetail extends Component {
                             type="icon-edit"/>编辑</Button>
                     </Col>
                 </Row>
-                <Row className="ico-detail-info">
+                <Row className="live-detail-info">
                     <Col className="section" {...col}>
                         <span className="name">ICO名称：</span>
                         <span className="desc">{`${icoBase.name}`} </span>
@@ -156,10 +155,10 @@ class IcoDetail extends Component {
                 <Row className="">
                     <Col className="section" {...col}>
                         <span className="name">ICO状态：</span>
-                        <span className="desc ico-status">{this.channelName(icoBase.status)} </span>
+                        <span className="desc live-status">{this.channelName(icoBase.status)} </span>
                     </Col>
                     <Col className="section" span={20}>
-                        <Col span={1} className="name ico-desc">ICO简介：</Col>
+                        <Col span={1} className="name live-desc">ICO简介：</Col>
                         <Col span={20} className="desc" dangerouslySetInnerHTML={this.createMarkup(icoBase.description)} />
                     </Col>
                 </Row>
@@ -176,7 +175,7 @@ class IcoDetail extends Component {
                 <Modal visible={this.state.previewVisible} footer={null} onCancel={this.handleCancel}>
                     <img alt="example" style={{width: '100%'}} src={this.state.previewImage}/>
                 </Modal>
-                <Row className="ico-detail-info">
+                <Row className="live-detail-info">
                     <Col className="section" {...col}>
                         <span className="name">已众筹数量：</span>
                         <span className="desc">{`${icoBase.raised && icoBase.raised.trim() !== '' ? icoBase.raised : '暂无'}`} </span>
@@ -223,11 +222,11 @@ class IcoDetail extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        info: state.icoInfo.info,
-        icoBase: state.icoInfo.info.icoBase,
-        icoLink: state.icoInfo.info.icoLink,
-        icoTeam: state.icoInfo.info.icoTeam
+        info: state.liveInfo.info,
+        liveBase: state.liveInfo.info.liveBase,
+        liveLink: state.liveInfo.info.liveLink,
+        liveTeam: state.liveInfo.info.liveTeam
     }
 }
 
-export default connect(mapStateToProps)(IcoDetail)
+export default connect(mapStateToProps)(LiveDetail)

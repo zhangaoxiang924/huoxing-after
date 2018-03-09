@@ -24,14 +24,14 @@ class DynamicFieldSet extends Component {
             _data.push(item)
             _thiskeys = [1]
         } else {
-            let icoTeam = this.props.selectGood.icoTeam
-            let _keys = icoTeam || []
+            let icoLink = this.props.selectGood.icoLink
+            let _keys = icoLink || []
             uuid = _keys ? _keys.length : 1
             for (let i = 0; i < _keys.length; i++) {
                 // let _k = _keys[i]
                 let _k = i + 1
-                _data = icoTeam
-                itemCode = icoTeam
+                _data = icoLink
+                itemCode = icoLink
                 _thiskeys.push(_k)
             }
         }
@@ -41,15 +41,18 @@ class DynamicFieldSet extends Component {
             data: _data
         }
         this.props.setFieldData(_data)
-        this.props.form.getFieldDecorator('keys', { initialValue: _thiskeys })
+        this.props.form.getFieldDecorator('linkkeys', { initialValue: _thiskeys })
     }
 
     // 删除列操作
     remove = (k, index) => {
         const {form} = this.props
-        const keys = form.getFieldValue('keys')
+        const keys = form.getFieldValue('linkkeys')
+        if (keys.length === 1) {
+            return
+        }
         form.setFieldsValue({
-            keys: keys.filter(key => key !== k)
+            linkkeys: keys.filter(key => key !== k)
         })
         let _data = this.state.data
         _data = [
@@ -73,10 +76,10 @@ class DynamicFieldSet extends Component {
     add = () => {
         const {form, params1, params2} = this.props
         uuid++
-        const keys = form.getFieldValue('keys')
+        const keys = form.getFieldValue('linkkeys')
         const nextKeys = keys.concat(uuid)
         form.setFieldsValue({
-            keys: nextKeys
+            linkkeys: nextKeys
         })
         let _data = this.state.data
         let item = {}
@@ -116,12 +119,12 @@ class DynamicFieldSet extends Component {
                 wrapperCol: {span: 13}
             }
         }
-        let icoTeamInfo = this.props.selectGood.icoTeam
+        let icoLinkInfo = this.props.selectGood.icoLink
 
         const {formItemGood, formItemNum, formItemLayout} = FieldsProps
         const { update, form, title, member, desc, params1, params2 } = this.props
         const {getFieldDecorator, getFieldValue} = form
-        const keys = getFieldValue('keys')
+        const keys = getFieldValue('linkkeys')
         return <div>
             <FormItem label={title} {...formItemLayout}>
                 <Button disabled={keys.length === 10} type="dashed" onClick={this.add} style={{ width: '43%' }}>
@@ -130,12 +133,12 @@ class DynamicFieldSet extends Component {
             </FormItem>
             {
                 keys.map((k, index) => {
-                    let itemCode = !update || !this.state.lk_itemCode[index] ? [] : icoTeamInfo[index]
+                    let itemCode = !update || !this.state.lk_itemCode[index] ? [] : icoLinkInfo[index]
                     return (
                         <Row key={k}>
                             <Col span="5" offset={1}>
                                 <FormItem label={`${member} ${index + 1}`} {...formItemGood} required={false}>
-                                    {getFieldDecorator(`${params1}_${k}`, {
+                                    {getFieldDecorator(`link${params1}_${k}`, {
                                         initialValue: !update ? '' : itemCode[params1],
                                         validateTrigger: ['onChange', 'onBlur'],
                                         rules: [{
@@ -162,7 +165,7 @@ class DynamicFieldSet extends Component {
                                 </FormItem>
                             </Col>
                             <Col span="1">
-                                {keys.length > 0 ? (<Icon style={{fontSize: 30}} className="dynamic-delete-button" type="minus-circle-o" disabled={keys.length === 0} onClick={() => this.remove(k, index)}/>) : null}
+                                {keys.length > 0 ? (<Icon style={{fontSize: 30}} className="dynamic-delete-button" type="minus-circle-o" disabled={keys.length === 1} onClick={() => this.remove(k, index)}/>) : null}
                             </Col>
                         </Row>
                     )

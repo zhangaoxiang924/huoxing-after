@@ -156,6 +156,15 @@ export const isJsonString = (str) => {
     return false
 }
 
+// 空返回展示
+export const emptyOrNot = (data, value) => {
+    if (data && data.trim() !== '') {
+        return data
+    } else {
+        return !value ? '暂无' : value
+    }
+}
+
 // 新闻频道
 export const channelIdOptions = [
     { label: '新闻', value: '1' },

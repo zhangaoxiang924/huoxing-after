@@ -141,6 +141,24 @@ const menuData = [
                 text: 'ICO 添加/编辑'
             }
         ]
+    }, {
+        key: 'live',
+        icon: 'icon-ico',
+        link: '',
+        text: '直播管理',
+        children: [
+            {
+                key: 'live-list',
+                icon: 'icon-post-list',
+                link: '/live-list',
+                text: '直播列表'
+            }, {
+                key: 'live-edit',
+                icon: 'icon-ico-edit',
+                link: '/live-edit',
+                text: '直播添加/编辑'
+            }
+        ]
     }
 ]
 export default menuData

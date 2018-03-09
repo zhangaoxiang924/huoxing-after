@@ -165,6 +165,21 @@ const rootRoutes = <div>
                 callback(null, require('../containers/Ico/ico.detail.jsx').default)
             }, 'IcoDetail')
         }}/>
+        <Route path='/live-list' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Live/live.index.jsx').default)
+            }, 'LiveIndex')
+        }}/>
+        <Route path='/live-edit' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Live/live.edit.jsx').default)
+            }, 'LiveEdit')
+        }}/>
+        <Route path='/live-detail' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Live/live.detail.jsx').default)
+            }, 'LiveDetail')
+        }}/>
     </Route>
     <Route path='/login' getComponent={(nextState, callback) => {
         require.ensure([], (require) => {

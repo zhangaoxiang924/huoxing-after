@@ -10,13 +10,13 @@ import { Table, Row, Col, Modal, message, Spin, Select, Input, Button } from 'an
 import './index.scss'
 import { Link } from 'react-router'
 import IconItem from '../../components/icon/icon'
-import {getIcoList, setSearchQuery, setPageData, setFilterData} from '../../actions/ico.action'
+import {getIcoList, setSearchQuery, setPageData, setFilterData} from '../../actions/live.action'
 import {formatDate, axiosAjax, cutString, icoStatusOptions} from '../../public/index'
 const confirm = Modal.confirm
 const Option = Select.Option
 
 let columns = []
-class IcoIndex extends Component {
+class LiveIndex extends Component {
     constructor () {
         super()
         this.state = {
@@ -42,7 +42,7 @@ class IcoIndex extends Component {
             title: 'ICO名称',
             width: '250px',
             key: 'name',
-            render: (text, record) => (record && <div className="ico-info clearfix">
+            render: (text, record) => (record && <div className="live-info clearfix">
                 <div>
                     <h4 title={record.name} dangerouslySetInnerHTML={this.createMarkup(cutString(record.name, 30))} />
                 </div>
@@ -61,11 +61,11 @@ class IcoIndex extends Component {
             key: 'status',
             render: (record) => {
                 if (record && record.status === 'past') {
-                    return <span className="ico-status pre-publish">已结束</span>
+                    return <span className="live-status pre-publish">已结束</span>
                 } else if (record && record.status === 'ongoing') {
-                    return <span className="ico-status has-publish">进行中</span>
+                    return <span className="live-status has-publish">进行中</span>
                 } else if (record && record.status === 'upcoming') {
-                    return <span className="ico-status will-publish">即将开始</span>
+                    return <span className="live-status will-publish">即将开始</span>
                 } else {
                     return <span>暂无</span>
                 }
@@ -84,7 +84,7 @@ class IcoIndex extends Component {
             title: '操作',
             key: 'action',
             render: (item) => (<div>
-                <Link className="mr10 opt-btn" to={{pathname: '/ico-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>详情</Link>
+                <Link className="mr10 opt-btn" to={{pathname: '/live-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>详情</Link>
                 <a onClick={() => this.delIco(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
             </div>)
         }]
@@ -256,7 +256,7 @@ class IcoIndex extends Component {
 
     render () {
         const {list, pageData, filter, search, dispatch} = this.props
-        return <div className="ico-index">
+        return <div className="live-index">
             {/*
             <Row>
                 <Col span={1} className="form-label">帖子主题:</Col>
@@ -327,12 +327,12 @@ class IcoIndex extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        icoInfo: state.icoInfo,
-        list: state.icoInfo.list,
-        search: state.icoInfo.search,
-        filter: state.icoInfo.filter,
-        pageData: state.icoInfo.pageData
+        liveInfo: state.liveInfo,
+        list: state.liveInfo.list,
+        search: state.liveInfo.search,
+        filter: state.liveInfo.filter,
+        pageData: state.liveInfo.pageData
     }
 }
 
-export default connect(mapStateToProps)(IcoIndex)
+export default connect(mapStateToProps)(LiveIndex)

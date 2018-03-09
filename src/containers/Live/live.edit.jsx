@@ -8,11 +8,9 @@ import {connect} from 'react-redux'
 import {hashHistory} from 'react-router'
 import {Row, Col, Form, Input, Upload, Icon, Modal, Button, message, Spin, DatePicker, Radio} from 'antd'
 import moment from 'moment'
-import {getIcoItemInfo} from '../../actions/ico.action'
+import {getIcoItemInfo} from '../../actions/live.action'
 
 import {axiosPost, URL, formatDate, emptyOrNot, icoStatusOptions} from '../../public/index'
-import DynamicFieldSet from '../../components/DynamicField/index'
-import DynamicFieldSetLink from '../../components/DynamicField/index-link'
 import './index.scss'
 
 const FormItem = Form.Item
@@ -42,7 +40,7 @@ const {TextArea} = Input
 // let mp3List = []
 let icoTeam = []
 let icoLink = []
-class IcoSend extends Component {
+class LiveSend extends Component {
     state = {
         updateOrNot: false,
         isLogin: false,
@@ -197,7 +195,7 @@ class IcoSend extends Component {
 
     render () {
         const {getFieldDecorator} = this.props.form
-        const {icoInfo, location, selectData} = this.props
+        const {icoInfo} = this.props
         const {previewVisible, previewImage, fileList, description, updateOrNot} = this.state
         const formItemLayout = {
             labelCol: {span: 1},
@@ -225,7 +223,7 @@ class IcoSend extends Component {
         )
         const dis = { span: 6 }
 
-        return <div className="ico-send">
+        return <div className="live-send">
             <Spin spinning={this.state.loading} size='large'>
                 <Form onSubmit={this.handleSubmit}>
                     <Row>
@@ -238,7 +236,7 @@ class IcoSend extends Component {
                                     initialValue: (updateOrNot && icoInfo) ? `${icoInfo.icoBase.name}` : '',
                                     rules: [{required: true, message: '请输入名称！'}]
                                 })(
-                                    <Input className="ico-name" placeholder="请输入名称"/>
+                                    <Input className="live-name" placeholder="请输入名称"/>
                                 )}
                             </FormItem>
                         </Col>
@@ -251,7 +249,7 @@ class IcoSend extends Component {
                                     initialValue: (updateOrNot && icoInfo) ? `${icoInfo.icoBase.symbol}` : '',
                                     rules: [{required: true, message: '请输入Ico简称！'}]
                                 })(
-                                    <Input className="ico-symbol" placeholder="请输入Ico简称"/>
+                                    <Input className="live-symbol" placeholder="请输入Ico简称"/>
                                 )}
                             </FormItem>
                         </Col>
@@ -283,7 +281,7 @@ class IcoSend extends Component {
                         </Col>
                     </Row>
 
-                    <FormItem className="ico-status" {...formItemLayout} label="ICO状态: ">
+                    <FormItem className="live-status" {...formItemLayout} label="ICO状态: ">
                         {getFieldDecorator('status', {
                             initialValue: (updateOrNot && icoInfo) ? `${icoInfo.icoBase.status}` : 'upcoming'
                         })(
@@ -331,7 +329,7 @@ class IcoSend extends Component {
                                 {getFieldDecorator('raised', {
                                     initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.raised)}` : '暂无'
                                 })(
-                                    <Input className="ico-raised" placeholder="请输入已众筹数量"/>
+                                    <Input className="live-raised" placeholder="请输入已众筹数量"/>
                                 )}
                             </FormItem>
                         </Col>
@@ -343,7 +341,7 @@ class IcoSend extends Component {
                                 {getFieldDecorator('supply', {
                                     initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.supply)}` : '暂无'
                                 })(
-                                    <Input className="ico-supply" placeholder="请输入信息总量"/>
+                                    <Input className="live-supply" placeholder="请输入信息总量"/>
                                 )}
                             </FormItem>
                         </Col>
@@ -355,7 +353,7 @@ class IcoSend extends Component {
                                 {getFieldDecorator('legalForm', {
                                     initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.legalForm)}` : '暂无'
                                 })(
-                                    <Input className="ico-legalForm" placeholder="请输入法律形式"/>
+                                    <Input className="live-legalForm" placeholder="请输入法律形式"/>
                                 )}
                             </FormItem>
                         </Col>
@@ -367,7 +365,7 @@ class IcoSend extends Component {
                                 {getFieldDecorator('chainType', {
                                     initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.chainType)}` : '暂无'
                                 })(
-                                    <Input className="ico-chainType" placeholder="请输入代币平台"/>
+                                    <Input className="live-chainType" placeholder="请输入代币平台"/>
                                 )}
                             </FormItem>
                         </Col>
@@ -379,7 +377,7 @@ class IcoSend extends Component {
                                 {getFieldDecorator('jurisdiction', {
                                     initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.jurisdiction)}` : '暂无'
                                 })(
-                                    <Input className="ico-jurisdiction" placeholder="请输入管辖区域"/>
+                                    <Input className="live-jurisdiction" placeholder="请输入管辖区域"/>
                                 )}
                             </FormItem>
                         </Col>
@@ -391,7 +389,7 @@ class IcoSend extends Component {
                                 {getFieldDecorator('securityAudit', {
                                     initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.securityAudit)}` : '暂无'
                                 })(
-                                    <Input className="ico-securityAudit" placeholder="请输入安全审计"/>
+                                    <Input className="live-securityAudit" placeholder="请输入安全审计"/>
                                 )}
                             </FormItem>
                         </Col>
@@ -403,7 +401,7 @@ class IcoSend extends Component {
                                 {getFieldDecorator('assignment', {
                                     initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.assignment)}` : '暂无'
                                 })(
-                                    <Input className="ico-assignment" placeholder="请输入ICO分配"/>
+                                    <Input className="live-assignment" placeholder="请输入ICO分配"/>
                                 )}
                             </FormItem>
                         </Col>
@@ -421,19 +419,6 @@ class IcoSend extends Component {
                             </FormItem>
                         </Col>
                     </Row>
-                    <DynamicFieldSet
-                        {...teamProps}
-                        form={this.props.form}
-                        update={location.query.id && true}
-                        selectGood={selectData && selectData.icoTeam ? selectData : icoInfo}
-                        setFieldData={(data) => this.setIcoTeam(data)} />
-
-                    <DynamicFieldSetLink
-                        {...linkProps}
-                        form={this.props.form}
-                        update={location.query.id && true}
-                        selectGood={selectData && selectData.icoLink ? selectData : icoInfo}
-                        setFieldData={(data) => this.setIcoLink(data)} />
                     <FormItem
                         wrapperCol={{span: 12, offset: 1}}
                     >
@@ -457,10 +442,10 @@ class IcoSend extends Component {
 
 const mapStateToProps = (state) => {
     return {
-        userInfo: state.icoInfo.userInfo,
-        icoInfo: state.icoInfo.info,
-        selectData: state.icoInfo.selectedData
+        userInfo: state.liveInfo.userInfo,
+        liveInfo: state.liveInfo.info,
+        selectData: state.liveInfo.selectedData
     }
 }
 
-export default connect(mapStateToProps)(Form.create()(IcoSend))
+export default connect(mapStateToProps)(Form.create()(LiveSend))

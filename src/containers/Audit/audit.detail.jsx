@@ -241,7 +241,6 @@ class AuditDetail extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state.auditInfo)
     return {
         selectData: state.auditInfo.selectedData
     }

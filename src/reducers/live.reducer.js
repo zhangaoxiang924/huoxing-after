@@ -4,7 +4,7 @@
  * Description：Description
  */
 
-import {ICO, SELECTEDDATA} from '../constants/index'
+import {LIVE, SELECTEDDATA} from '../constants/index'
 
 const postInfo = (
     state = {
@@ -24,19 +24,19 @@ const postInfo = (
     let pageData = state.pageData
     let filter = state.filter
     switch (action.type) {
-        case ICO.ADD_DATA:
+        case LIVE.ADD_DATA:
             return {...state, ...action.data}
-        case ICO.ADD_QUERY:
+        case LIVE.ADD_QUERY:
             return {...state, query: {..._query, ...action.data}}
-        case ICO.SET_SEARCH_QUERY:
+        case LIVE.SET_SEARCH_QUERY:
             return {...state, search: {...search, ...action.data}}
-        case ICO.SET_PAGE_DATA:
+        case LIVE.SET_PAGE_DATA:
             return {...state, pageData: {...pageData, ...action.data}}
-        case ICO.SET_FILTER_DATA:
+        case LIVE.SET_FILTER_DATA:
             return {...state, filter: {...filter, ...action.data}}
-        case ICO.EDIT_USER_INFO:
+        case LIVE.EDIT_USER_INFO:
             return {...state, userInfo: {..._userInfo, ...action.data}}
-        case ICO.EDIT_LIST_ITEM:
+        case LIVE.EDIT_LIST_ITEM:
             let _thisItem = _list[action.index]
             return {
                 ...state,
@@ -47,7 +47,7 @@ const postInfo = (
                     },
                     ..._list.slice(action.index + 1)]
             }
-        case ICO.DEL_LIST_ITEM:
+        case LIVE.DEL_LIST_ITEM:
             return {...state, list: [..._list.slice(0, action.index), ..._list.slice(action.index + 1)]}
         case SELECTEDDATA:
             return {...state, selectedData: action.data}
