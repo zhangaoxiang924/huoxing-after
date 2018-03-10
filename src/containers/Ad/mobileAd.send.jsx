@@ -35,7 +35,8 @@ class PostSend extends Component {
             adContent: '',
             fileList: [],
             coverImgUrl: '',
-            loading: true
+            loading: true,
+            adType: 1
         }
     }
 
@@ -52,7 +53,8 @@ class PostSend extends Component {
                         url: data.imgSrc
                     }],
                     coverImgUrl: data.imgSrc,
-                    loading: false
+                    loading: false,
+                    adType: data.useType
                 })
             }))
         } else {
@@ -112,6 +114,13 @@ class PostSend extends Component {
         }
     }
 
+    adType = (e) => {
+        console.log('radio checked', e.target.value)
+        this.setState({
+            adType: e.target.value
+        })
+    }
+
     adVisibleHide = () => {
         this.setState({ adVisible: false })
     }
@@ -136,6 +145,7 @@ class PostSend extends Component {
                 values.status = status || 1
                 !this.state.updateOrNot && delete values.id
                 axiosAjax('post', `${this.state.updateOrNot ? '/ad/update' : '/ad/add'}`, values, (res) => {
+                    console.log(values)
                     if (res.code === 1) {
                         message.success(this.state.updateOrNot ? '修改成功！' : '添加成功！')
                         hashHistory.goBack()
@@ -198,6 +208,17 @@ class PostSend extends Component {
                                 options={mobileAdPosition}
                                 onChange={this.positionChange}
                                 setFieldsValue={this.state.adPlace}>
+                            </RadioGroup>
+                        )}
+                    </FormItem>
+
+                    <FormItem {...formItemLayout} label="类型: ">
+                        {getFieldDecorator('useType', {
+                            initialValue: this.state.adType
+                        })(
+                            <RadioGroup onChange={this.adType} setFieldsValue={this.state.adType}>
+                                <Radio value={1}>广告</Radio>
+                                <Radio value={2}>自有链接</Radio>
                             </RadioGroup>
                         )}
                     </FormItem>

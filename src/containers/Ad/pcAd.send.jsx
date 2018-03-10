@@ -35,7 +35,8 @@ class PostSend extends Component {
             newsContent: '',
             fileList: [],
             coverImgUrl: '',
-            loading: true
+            loading: true,
+            adType: 1
         }
     }
 
@@ -52,7 +53,8 @@ class PostSend extends Component {
                         url: data.imgSrc
                     }],
                     coverImgUrl: data.imgSrc,
-                    loading: false
+                    loading: false,
+                    adType: data.useType
                 })
             }))
         } else {
@@ -73,6 +75,11 @@ class PostSend extends Component {
     typeChange = (e) => {
         this.setState({
             type: e.target.value
+        })
+    }
+    adType = (e) => {
+        this.setState({
+            adType: e.target.value
         })
     }
 
@@ -162,7 +169,6 @@ class PostSend extends Component {
     render () {
         const { getFieldDecorator } = this.props.form
         const { adInfo } = this.props
-        console.log(adInfo)
         const { previewVisible, previewImage, fileList, updateOrNot } = this.state
         const formItemLayout = {
             labelCol: { span: 1 },
@@ -187,6 +193,17 @@ class PostSend extends Component {
                                 options={typeOptions}
                                 onChange={this.typeChange}
                                 setFieldsValue={this.state.type}>
+                            </RadioGroup>
+                        )}
+                    </FormItem>
+
+                    <FormItem {...formItemLayout} label="类型:">
+                        {getFieldDecorator('useType', {
+                            initialValue: this.state.adType
+                        })(
+                            <RadioGroup onChange={this.adType} setFieldsValue={this.state.adType}>
+                                <Radio value={1}>广告</Radio>
+                                <Radio value={2}>自有链接</Radio>
                             </RadioGroup>
                         )}
                     </FormItem>
