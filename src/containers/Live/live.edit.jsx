@@ -196,7 +196,7 @@ class LiveSend extends Component {
     render () {
         const {getFieldDecorator} = this.props.form
         const {icoInfo} = this.props
-        const {previewVisible, previewImage, fileList, description, updateOrNot} = this.state
+        const {previewVisible, previewImage, fileList, updateOrNot} = this.state
         const formItemLayout = {
             labelCol: {span: 1},
             wrapperCol: {span: 15, offset: 1}
@@ -216,50 +216,37 @@ class LiveSend extends Component {
                         <Col {...dis}>
                             <FormItem
                                 {...formItemLayout}
-                                label="ICO 名称: "
+                                label="直播标题 "
                             >
                                 {getFieldDecorator('name', {
                                     initialValue: (updateOrNot && icoInfo) ? `${icoInfo.icoBase.name}` : '',
-                                    rules: [{required: true, message: '请输入名称！'}]
+                                    rules: [{required: true, message: '请输入直播标题！'}]
                                 })(
-                                    <Input className="live-name" placeholder="请输入名称"/>
+                                    <Input className="live-name" placeholder="请输入直播标题"/>
                                 )}
                             </FormItem>
                         </Col>
                         <Col {...dis}>
                             <FormItem
                                 {...formItemLayout}
-                                label="ICO 简称: "
+                                label="直播 ID: "
                             >
                                 {getFieldDecorator('symbol', {
                                     initialValue: (updateOrNot && icoInfo) ? `${icoInfo.icoBase.symbol}` : '',
-                                    rules: [{required: true, message: '请输入Ico简称！'}]
+                                    rules: [{required: true, message: '请输入直播 ID！'}]
                                 })(
-                                    <Input className="live-symbol" placeholder="请输入Ico简称"/>
+                                    <Input className="live-symbol" placeholder="请输入直播 ID"/>
                                 )}
                             </FormItem>
                         </Col>
                         <Col {...dis}>
                             <FormItem
                                 {...formItemLayout}
-                                label="开始时间: "
+                                label="直播时间: "
                             >
                                 {getFieldDecorator('startTime', {
-                                    rules: [{required: true, message: '请选择Ico开始时间！'}],
+                                    rules: [{required: true, message: '请选择直播开始时间！'}],
                                     initialValue: (updateOrNot && icoInfo) ? moment(formatDate(icoInfo.icoBase.startTime), 'YYYY-MM-DD HH:mm:ss') : moment()
-                                })(
-                                    <DatePicker showTime format="YYYY-MM-DD HH:mm:ss"/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col {...dis}>
-                            <FormItem
-                                {...formItemLayout}
-                                label="结束时间: "
-                            >
-                                {getFieldDecorator('endTime', {
-                                    rules: [{required: true, message: '请选择Ico开始时间！'}],
-                                    initialValue: (updateOrNot && icoInfo) ? moment(formatDate(icoInfo.icoBase.endTime), 'YYYY-MM-DD HH:mm:ss') : moment()
                                 })(
                                     <DatePicker showTime format="YYYY-MM-DD HH:mm:ss"/>
                                 )}
@@ -267,7 +254,7 @@ class LiveSend extends Component {
                         </Col>
                     </Row>
 
-                    <FormItem className="live-status" {...formItemLayout} label="ICO状态: ">
+                    <FormItem className="live-status" {...formItemLayout} label="直播状态: ">
                         {getFieldDecorator('status', {
                             initialValue: (updateOrNot && icoInfo) ? `${icoInfo.icoBase.status}` : 'upcoming'
                         })(
@@ -278,16 +265,39 @@ class LiveSend extends Component {
                             </RadioGroup>
                         )}
                     </FormItem>
-
+                    <FormItem
+                        className='inviteName'
+                        {...formItemLayout}
+                        label="嘉宾名称: "
+                    >
+                        {getFieldDecorator('raised', {
+                            initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.raised)}` : '',
+                            rules: [{required: true, message: '请输入嘉宾名称！'}]
+                        })(
+                            <Input className="live-raised" placeholder="请输入嘉宾名称"/>
+                        )}
+                    </FormItem>
+                    <FormItem
+                        className="inviteInfo"
+                        {...formItemLayout}
+                        label="嘉宾信息: "
+                    >
+                        {getFieldDecorator('supply', {
+                            initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.supply)}` : '',
+                            rules: [{required: true, message: '请输入嘉宾名称！'}]
+                        })(
+                            <TextArea className="live-supply" placeholder="请输入嘉宾信息"/>
+                        )}
+                    </FormItem>
                     <FormItem
                         {...formItemLayout}
-                        label="ICO 图标: "
+                        label="嘉宾头像: "
                         className='upload-div'
                     >
                         <div className="dropbox">
                             {getFieldDecorator('img', {
                                 initialValue: (updateOrNot && icoInfo) ? fileList : '',
-                                rules: [{required: true, message: '请上传ICO 图标！'}]
+                                rules: [{required: true, message: '请上传嘉宾头像！'}]
                             })(
                                 <Upload
                                     action={`${URL}/pic/upload`}
@@ -303,117 +313,81 @@ class LiveSend extends Component {
                             <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
                                 <img alt="example" style={{width: '100%'}} src={previewImage}/>
                             </Modal>
-                            <span className="cover-img-tip">用于ICO 图标展示, 长宽比例: <font style={{color: 'red'}}>1 : 1</font></span>
+                            <span className="cover-img-tip">用于直播页面嘉宾头像展示, 长宽比例: <font style={{color: 'red'}}>1 : 1</font></span>
                         </div>
                     </FormItem>
-                    <Row>
-                        <Col {...dis}>
-                            <FormItem
-                                {...formItemLayout}
-                                label="已众筹数量: "
-                            >
-                                {getFieldDecorator('raised', {
-                                    initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.raised)}` : '暂无'
-                                })(
-                                    <Input className="live-raised" placeholder="请输入已众筹数量"/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col {...dis}>
-                            <FormItem
-                                {...formItemLayout}
-                                label="信息总量: "
-                            >
-                                {getFieldDecorator('supply', {
-                                    initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.supply)}` : '暂无'
-                                })(
-                                    <Input className="live-supply" placeholder="请输入信息总量"/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col {...dis}>
-                            <FormItem
-                                {...formItemLayout}
-                                label="法律形式: "
-                            >
-                                {getFieldDecorator('legalForm', {
-                                    initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.legalForm)}` : '暂无'
-                                })(
-                                    <Input className="live-legalForm" placeholder="请输入法律形式"/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col {...dis}>
-                            <FormItem
-                                {...formItemLayout}
-                                label="代币平台: "
-                            >
-                                {getFieldDecorator('chainType', {
-                                    initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.chainType)}` : '暂无'
-                                })(
-                                    <Input className="live-chainType" placeholder="请输入代币平台"/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col {...dis}>
-                            <FormItem
-                                {...formItemLayout}
-                                label="管辖区域: "
-                            >
-                                {getFieldDecorator('jurisdiction', {
-                                    initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.jurisdiction)}` : '暂无'
-                                })(
-                                    <Input className="live-jurisdiction" placeholder="请输入管辖区域"/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col {...dis}>
-                            <FormItem
-                                {...formItemLayout}
-                                label="安全审计: "
-                            >
-                                {getFieldDecorator('securityAudit', {
-                                    initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.securityAudit)}` : '暂无'
-                                })(
-                                    <Input className="live-securityAudit" placeholder="请输入安全审计"/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col {...dis}>
-                            <FormItem
-                                {...formItemLayout}
-                                label="ICO分配: "
-                            >
-                                {getFieldDecorator('assignment', {
-                                    initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.assignment)}` : '暂无'
-                                })(
-                                    <Input className="live-assignment" placeholder="请输入ICO分配"/>
-                                )}
-                            </FormItem>
-                        </Col>
-                        <Col span={24} className="description">
-                            <FormItem
-                                {...formItemLayout}
-                                label="ICO简介: "
-                            >
-                                {getFieldDecorator('description', {
-                                    initialValue: (updateOrNot && icoInfo) ? emptyOrNot(description) : '',
-                                    rules: [{required: true, message: '请输入ICO简介！'}]
-                                })(
-                                    <TextArea className="description"/>
-                                )}
-                            </FormItem>
-                        </Col>
-                    </Row>
+                    <FormItem
+                        className="compereName"
+                        {...formItemLayout}
+                        label="主持人名称: "
+                    >
+                        {getFieldDecorator('raised', {
+                            initialValue: (updateOrNot && icoInfo) ? `${emptyOrNot(icoInfo.icoBase.raised)}` : '',
+                            rules: [{required: true, message: '请输入主持人名称！'}]
+                        })(
+                            <Input className="live-raised" placeholder="请输入主持人名称"/>
+                        )}
+                    </FormItem>
+                    <FormItem
+                        {...formItemLayout}
+                        label="主持人头像: "
+                        className='upload-div'
+                    >
+                        <div className="dropbox">
+                            {getFieldDecorator('img', {
+                                initialValue: (updateOrNot && icoInfo) ? fileList : '',
+                                rules: [{required: true, message: '请上传主持人头像！'}]
+                            })(
+                                <Upload
+                                    action={`${URL}/pic/upload`}
+                                    name='uploadFile'
+                                    listType="picture-card"
+                                    fileList={fileList}
+                                    onPreview={this.handlePreview}
+                                    onChange={this.handleChange}
+                                >
+                                    {fileList.length >= 1 ? null : uploadButton}
+                                </Upload>
+                            )}
+                            <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                                <img alt="example" style={{width: '100%'}} src={previewImage}/>
+                            </Modal>
+                            <span className="cover-img-tip">用于直播页面主持人头像展示, 长宽比例: <font style={{color: 'red'}}>1 : 1</font></span>
+                        </div>
+                    </FormItem>
+                    <FormItem
+                        {...formItemLayout}
+                        label="直播背景图: "
+                        className='upload-div'
+                    >
+                        <div className="dropbox">
+                            {getFieldDecorator('img', {
+                                initialValue: (updateOrNot && icoInfo) ? fileList : '',
+                                rules: [{required: true, message: '请上传直播背景图！'}]
+                            })(
+                                <Upload
+                                    action={`${URL}/pic/upload`}
+                                    name='uploadFile'
+                                    listType="picture-card"
+                                    fileList={fileList}
+                                    onPreview={this.handlePreview}
+                                    onChange={this.handleChange}
+                                >
+                                    {fileList.length >= 1 ? null : uploadButton}
+                                </Upload>
+                            )}
+                            <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                                <img alt="example" style={{width: '100%'}} src={previewImage}/>
+                            </Modal>
+                            <span className="cover-img-tip">用于直播页面的背景图展示, 长宽比例: <font style={{color: 'red'}}>1 : 1</font></span>
+                        </div>
+                    </FormItem>
                     <FormItem
                         wrapperCol={{span: 12, offset: 1}}
                     >
                         <Button
                             type="primary" data-status='1' htmlType="submit"
-                            style={{marginRight: '10px'}}>发表</Button>
-                        <Button
-                            type="primary" data-status='0' onClick={this.handleSubmit}
-                            style={{marginRight: '10px'}}>存草稿</Button>
+                            style={{marginRight: '10px'}}>保存</Button>
                         <Button
                             type="primary" className="cancel"
                             onClick={() => {

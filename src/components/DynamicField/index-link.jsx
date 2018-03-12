@@ -48,9 +48,6 @@ class DynamicFieldSet extends Component {
     remove = (k, index) => {
         const {form} = this.props
         const keys = form.getFieldValue('linkkeys')
-        if (keys.length === 1) {
-            return
-        }
         form.setFieldsValue({
             linkkeys: keys.filter(key => key !== k)
         })
@@ -165,7 +162,7 @@ class DynamicFieldSet extends Component {
                                 </FormItem>
                             </Col>
                             <Col span="1">
-                                {keys.length > 0 ? (<Icon style={{fontSize: 30}} className="dynamic-delete-button" type="minus-circle-o" disabled={keys.length === 1} onClick={() => this.remove(k, index)}/>) : null}
+                                {keys.length > 0 ? (<Icon style={{fontSize: 30}} className="dynamic-delete-button" type="minus-circle-o" onClick={() => this.remove(k, index)}/>) : null}
                             </Col>
                         </Row>
                     )

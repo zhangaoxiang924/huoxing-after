@@ -156,7 +156,7 @@ class IcoDetail extends Component {
                 <Row className="">
                     <Col className="section" {...col}>
                         <span className="name">ICO状态：</span>
-                        <span className="desc ico-status">{this.channelName(icoBase.status)} </span>
+                        <span className="ico-status">{this.channelName(icoBase.status)} </span>
                     </Col>
                     <Col className="section" span={20}>
                         <Col span={1} className="name ico-desc">ICO简介：</Col>
@@ -169,7 +169,7 @@ class IcoDetail extends Component {
                         <img
                             style={{width: 100, verticalAlign: 'middle'}}
                             alt={icoBase.name}
-                            className="desc" onClick={() => this.showModal(icoBase.img.indexOf('http') !== -1 ? icoBase.img : `${location.href.split('#')[0] + icoBase.img}`)}
+                            className="" onClick={() => this.showModal(icoBase.img.indexOf('http') !== -1 ? icoBase.img : `${location.href.split('#')[0] + icoBase.img}`)}
                             src={icoBase.img.indexOf('http') !== -1 ? icoBase.img : `${location.href.split('#')[0] + icoBase.img}`}/>
                     </Col>
                 </Row>

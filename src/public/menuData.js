@@ -148,6 +148,11 @@ const menuData = [
         text: '直播管理',
         children: [
             {
+                key: 'live-userList',
+                icon: 'icon-ico-edit',
+                link: '/live-userList',
+                text: '用户列表'
+            }, {
                 key: 'live-list',
                 icon: 'icon-post-list',
                 link: '/live-list',

@@ -93,7 +93,7 @@ module.exports = {
         // host: '127.0.0.1',
         port: '3010',
         proxy: [{
-            context: ['/*/*/*'],
+            context: ['/*/*/*', '/*/*/*/*'],
             // context: ['/*/*/*'],
             // target: 'http://wechatstore.linekong.com',
             // target: 'http://192.168.252.69:8380',

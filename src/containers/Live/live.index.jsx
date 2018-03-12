@@ -72,7 +72,8 @@ class LiveIndex extends Component {
             title: '操作',
             key: 'action',
             render: (item) => (<div>
-                <Link className="mr10 opt-btn" to={{pathname: '/live-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>详情</Link>
+                <Link className="mr10 opt-btn" to={{pathname: '/live-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>进入直播</Link>
+                <Link className="mr10 opt-btn" to={{pathname: '/live-edit', query: {id: item.id}}} style={{background: '#108ee9'}}>重新编辑</Link>
                 <a onClick={() => this.delIco(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
             </div>)
         }]

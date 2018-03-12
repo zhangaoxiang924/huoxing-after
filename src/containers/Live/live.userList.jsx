@@ -1,0 +1,305 @@
+/**
+ * Author：tantingting
+ * Time：2017/9/19
+ * Description：Description
+ */
+import React, { Component } from 'react'
+import { connect } from 'react-redux'
+import { Table, Row, Col, Modal, message, Spin, Select, Button } from 'antd'
+import CollectionCreateForm from './ModalForm/index'
+import './index.scss'
+// import { Link } from 'react-router'
+import {getLiveUserList, getLiveUserItemInfo, setSearchQuery, setPageData, setFilterData} from '../../actions/liveUser.action'
+import {formatDate, axiosAjax, cutString} from '../../public/index'
+const confirm = Modal.confirm
+const Option = Select.Option
+let columns = []
+const userTypeOptions = [
+    { label: '嘉宾', value: '1' },
+    { label: '主持人', value: '2' },
+    { label: '全部', value: '0' }
+]
+class LiveUser extends Component {
+    constructor () {
+        super()
+        this.state = {
+            visible: false,
+            loading: true,
+            type: null,
+            data: {},
+            imgUrl: ''
+        }
+    }
+
+    componentWillMount () {
+        const {filter} = this.props
+        this.doSearch('init', {...filter})
+        columns = [{
+            title: '用户名',
+            key: 'userName',
+            render: (text, record) => (record && <div className="live-info clearfix">
+                <div>
+                    <h4 title={record.userName} dangerouslySetInnerHTML={this.createMarkup(cutString(record.userName, 30))} />
+                </div>
+            </div>)
+        }, {
+            title: '用户类型',
+            dataIndex: 'userType',
+            key: 'userType',
+            render: (record) => {
+                if (parseInt(record) === 2) {
+                    return '主持人'
+                } else if (parseInt(record) === 1) {
+                    return '嘉宾'
+                } else {
+                    return '其他'
+                }
+            }
+        }, {
+            title: '用户头像 ',
+            dataIndex: 'headUrl',
+            key: 'headUrl',
+            render: (record) => (<img style={{width: 70}} src={record.headUrl || 'http://47.52.210.208/usericon/default/portrait.jpg'} alt=""/>)
+        }, {
+            title: '创建时间',
+            dataIndex: 'createTime',
+            key: 'createTime',
+            render: (record) => (record && formatDate(record))
+        }, {
+            title: '用户描述',
+            key: 'description',
+            render: (record) => {
+                if (!record.description) {
+                    return '无'
+                } else {
+                    return <h4 title={record.description} dangerouslySetInnerHTML={this.createMarkup(cutString(record.description, 30))} />
+                }
+            }
+        }, {
+            title: '操作',
+            key: 'action',
+            render: (item) => {
+                return <div>
+                    <a className="mr10 opt-btn" onClick={() => { this.update(item) }} style={{background: '#108ee9'}}>编辑</a>
+                    <a onClick={() => this.delIco(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
+                </div>
+            }
+        }]
+    }
+
+    componentWillUnmount () {
+        const {dispatch} = this.props
+        dispatch(setSearchQuery({'type': 'init'}))
+        dispatch(setPageData({'pageSize': 20, 'totalCount': 0}))
+    }
+
+    createMarkup (str) { return {__html: str} }
+
+    // 状态改变
+    channelName (id) {
+        let name = ''
+        userTypeOptions.map((item, index) => {
+            if (parseInt(item.value) === id) {
+                name = item.label
+            }
+        })
+        return name
+    }
+
+    // 列表请求
+    doSearch (type, data) {
+        const {dispatch, pageData, filter} = this.props
+        let sendDada = {
+            ...filter,
+            pageSize: 20,
+            currentPage: pageData.page
+        }
+        sendDada = {...sendDada, ...data}
+        dispatch(getLiveUserList(type, sendDada, () => {
+            this.setState({
+                loading: false
+            })
+        }))
+    }
+
+    // 点击搜索
+    _search () {
+        const {dispatch} = this.props
+        this.doSearch('init', {'page': 1})
+        dispatch(setPageData({'page': 1}))
+    }
+
+    // 改变页数
+    changePage (page) {
+        this.setState({
+            loading: true
+        })
+        const {dispatch, filter} = this.props
+        dispatch(setPageData({'page': page}))
+        this.doSearch('init', {'page': page, ...filter})
+    }
+
+    // 添加/修改用户信息
+    update = (item) => {
+        let {dispatch} = this.props
+        console.log(item)
+        this.setState({
+            data: item
+        })
+        dispatch(getLiveUserItemInfo({
+            id: item.userId
+        }))
+        this.showModal()
+    }
+
+    showModal = () => {
+        this.setState({ visible: true })
+    }
+
+    // 取消提交
+    handleCancel = () => {
+        this.setState({ visible: false })
+    }
+
+    getImgUrl = (data) => {
+        console.log(data)
+        this.setState({
+            imgUrl: data
+        })
+    }
+
+    // 提交表单
+    handleCreate = () => {
+        const form = this.form
+        form.setFieldsValue({
+            headUrl: this.state.imgUrl
+        })
+        form.validateFields((err, values) => {
+            if (err) {
+                return
+            }
+            axiosAjax('POST', '/caster/user/add', values, (res) => {
+                if (res.code === 1) {
+                    message.success('添加成功！')
+                    form.resetFields()
+                    this.setState({ visible: false })
+                    this.doSearch('init')
+                } else {
+                    message.error(res.msg)
+                }
+            })
+        })
+    }
+    saveFormRef = (form) => {
+        this.form = form
+    }
+
+    // 删除
+    delIco (item) {
+        const {dispatch} = this.props
+        const _this = this
+        confirm({
+            title: '提示',
+            content: `确认要删除吗 ?`,
+            onOk () {
+                let sendData = {
+                    // 'appId': $.cookie('gameId'),
+                    id: item.id,
+                    type: -1
+                }
+                axiosAjax('POST', '/ico/delete', {...sendData}, (res) => {
+                    if (res.code === 1) {
+                        message.success('删除成功')
+                        _this.doSearch('init')
+                        dispatch(setSearchQuery({'type': 'init'}))
+                    } else {
+                        message.error(res.msg)
+                    }
+                })
+            }
+        })
+    }
+
+    // 发表或存草稿
+    _isPublish (item) {
+        const _this = this
+        confirm({
+            title: '提示',
+            content: `确认要${item.type === 0 ? '开启直播' : '结束直播'}吗 ?`,
+            onOk () {
+                let sendData = {
+                    id: item.id,
+                    type: item.type === 0 ? 1 : 0
+                }
+                axiosAjax('POST', '/news/status', {...sendData}, (res) => {
+                    if (res.code === 1) {
+                        message.success(`操作成功！`)
+                        _this.doSearch('init')
+                    } else {
+                        message.error(res.msg)
+                    }
+                })
+            }
+        })
+    }
+
+    // 筛选直播状态
+    handleChange = (value) => {
+        const {dispatch} = this.props
+        dispatch(setFilterData({'type': value}))
+        this.setState({
+            type: value
+        })
+        this.doSearch('init', {'page': 1, type: value})
+    }
+
+    render () {
+        const {list, pageData, filter} = this.props
+        return <div className="live-index">
+            <Row>
+                <Col>
+                    <span>列表筛选：</span>
+                    <Select defaultValue={`${filter.type}`} style={{ width: 120 }} onChange={this.handleChange}>
+                        {userTypeOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
+                    </Select>
+                    <Button type="primary" style={{margin: '0 15px'}} onClick={this.showModal}>新增用户</Button>
+                </Col>
+            </Row>
+            <div className="mt30">
+                <Spin spinning={this.state.loading} size="large">
+                    <Table
+                        dataSource={list.map((item, index) => ({...item, key: index}))}
+                        columns={columns}
+                        bordered
+                        pagination={{
+                            current: pageData.page,
+                            total: pageData.totalCount,
+                            pageSize: pageData.pageSize,
+                            onChange: (page) => this.changePage(page)
+                        }}
+                    />
+                </Spin>
+            </div>
+            <CollectionCreateForm
+                getImgData={(data) => { this.getImgUrl(data) }}
+                ref={this.saveFormRef}
+                visible={this.state.visible}
+                onCancel={this.handleCancel}
+                onCreate={this.handleCreate}
+                data={this.state.data}
+            />
+        </div>
+    }
+}
+
+const mapStateToProps = (state) => {
+    return {
+        liveUserInfo: state.liveUserInfo,
+        list: state.liveUserInfo.list,
+        search: state.liveUserInfo.search,
+        filter: state.liveUserInfo.filter,
+        pageData: state.liveUserInfo.pageData
+    }
+}
+
+export default connect(mapStateToProps)(LiveUser)

@@ -79,180 +79,60 @@
 }
 
 .live-detail {
-    .live-status {
-        padding: 3px 8px;
-        border-radius: 4px;
-        color: #fff;
+    position: relative;
+    padding: 0 15px;
+    margin-top: 50px;
+    font-size: 15px;
 
-        &.has-publish {
-            background: #00a854;
+    .item-section {
+        width: 70%;
+        border-top: 1px solid #9e9e9e;
+
+        &:last-of-type {
+            border-bottom: 1px solid #9e9e9e;
         }
 
-        &.pre-publish {
-            background: #afafaf;
+        .item-content {
+            color: #373737;
+            margin: 10px 0;
+            text-align: justify;
+            word-break: break-all;
+            padding: 0 5px;
         }
 
-        &.will-publish {
-            background: #e9892f;
-        }
-    }
-
-    .live-content {
-        margin-top: 20px;
-        padding: 20px 30px;
-        display: flex;
-        justify-content: center;
-
-        .live-main {
-            overflow: hidden;
+        .item-img {
+            padding: 0 5px;
+            font-size: 0;
 
             img {
-                width: auto;
-            }
-        }
+                width: 200px;
+                max-width: 200px;
+                margin: 0 5px;
 
-        .live-info {
-            margin-bottom: 30px;
-
-            h3 {
-                font-size: 22px;
-                margin-bottom: 10px;
-            }
-        }
-
-        p {
-            margin: 10px 0 15px;
-        }
-    }
-
-    .section {
-        margin: 10px 0;
-
-        .name {
-            padding: 5px;
-            font-size: 15px;
-            color: #000;
-            font-weight: bold;
-
-            &.live-desc {
-                width: 85px;
-            }
-        }
-
-        .desc {
-            position: relative;
-            margin-left: 10px;
-            color: #000;
-
-            .audio-v {
-                position: absolute;
-                top: -10px;
-            }
-        }
-    }
-
-    .live-detail-info {
-        position: relative;
-        margin: 30px 0 10px;
-    }
-
-    .img-content {
-        margin-top: 15px;
-
-        img {
-            width: 185px;
-            height: 130px;
-        }
-    }
-
-    .user-content {
-        margin-top: 30px;
-
-        & > .item {
-            padding: 20px 30px;
-            border-bottom: 1px solid #e9e9e9;
-            position: relative;
-
-            .num-tip {
-                position: absolute;
-                width: 42px;
-                height: 42px;
-                text-align: center;
-                line-height: 40px;
-                top: 0;
-                left: 0;
-                z-index: 1;
-
-                &:after {
-                    content: '';
-                    position: absolute;
-                    width: 78px;
-                    transform: rotate(-45deg);
-                    height: 1px;
-                    background: #e9e9e9;
-                    top: 27px;
-                    left: -11px;
-                    box-shadow: -2px 2px 2px #e9e9e9;
-                }
-            }
-
-            .first-reply {
-                border: 1px dotted #cec7c7;
-                padding: 10px;
-                border-radius: 5px;
-                margin-top: 10px;
-
-                span {
-                    color: #108ee9;
-                }
-
-                p {
-                    margin-top: 10px;
+                &:first-child {
+                    margin-left: 0;
                 }
             }
         }
 
-        p {
-            margin-top: 25px;
-        }
+        .item-opts,
+        .item-date {
+            margin: 10px 5px 15px;
 
-        .user-info {
-            display: flex;
-            align-items: center;
-
-            & > .img-box {
-                margin-right: 20px;
+            a {
+                margin: 0 5px;
             }
         }
-    }
-
-    .pagination {
-        float: right;
-        margin-top: 30px;
-    }
-
-    .live-cover-img {
-        span {
-            display: inline-block;
-            width: 125px;
-            vertical-align: top;
-        }
-
-        img {
-            width: 95px;
-            border: 1px solid #eee;
-        }
-    }
-
-    .simditor-body {
-        width: 100%;
     }
 }
 
 .live-send {
     .upload-div,
     .description,
-    .live-status {
+    .live-status,
+    .compereName,
+    .inviteInfo,
+    .inviteName {
         .ant-form-item-control-wrapper {
             margin-left: 1%;
         }
