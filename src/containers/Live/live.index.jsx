@@ -9,8 +9,8 @@ import { Table, Row, Col, Modal, message, Spin, Select, Input, Button } from 'an
 import './index.scss'
 import { Link, hashHistory } from 'react-router'
 // import IconItem from '../../components/icon/icon'
-import {getIcoList, setSearchQuery, setPageData, setFilterData} from '../../actions/live.action'
-import {formatDate, axiosAjax, cutString, icoStatusOptions} from '../../public/index'
+import {getLiveList, setSearchQuery, setPageData, setFilterData} from '../../actions/live.action'
+import {formatDate, axiosAjax, cutString, liveStatusOptions} from '../../public/index'
 const confirm = Modal.confirm
 const Option = Select.Option
 
@@ -25,39 +25,42 @@ class LiveIndex extends Component {
     }
 
     componentWillMount () {
-        const {search, filter} = this.props
-        this.doSearch('init', {...filter, symbol: search.symbol})
+        const {filter} = this.props
+        this.doSearch('init', {status: filter.status})
         columns = [{
             title: '直播标题',
             width: '250px',
-            key: 'name',
+            key: 'title',
             render: (text, record) => (record && <div className="live-info clearfix">
                 <div>
-                    <h4 title={record.name} dangerouslySetInnerHTML={this.createMarkup(cutString(record.name, 30))} />
+                    <h4 title={record.title} dangerouslySetInnerHTML={this.createMarkup(cutString(record.title, 30))} />
                 </div>
             </div>)
         }, {
             title: '嘉宾名称 ',
-            dataIndex: 'symbol',
-            key: 'symbol'
+            dataIndex: 'guestName',
+            key: 'guestName'
         }, {
             title: '主持人名称 ',
-            dataIndex: 'endTime',
-            key: 'endTime',
-            render: (record) => ('董卿')
+            dataIndex: 'presenterName',
+            key: 'presenterName'
         }, {
             title: '直播 ID',
-            key: 'img',
-            render: (record) => (123)
+            dataIndex: 'id',
+            key: 'id'
+        }, {
+            title: '直播间简介',
+            key: 'casterDesc',
+            render: (text, record) => (record && <h4 title={record.casterDesc} dangerouslySetInnerHTML={this.createMarkup(cutString(record.casterDesc, 30))} />)
         }, {
             title: '直播状态',
             key: 'status',
             render: (record) => {
-                if (record && record.status === 'past') {
+                if (record && record.status === 2) {
                     return <span className="live-status pre-publish">已结束</span>
-                } else if (record && record.status === 'ongoing') {
+                } else if (record && record.status === 1) {
                     return <span className="live-status has-publish">进行中</span>
-                } else if (record && record.status === 'upcoming') {
+                } else if (record && record.status === 0) {
                     return <span className="live-status will-publish">即将开始</span>
                 } else {
                     return <span>暂无</span>
@@ -65,8 +68,8 @@ class LiveIndex extends Component {
             }
         }, {
             title: '直播时间',
-            dataIndex: 'startTime',
-            key: 'startTime',
+            dataIndex: 'beginTime',
+            key: 'beginTime',
             render: (record) => (record && formatDate(record))
         }, {
             title: '操作',
@@ -90,7 +93,7 @@ class LiveIndex extends Component {
     // 状态改变
     channelName (id) {
         let name = ''
-        icoStatusOptions.map((item, index) => {
+        liveStatusOptions.map((item, index) => {
             if (parseInt(item.value) === id) {
                 name = item.label
             }
@@ -100,15 +103,15 @@ class LiveIndex extends Component {
 
     // 列表展示
     doSearch (type, data) {
-        const {dispatch, pageData, search, filter} = this.props
+        const {dispatch, pageData, filter} = this.props
         let sendDada = {
-            ...filter,
-            symbol: search.symbol,
+            status: filter.status,
+            // symbol: search.symbol,
             pageSize: 10,
-            page: pageData.page
+            currentPage: pageData.currentPage
         }
         sendDada = {...sendDada, ...data}
-        dispatch(getIcoList(type, sendDada, () => {
+        dispatch(getLiveList(type, sendDada, () => {
             this.setState({
                 loading: false
             })
@@ -118,8 +121,8 @@ class LiveIndex extends Component {
     // 点击搜索
     _search () {
         const {dispatch} = this.props
-        this.doSearch('init', {'page': 1})
-        dispatch(setPageData({'page': 1}))
+        this.doSearch('init', {'currentPage': 1})
+        dispatch(setPageData({'currentPage': 1}))
     }
 
     // 改变页数
@@ -128,8 +131,18 @@ class LiveIndex extends Component {
             loading: true
         })
         const {dispatch, search, filter} = this.props
-        dispatch(setPageData({'page': page}))
-        this.doSearch(search.type, {'page': page, ...filter})
+        dispatch(setPageData({'currentPage': page}))
+        this.doSearch(search.type, {'currentPage': page, ...filter})
+    }
+
+    // 筛选直播状态
+    handleChange = (value) => {
+        const {dispatch} = this.props
+        dispatch(setFilterData({'status': value}))
+        this.setState({
+            icoStatus: value
+        })
+        this.doSearch('init', {'currentPage': 1, status: value})
     }
 
     // 删除
@@ -218,16 +231,6 @@ class LiveIndex extends Component {
         })
     }
 
-    // 筛选直播状态
-    handleChange = (value) => {
-        const {dispatch} = this.props
-        dispatch(setFilterData({'status': value}))
-        this.setState({
-            icoStatus: value
-        })
-        this.doSearch('init', {'page': 1, status: value})
-    }
-
     render () {
         const {list, pageData, filter, search, dispatch} = this.props
         return <div className="live-index">
@@ -235,8 +238,8 @@ class LiveIndex extends Component {
                 <Col>
                     <span>直播状态：</span>
                     <Select defaultValue={`${filter.status}`} style={{ width: 120 }} onChange={this.handleChange}>
-                        <Option value="">全部</Option>
-                        {icoStatusOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
+                        <Option value="-2">全部</Option>
+                        {liveStatusOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
                     </Select>
                     <span style={{marginLeft: 15}}>直播标题： </span>
                     <Input
@@ -251,7 +254,7 @@ class LiveIndex extends Component {
             </Row>
             <div className="mt30">
                 <Spin spinning={this.state.loading} size="large">
-                    <Table dataSource={list.map((item, index) => ({...item, key: index}))} columns={columns} bordered pagination={{current: pageData.page, total: pageData.totalCount, pageSize: pageData.pageSize, onChange: (page) => this.changePage(page)}} />
+                    <Table dataSource={list.map((item, index) => ({...item, key: index}))} columns={columns} bordered pagination={{current: pageData.currentPage, total: pageData.totalCount, pageSize: pageData.pageSize, onChange: (page) => this.changePage(page)}} />
                 </Spin>
             </div>
         </div>

@@ -8,7 +8,7 @@ import { connect } from 'react-redux'
 // import { Input, Row, Col, Button, Table, Modal, message } from 'antd'
 import { Table, Row, Col, Modal, message, Spin, Tag, Select, Input, Button } from 'antd'
 import './post.scss'
-import { Link } from 'react-router'
+import { Link, hashHistory } from 'react-router'
 import IconItem from '../../components/icon/icon'
 import {getPostList, setSearchQuery, setPageData, setFilterData} from '../../actions/post.action'
 import {formatDate, axiosAjax, cutString, channelIdOptions} from '../../public/index'
@@ -334,6 +334,7 @@ class PostIndex extends Component {
                     />
                     <span>
                         <Button type="primary" onClick={() => { this._search() }}><IconItem type="icon-search"/>搜索</Button>
+                        <Button type="primary" style={{margin: '0 15px'}} onClick={() => { hashHistory.push('/post-send') }}><IconItem type="icon-post-send"/>新增</Button>
                     </span>
                 </Col>
             </Row>

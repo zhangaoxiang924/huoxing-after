@@ -8,13 +8,15 @@ import {LIVE, SELECTEDDATA} from '../constants/index'
 
 const postInfo = (
     state = {
-        filter: {status: '', recommend: '', channelId: ''},
+        filter: {status: '0'},
         search: {'nickName': '', 'title': '', 'type': 'init', symbol: ''},
-        pageData: {'page': 1, 'pageSize': 10, 'totalCount': 0},
+        pageData: {'currentPage': 1, 'pageSize': 10, 'totalCount': 0},
         query: {},
         list: [],
         userInfo: {'name': '', 'pwd': ''},
         info: {},
+        zcrList: [],
+        guestList: [],
         replyList: []
     }, action) => {
     let _query = state.query
@@ -51,6 +53,10 @@ const postInfo = (
             return {...state, list: [..._list.slice(0, action.index), ..._list.slice(action.index + 1)]}
         case SELECTEDDATA:
             return {...state, selectedData: action.data}
+        case LIVE.GET_ZCR_LIST:
+            return {...state, zcrList: action.actionData.inforList}
+        case LIVE.GET_GUEST_LIST:
+            return {...state, guestList: action.actionData.inforList}
         default:
             return state
     }

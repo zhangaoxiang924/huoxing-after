@@ -221,3 +221,10 @@ export const icoStatusOptions = [
     { label: '进行中', value: 'ongoing' },
     { label: '即将开始', value: 'upcoming' }
 ]
+
+// 直播状态
+export const liveStatusOptions = [
+    { label: '已结束', value: '2' },
+    { label: '进行中', value: '1' },
+    { label: '即将开始', value: '0' }
+]

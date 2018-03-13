@@ -11,7 +11,7 @@ import LiveEditor from './LiveEditor/index'
 import ShowContent from './ShowContent/index'
 import {hashHistory} from 'react-router'
 // import IconItem from '../../components/icon/icon'
-import {getIcoItemInfo, selectedData} from '../../actions/live.action'
+import {getLiveItemInfo, selectedData} from '../../actions/live.action'
 // import {formatDate} from '../../public/index'
 import './index.scss'
 
@@ -30,7 +30,7 @@ class LiveDetail extends Component {
 
     componentWillMount () {
         const {dispatch, location} = this.props
-        dispatch(getIcoItemInfo({'id': location.query.id}, () => {
+        dispatch(getLiveItemInfo({'id': location.query.id}, () => {
             this.setState({
                 loading: false
             })

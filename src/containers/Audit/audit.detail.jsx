@@ -145,7 +145,7 @@ class AuditDetail extends Component {
         }
         confirm({
             title: '提示',
-            content: `确认要${status === 1 ? '通过审核' : '驳回请求'}吗 ?`,
+            content: `确认要${parseInt(status) === 1 ? '通过审核' : '驳回请求'}吗 ?`,
             onOk () {
                 axiosAjax('post', '/passport/account/updaterealauth', params, (res) => {
                     if (res.code === 1) {

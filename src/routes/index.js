@@ -185,6 +185,11 @@ const rootRoutes = <div>
                 callback(null, require('../containers/Live/live.userList.jsx').default)
             }, 'LiveUserList')
         }}/>
+        <Route path='/live-userEdit' getComponent={(nextState, callback) => {
+            require.ensure([], (require) => {
+                callback(null, require('../containers/Live/live.userEdit.jsx').default)
+            }, 'LiveUserEdit')
+        }}/>
     </Route>
     <Route path='/login' getComponent={(nextState, callback) => {
         require.ensure([], (require) => {

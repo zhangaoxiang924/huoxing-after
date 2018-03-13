@@ -93,14 +93,22 @@ module.exports = {
         // host: '127.0.0.1',
         port: '3010',
         proxy: [{
-            context: ['/*/*/*', '/*/*/*/*'],
-            // context: ['/*/*/*'],
-            // target: 'http://wechatstore.linekong.com',
-            // target: 'http://192.168.252.69:8380',
-            // target: 'http://admin.play.linekong.com',
-            // target: 'http://47.52.210.208', // 磊鹏
-            // target: 'http://admin.huoxing24.com', // 磊鹏
-            // target: 'http://192.168.10.54:8080',
+            context: ['/*/*/*'],
+            // target: 'http://admin.huoxing24.com',
+            target: 'http://www.huoxing24.vip',
+            changeOrigin: true,
+            ws: true,
+            secure: false
+        }, {
+            context: ['/*/*/*/*'],
+            // target: 'http://admin.huoxing24.com',
+            target: 'http://www.huoxing24.vip',
+            changeOrigin: true,
+            ws: true,
+            secure: false
+        }, {
+            context: ['/*/*/*/*/*'],
+            // target: 'http://admin.huoxing24.com',
             target: 'http://www.huoxing24.vip',
             changeOrigin: true,
             ws: true,

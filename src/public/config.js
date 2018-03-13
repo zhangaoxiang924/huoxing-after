@@ -35,6 +35,7 @@ export const NavKey = {
     'live-detail': '直播详情',
     'live-edit': '直播编辑',
     'live-userList': '用户管理',
+    'live-userEdit': '用户编辑',
     'postUser': '用户管理',
     'postUser-list': '用户列表',
     'postUser-detail': '用户详情',

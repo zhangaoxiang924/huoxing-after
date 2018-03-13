@@ -1,9 +1,12 @@
 import React, {Component} from 'react'
-import { Modal, Form, Input, Radio, message, Icon, Upload } from 'antd'
-import {URL} from '../../../public/index'
+import { connect } from 'react-redux'
+import {hashHistory} from 'react-router'
+import { Modal, Form, Input, Radio, message, Icon, Upload, Button, Spin } from 'antd'
+import {getLiveUserItemInfo} from '../../actions/liveUser.action'
+import {URL, axiosAjax} from '../../public/index'
 const FormItem = Form.Item
 
-class CollectionCreateForm extends Component {
+class LiveUserEdit extends Component {
     constructor (props) {
         super(props)
         this.state = {
@@ -15,6 +18,27 @@ class CollectionCreateForm extends Component {
             loading: true,
             userType: '1'
         }
+    }
+
+    componentWillMount () {
+        const {dispatch, location} = this.props
+        dispatch(getLiveUserItemInfo({'id': location.query.id}, (data) => {
+            let img = data.headUrl
+            this.setState({
+                updateOrNot: true,
+                fileList: [{
+                    uid: 0,
+                    name: 'xxx.png',
+                    status: 'done',
+                    url: img
+                }],
+                description: data.description,
+                coverImgUrl: img,
+                loading: false,
+                userType: data.userType,
+                userName: data.userName
+            })
+        }))
     }
 
     // 上传图片
@@ -43,7 +67,6 @@ class CollectionCreateForm extends Component {
                 this.setState({
                     coverImgUrl: file.response.obj
                 })
-                this.props.getImgData(file.response.obj)
             }
             if (file.status === 'error') {
                 message.error('网络错误，上传失败！')
@@ -55,12 +78,36 @@ class CollectionCreateForm extends Component {
         }
     }
 
+    // 提交
+    handleSubmit = (e) => {
+        e.preventDefault()
+        this.props.form.setFieldsValue({
+            headUrl: this.state.coverImgUrl
+        })
+        this.props.form.validateFieldsAndScroll((err, values) => {
+            if (!err) {
+                this.setState({
+                    loading: true
+                })
+                values.userId = this.props.userInfo.userId
+                axiosAjax('post', '/caster/user/update', values, (res) => {
+                    if (res.code === 1) {
+                        message.success('修改成功')
+                        hashHistory.push('/live-userList')
+                    } else {
+                        message.error(res.msg)
+                    }
+                })
+            }
+        })
+    }
+
     render () {
-        const { visible, onCancel, onCreate, form } = this.props
+        const {form, userInfo} = this.props
         const { getFieldDecorator } = form
         const formItemLayout = {
-            labelCol: {span: 4},
-            wrapperCol: {span: 18, offset: 1}
+            labelCol: {span: 1},
+            wrapperCol: {span: 15, offset: 1}
         }
         const uploadButton = (
             <div>
@@ -69,19 +116,13 @@ class CollectionCreateForm extends Component {
             </div>
         )
         return (
-            <Modal
-                visible={visible}
-                title="新增用户"
-                okText="确定"
-                onCancel={onCancel}
-                onOk={onCreate}
-            >
-                <Form>
+            <Form onSubmit={this.handleSubmit}>
+                <Spin spinning={this.state.loading} size='large'>
                     <FormItem
                         {...formItemLayout}
                         label="用户名">
                         {getFieldDecorator('userName', {
-                            initialValue: '',
+                            initialValue: userInfo.userName ? userInfo.userName : '',
                             rules: [{ required: true, message: '请输入直播用户名！' }]
                         })(
                             <Input />
@@ -89,11 +130,11 @@ class CollectionCreateForm extends Component {
                     </FormItem>
                     <FormItem
                         {...formItemLayout}
-                        className="collection-create-form_last-form-item"
+                        className=""
                         label="用户类型"
                     >
                         {getFieldDecorator('userType', {
-                            initialValue: '1'
+                            initialValue: userInfo.userType ? `${userInfo.userType}` : '1'
                         })(
                             <Radio.Group>
                                 <Radio value="1">嘉宾</Radio>
@@ -108,7 +149,7 @@ class CollectionCreateForm extends Component {
                     >
                         <div className="dropbox">
                             {getFieldDecorator('headUrl', {
-                                initialValue: '',
+                                initialValue: (userInfo && userInfo.headUrl) ? this.state.fileList : '',
                                 rules: [{required: true, message: '请上传用户头像！'}]
                             })(
                                 <Upload
@@ -125,20 +166,38 @@ class CollectionCreateForm extends Component {
                             <Modal visible={this.state.previewVisible} footer={null} onCancel={this.handleCancel}>
                                 <img alt="example" style={{width: '100%'}} src={this.state.previewImage}/>
                             </Modal>
-                            <span className="cover-img-tip" style={{display: 'inline-block', marginTop: '70px', position: 'absolute'}}>用于直播页面头像展示, 长宽比例: <font style={{color: 'red'}}>1 : 1</font></span>
+                            <span className="cover-img-tip" style={{display: 'inline-block', marginTop: '70px'}}>用于直播页面头像展示, 长宽比例: <font style={{color: 'red'}}>1 : 1</font></span>
                         </div>
                     </FormItem>
                     <FormItem
                         {...formItemLayout}
-                        label="用户信息">
+                        label="用户描述">
                         {getFieldDecorator('description', {
-                            initialValue: ''
+                            initialValue: (userInfo && userInfo.description) ? userInfo.description : ''
                         })(<Input rows={4} type="textarea" />)}
                     </FormItem>
-                </Form>
-            </Modal>
+                    <FormItem
+                        wrapperCol={{span: 12, offset: 2}}
+                    >
+                        <Button
+                            type="primary" data-status='1' htmlType="submit"
+                            style={{marginRight: '10px'}}>保存</Button>
+                        <Button
+                            type="primary" className="cancel"
+                            onClick={() => {
+                                hashHistory.goBack()
+                            }}>取消</Button>
+                    </FormItem>
+                </Spin>
+            </Form>
         )
     }
 }
 
-export default Form.create()(CollectionCreateForm)
+const mapStateToProps = (state) => {
+    return {
+        userInfo: state.liveUserInfo.info
+    }
+}
+
+export default connect(mapStateToProps)(Form.create()(LiveUserEdit))

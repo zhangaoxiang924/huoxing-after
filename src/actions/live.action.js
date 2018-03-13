@@ -13,15 +13,42 @@ export const selectedData = (data) => {
     return {type: SELECTEDDATA, data}
 }
 
-// 帖子列表
-export const getIcoList = (type, sendData, fn) => {
+// 直播列表
+export const getLiveList = (type, sendData, fn) => {
     return (dispatch) => {
-        let _url = type === 'init' ? '/ico/list' : '/post/search'
+        let _url = type === 'init' ? '/caster/room/list' : '/post/search'
         axiosAjax('get', _url, !sendData ? {} : {...sendData}, function (res) {
             if (res.code === 1) {
                 const actionData = res.obj
-                dispatch(addIcoData({'list': actionData.datas}))
-                dispatch(setPageData({'totalCount': actionData.totalCount, 'pageSize': actionData.pageSize, 'page': actionData.currentIndex}))
+                dispatch(addLiveData({'list': actionData.inforList}))
+                dispatch(setPageData({'totalCount': actionData.recordCount, 'pageSize': actionData.pageSize, 'currentPage': actionData.currentPage}))
+                if (fn) {
+                    fn(actionData)
+                }
+            } else {
+                message.error(res.msg)
+            }
+        })
+    }
+}
+
+// 主持人/嘉宾获取
+export const getDepartLiveUserList = (sendData, fn) => {
+    return (dispatch) => {
+        axiosAjax('get', '/caster/usertype/list', sendData, function (res) {
+            if (res.code === 1) {
+                const actionData = res.obj
+                if (parseInt(sendData.type) === 1) {
+                    dispatch({
+                        type: LIVE.GET_ZCR_LIST,
+                        actionData
+                    })
+                } else {
+                    dispatch({
+                        type: LIVE.GET_GUEST_LIST,
+                        actionData
+                    })
+                }
                 if (fn) {
                     fn(actionData)
                 }
@@ -33,12 +60,12 @@ export const getIcoList = (type, sendData, fn) => {
 }
 
 // 帖子详情
-export const getIcoItemInfo = (sendData, fn) => {
+export const getLiveItemInfo = (sendData, fn) => {
     return (dispatch) => {
         axiosAjax('post', '/ico/getbyid', {...sendData}, function (res) {
             if (res.code === 1) {
                 const actionData = res.obj
-                dispatch(addIcoData({'info': actionData}))
+                dispatch(addLiveData({'info': actionData}))
                 if (fn) {
                     fn(actionData)
                 }
@@ -49,23 +76,23 @@ export const getIcoItemInfo = (sendData, fn) => {
     }
 }
 
-export const addIcoData = (data) => {
+export const addLiveData = (data) => {
     return {type: LIVE.ADD_DATA, data}
 }
 
-export const addIcoQuery = (data) => {
+export const addLiveQuery = (data) => {
     return {type: LIVE.ADD_QUERY, data}
 }
 
-export const editIcoUserInfo = (data) => {
+export const editLiveUserInfo = (data) => {
     return {type: LIVE.EDIT_USER_INFO, data}
 }
 
-export const editIcoList = (data, index) => {
+export const editLiveList = (data, index) => {
     return {type: LIVE.EDIT_LIST_ITEM, data, index}
 }
 
-export const delIcoData = (index) => {
+export const delLiveData = (index) => {
     return {type: LIVE.DEL_LIST_ITEM, index}
 }
 

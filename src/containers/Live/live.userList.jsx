@@ -8,8 +8,8 @@ import { connect } from 'react-redux'
 import { Table, Row, Col, Modal, message, Spin, Select, Button } from 'antd'
 import CollectionCreateForm from './ModalForm/index'
 import './index.scss'
-// import { Link } from 'react-router'
-import {getLiveUserList, getLiveUserItemInfo, setSearchQuery, setPageData, setFilterData} from '../../actions/liveUser.action'
+import { Link } from 'react-router'
+import {getLiveUserList, setSearchQuery, setPageData, setFilterData} from '../../actions/liveUser.action'
 import {formatDate, axiosAjax, cutString} from '../../public/index'
 const confirm = Modal.confirm
 const Option = Select.Option
@@ -80,7 +80,7 @@ class LiveUser extends Component {
             key: 'action',
             render: (item) => {
                 return <div>
-                    <a className="mr10 opt-btn" onClick={() => { this.update(item) }} style={{background: '#108ee9'}}>编辑</a>
+                    <Link className="mr10 opt-btn" to={{pathname: '/live-userEdit', query: {id: item.userId}}} style={{background: '#108ee9'}}>编辑</Link>
                     <a onClick={() => this.delIco(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
                 </div>
             }
@@ -139,30 +139,19 @@ class LiveUser extends Component {
         this.doSearch('init', {'page': page, ...filter})
     }
 
-    // 添加/修改用户信息
-    update = (item) => {
-        let {dispatch} = this.props
-        console.log(item)
-        this.setState({
-            data: item
-        })
-        dispatch(getLiveUserItemInfo({
-            id: item.userId
-        }))
-        this.showModal()
-    }
-
     showModal = () => {
         this.setState({ visible: true })
     }
 
-    // 取消提交
+    // 取消
     handleCancel = () => {
-        this.setState({ visible: false })
+        this.setState({
+            visible: false,
+            data: {}
+        })
     }
 
     getImgUrl = (data) => {
-        console.log(data)
         this.setState({
             imgUrl: data
         })
@@ -203,11 +192,10 @@ class LiveUser extends Component {
             content: `确认要删除吗 ?`,
             onOk () {
                 let sendData = {
-                    // 'appId': $.cookie('gameId'),
-                    id: item.id,
-                    type: -1
+                    id: item.userId,
+                    status: 0
                 }
-                axiosAjax('POST', '/ico/delete', {...sendData}, (res) => {
+                axiosAjax('POST', '/caster/user/delete', {...sendData}, (res) => {
                     if (res.code === 1) {
                         message.success('删除成功')
                         _this.doSearch('init')

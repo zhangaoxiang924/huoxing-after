@@ -124,6 +124,10 @@ class PostSend extends Component {
         }
     }
 
+    componentDidMount () {
+        this.authorInput.focus()
+    }
+
     // 频道改变
     channelIdChange = (e) => {
         this.setState({
@@ -428,7 +432,7 @@ class PostSend extends Component {
                             initialValue: (updateOrNot && newsInfo) ? `${newsInfo.author}` : '',
                             rules: [{required: true, message: '请输入作者！'}]
                         })(
-                            <Input className="news-author" placeholder="请输入作者"/>
+                            <Input ref={(input) => { this.authorInput = input }} className="news-author" placeholder="请输入作者"/>
                         )}
                     </FormItem>
                     <FormItem
@@ -735,8 +739,9 @@ class PostSend extends Component {
                             <Col
                                 className="previewNews simditor">
                                 <p
-                                    className="simditor-body" style={{padding: 10}}
-                                    dangerouslySetInnerHTML={this.createMarkup(newsContent)}></p>
+                                    className="simditor-body"
+                                    style={{padding: 10}}
+                                    dangerouslySetInnerHTML={this.createMarkup(newsContent)}> </p>
                             </Col>
                         </Row>
                     </Modal>
