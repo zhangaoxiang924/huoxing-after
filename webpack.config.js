@@ -96,6 +96,7 @@ module.exports = {
             context: ['/*/*/*'],
             // target: 'http://admin.huoxing24.com',
             target: 'http://www.huoxing24.vip',
+            // target: 'http://192.168.90.255:8080',
             changeOrigin: true,
             ws: true,
             secure: false
@@ -103,6 +104,7 @@ module.exports = {
             context: ['/*/*/*/*'],
             // target: 'http://admin.huoxing24.com',
             target: 'http://www.huoxing24.vip',
+            // target: 'http://192.168.90.255:8080',
             changeOrigin: true,
             ws: true,
             secure: false
@@ -110,6 +112,7 @@ module.exports = {
             context: ['/*/*/*/*/*'],
             // target: 'http://admin.huoxing24.com',
             target: 'http://www.huoxing24.vip',
+            // target: 'http://192.168.90.255:8080',
             changeOrigin: true,
             ws: true,
             secure: false

@@ -741,7 +741,7 @@ class PostSend extends Component {
                                 <p
                                     className="simditor-body"
                                     style={{padding: 10}}
-                                    dangerouslySetInnerHTML={this.createMarkup(newsContent)}> </p>
+                                    dangerouslySetInnerHTML={this.createMarkup(newsContent)}></p>
                             </Col>
                         </Row>
                     </Modal>

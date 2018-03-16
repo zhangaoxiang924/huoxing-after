@@ -5,7 +5,7 @@
  */
 import React, { Component } from 'react'
 import { connect } from 'react-redux'
-import { Table, Row, Col, Modal, message, Spin, Select, Input, Button } from 'antd'
+import { Table, Row, Col, Modal, message, Spin, Select, Button } from 'antd'
 import './index.scss'
 import { Link, hashHistory } from 'react-router'
 // import IconItem from '../../components/icon/icon'
@@ -16,10 +16,12 @@ const Option = Select.Option
 
 let columns = []
 class LiveIndex extends Component {
-    constructor () {
-        super()
+    constructor (props) {
+        super(props)
         this.state = {
             loading: true,
+            previewVisible: false,
+            previewImage: '',
             icoStatus: null
         }
     }
@@ -51,7 +53,18 @@ class LiveIndex extends Component {
         }, {
             title: '直播间简介',
             key: 'casterDesc',
-            render: (text, record) => (record && <h4 title={record.casterDesc} dangerouslySetInnerHTML={this.createMarkup(cutString(record.casterDesc, 30))} />)
+            width: 200,
+            render: (text, record) => (record && <h4 title={record.casterDesc} dangerouslySetInnerHTML={this.createMarkup(cutString(record.casterDesc, 100))} />)
+        }, {
+            title: '直播封面 ',
+            dataIndex: 'coverPic',
+            key: 'coverPic',
+            render: (record) => (<img onClick={this.handlePreview} style={{width: 70, cursor: 'pointer'}} src={record || 'http://47.52.210.208/usericon/default/portrait.jpg'} alt=""/>)
+        }, {
+            title: '直播背景 ',
+            dataIndex: 'backImage',
+            key: 'backImage',
+            render: (record) => (<img onClick={this.handlePreview} style={{width: 70, cursor: 'pointer'}} src={record || 'http://47.52.210.208/usericon/default/portrait.jpg'} alt=""/>)
         }, {
             title: '直播状态',
             key: 'status',
@@ -67,6 +80,10 @@ class LiveIndex extends Component {
                 }
             }
         }, {
+            title: '直播间',
+            key: 'room',
+            render: (record) => <Link className="mr10 opt-btn" to={{pathname: '/live-detail', query: {id: record.id}}} style={{background: '#108ee9'}}>进入直播间</Link>
+        }, {
             title: '直播时间',
             dataIndex: 'beginTime',
             key: 'beginTime',
@@ -74,11 +91,24 @@ class LiveIndex extends Component {
         }, {
             title: '操作',
             key: 'action',
-            render: (item) => (<div>
-                <Link className="mr10 opt-btn" to={{pathname: '/live-detail', query: {id: item.id}}} style={{background: '#108ee9'}}>进入直播</Link>
-                <Link className="mr10 opt-btn" to={{pathname: '/live-edit', query: {id: item.id}}} style={{background: '#108ee9'}}>重新编辑</Link>
-                <a onClick={() => this.delIco(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
-            </div>)
+            render: (item) => {
+                let btn = ''
+                switch (item.status) {
+                    case 0:
+                        btn = <a className="mr10 opt-btn" onClick={() => this.enterRoom(item)} style={{background: '#00b45a'}}>开始直播</a>
+                        break
+                    case 1:
+                        btn = <a className="mr10 opt-btn" onClick={() => this.endRoom(item)} style={{background: '#e9892f'}}>结束直播</a>
+                        break
+                    default:
+                        btn = ''
+                }
+                return <div>
+                    {btn}
+                    <Link className="mr10 opt-btn" to={{pathname: '/live-edit', query: {id: item.id}}} style={{background: '#108ee9'}}>重新编辑</Link>
+                    <a onClick={() => this.delLive(item)} className="mr10 opt-btn" href="javascript:void(0)" style={{background: '#d73435'}}>删除</a>
+                </div>
+            }
         }]
     }
 
@@ -146,7 +176,7 @@ class LiveIndex extends Component {
     }
 
     // 删除
-    delIco (item) {
+    delLive (item) {
         const {dispatch} = this.props
         const _this = this
         confirm({
@@ -154,15 +184,60 @@ class LiveIndex extends Component {
             content: `确认要删除吗 ?`,
             onOk () {
                 let sendData = {
-                    // 'appId': $.cookie('gameId'),
-                    id: item.id,
+                    castId: item.id,
                     status: -1
                 }
-                axiosAjax('POST', '/ico/delete', {...sendData}, (res) => {
+                axiosAjax('POST', '/caster/room/update/status', {...sendData}, (res) => {
                     if (res.code === 1) {
                         message.success('删除成功')
                         _this.doSearch('init')
                         dispatch(setSearchQuery({'type': 'init'}))
+                    } else {
+                        message.error(res.msg)
+                    }
+                })
+            }
+        })
+    }
+
+    enterRoom (item) {
+        const {dispatch} = this.props
+        confirm({
+            title: '提示',
+            content: `确认要开始直播吗 ?`,
+            onOk () {
+                let sendData = {
+                    castId: item.id,
+                    status: 1
+                }
+                axiosAjax('POST', '/caster/room/update/status', {...sendData}, (res) => {
+                    if (res.code === 1) {
+                        dispatch(setFilterData({'status': 1}))
+                        hashHistory.push({pathname: '/live-detail', query: {id: item.id}})
+                    } else {
+                        message.error(res.msg)
+                    }
+                })
+            }
+        })
+    }
+
+    endRoom (item) {
+        const {dispatch} = this.props
+        const _this = this
+        confirm({
+            title: '提示',
+            content: `确认要结束直播吗 ?`,
+            onOk () {
+                let sendData = {
+                    castId: item.id,
+                    status: 2
+                }
+                axiosAjax('POST', '/caster/room/update/status', {...sendData}, (res) => {
+                    if (res.code === 1) {
+                        dispatch(setFilterData({status: -2}))
+                        message.success('操作成功')
+                        _this.doSearch('init')
                     } else {
                         message.error(res.msg)
                     }
@@ -231,8 +306,18 @@ class LiveIndex extends Component {
         })
     }
 
+    handleCancel = () => this.setState({previewVisible: false})
+
+    handlePreview = (e) => {
+        this.setState({
+            previewImage: e.target.getAttribute('src'),
+            previewVisible: true
+        })
+    }
+
     render () {
-        const {list, pageData, filter, search, dispatch} = this.props
+        // const {list, pageData, filter, search, dispatch} = this.props
+        const {list, pageData, filter} = this.props
         return <div className="live-index">
             <Row>
                 <Col>
@@ -241,6 +326,7 @@ class LiveIndex extends Component {
                         <Option value="-2">全部</Option>
                         {liveStatusOptions.map(d => <Option value={d.value} key={d.value}>{d.label}</Option>)}
                     </Select>
+                    {/*
                     <span style={{marginLeft: 15}}>直播标题： </span>
                     <Input
                         value={search.symbol}
@@ -249,12 +335,16 @@ class LiveIndex extends Component {
                         placeholder="请输入直播标题搜索"
                     />
                     <Button type="primary" onClick={() => { this._search() }}>搜索</Button>
+                    */}
                     <Button type="primary" style={{margin: '0 15px'}} onClick={() => hashHistory.push('/live-edit')}>创建直播</Button>
                 </Col>
             </Row>
             <div className="mt30">
                 <Spin spinning={this.state.loading} size="large">
                     <Table dataSource={list.map((item, index) => ({...item, key: index}))} columns={columns} bordered pagination={{current: pageData.currentPage, total: pageData.totalCount, pageSize: pageData.pageSize, onChange: (page) => this.changePage(page)}} />
+                    <Modal visible={this.state.previewVisible} footer={null} onCancel={this.handleCancel}>
+                        <img alt="example" style={{width: '100%'}} src={this.state.previewImage}/>
+                    </Modal>
                 </Spin>
             </div>
         </div>

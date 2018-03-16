@@ -59,7 +59,7 @@ class LiveUser extends Component {
             title: '用户头像 ',
             dataIndex: 'headUrl',
             key: 'headUrl',
-            render: (record) => (<img style={{width: 70}} src={record.headUrl || 'http://47.52.210.208/usericon/default/portrait.jpg'} alt=""/>)
+            render: (record) => (<img style={{width: 70}} src={record || 'http://47.52.210.208/usericon/default/portrait.jpg'} alt=""/>)
         }, {
             title: '创建时间',
             dataIndex: 'createTime',

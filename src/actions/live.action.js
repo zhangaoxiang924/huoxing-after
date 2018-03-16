@@ -40,12 +40,12 @@ export const getDepartLiveUserList = (sendData, fn) => {
                 const actionData = res.obj
                 if (parseInt(sendData.type) === 1) {
                     dispatch({
-                        type: LIVE.GET_ZCR_LIST,
+                        type: LIVE.GET_GUEST_LIST,
                         actionData
                     })
                 } else {
                     dispatch({
-                        type: LIVE.GET_GUEST_LIST,
+                        type: LIVE.GET_ZCR_LIST,
                         actionData
                     })
                 }
@@ -62,7 +62,7 @@ export const getDepartLiveUserList = (sendData, fn) => {
 // 帖子详情
 export const getLiveItemInfo = (sendData, fn) => {
     return (dispatch) => {
-        axiosAjax('post', '/ico/getbyid', {...sendData}, function (res) {
+        axiosAjax('post', '/caster/room/one', {...sendData}, function (res) {
             if (res.code === 1) {
                 const actionData = res.obj
                 dispatch(addLiveData({'info': actionData}))

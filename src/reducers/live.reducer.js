@@ -6,9 +6,9 @@
 
 import {LIVE, SELECTEDDATA} from '../constants/index'
 
-const postInfo = (
+const liveInfo = (
     state = {
-        filter: {status: '0'},
+        filter: {status: '-2'},
         search: {'nickName': '', 'title': '', 'type': 'init', symbol: ''},
         pageData: {'currentPage': 1, 'pageSize': 10, 'totalCount': 0},
         query: {},
@@ -62,4 +62,4 @@ const postInfo = (
     }
 }
 
-export default postInfo
+export default liveInfo

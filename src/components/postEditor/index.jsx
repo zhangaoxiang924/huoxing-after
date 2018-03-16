@@ -14,43 +14,43 @@ import {Input, Button} from 'antd'
 import './index.scss'
 import {URL} from '../../public/index'
 const {TextArea} = Input
-const EDITTOOLBAR = [
-    'title',
-    'bold',
-    'italic',
-    'underline',
-    'strikethrough',
-    'fontScale',
-    'color',
-    'ol',
-    'ul',
-    'blockquote',
-    'code',
-    'table',
-    'link',
-    'image',
-    'hr',
-    'indent',
-    'outdent',
-    'alignment'
-]
 let editor = ''
 
 class PostEditor extends Component {
     constructor (props) {
         super(props)
-        const {info} = props
+        const {info, toolBar} = props
         this.state = {
             'postContent': !info.postContent ? '' : info.postContent
         }
+        this.EDITTOOLBAR = !toolBar ? [
+            'title',
+            'bold',
+            'italic',
+            'underline',
+            'strikethrough',
+            'fontScale',
+            'color',
+            'ol',
+            'ul',
+            'blockquote',
+            'code',
+            'table',
+            'link',
+            'image',
+            'hr',
+            'indent',
+            'outdent',
+            'alignment'
+        ] : toolBar
     }
 
     componentDidMount () {
         editor = new Simditor({
             textarea: $('.editor'),
             defaultImage: LargedefaultImg,
-            placeholder: '这里输入新闻内容...',
-            toolbar: EDITTOOLBAR,
+            placeholder: '这里输入内容...',
+            toolbar: this.EDITTOOLBAR,
             upload: {
                 // url: '/pic/upload', // 文件上传的接口地址
                 url: `${URL}/pic/upload`, // 文件上传的接口地址
@@ -89,6 +89,8 @@ class PostEditor extends Component {
         const {subSend} = this.props
         subSend(this.state)
     }
+
+    // this.props.clear && this.clearContent()
 
     // 清空
     clearContent () {

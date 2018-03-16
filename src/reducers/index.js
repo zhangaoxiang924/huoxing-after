@@ -23,6 +23,7 @@ import articleAudit from './articleAudit.reducer'
 import icoInfo from './ico.reducer'
 import liveInfo from './live.reducer'
 import liveUserInfo from './liveUser.reducer'
+import liveContent from './liveContent.reducer'
 const reducers = Object.assign({
     loginInfo,
     gameListInfo,
@@ -40,6 +41,7 @@ const reducers = Object.assign({
     icoInfo,
     liveInfo,
     liveUserInfo,
+    liveContent,
     routing: routerReducer
 })
 

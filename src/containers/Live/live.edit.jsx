@@ -33,7 +33,9 @@ class LiveSend extends Component {
         previewImage: '',
         fileList: [],
         coverImgUrl: '',
+        coverPicImgUrl: '',
         loading: true,
+        coverFileList: [],
         status: 'upcoming'
     }
     componentWillMount () {
@@ -41,17 +43,23 @@ class LiveSend extends Component {
         dispatch(getDepartLiveUserList({type: 1}))
         dispatch(getDepartLiveUserList({type: 2}))
         if (location.query.id) {
-            dispatch(getLiveItemInfo({'id': location.query.id}, (data) => {
-                let img = data.backImage
+            dispatch(getLiveItemInfo({'castId': location.query.id}, (data) => {
                 this.setState({
                     updateOrNot: true,
                     fileList: [{
                         uid: 0,
                         name: 'xxx.png',
                         status: 'done',
-                        url: img
+                        url: data.backImage
                     }],
-                    coverImgUrl: img,
+                    coverFileList: [{
+                        uid: 0,
+                        name: 'xxx.png',
+                        status: 'done',
+                        url: data.coverPic
+                    }],
+                    coverImgUrl: data.backImage,
+                    coverPicImgUrl: data.coverPic,
                     loading: false
                 })
             }))
@@ -105,13 +113,40 @@ class LiveSend extends Component {
         }
     }
 
+    handleCoverChange = ({file, fileList}) => {
+        this.setState({
+            coverFileList: fileList
+        })
+
+        if (file.status === 'removed') {
+            this.setState({
+                coverPicImgUrl: ''
+            })
+        }
+
+        if (file.response) {
+            if (file.response.code === 1 && file.status === 'done') {
+                this.setState({
+                    coverPicImgUrl: file.response.obj
+                })
+            }
+            if (file.status === 'error') {
+                message.error('网络错误，上传失败！')
+                this.setState({
+                    coverPicImgUrl: '',
+                    coverFileList: []
+                })
+            }
+        }
+    }
     // 提交
     handleSubmit = (e) => {
         // let status = e.target.getAttribute('data-status')
         e.preventDefault()
 
         this.props.form.setFieldsValue({
-            backImage: this.state.coverImgUrl
+            backImage: this.state.coverImgUrl,
+            coverPic: this.state.coverPicImgUrl
         })
         this.props.form.validateFieldsAndScroll((err, values) => {
             if (!err) {
@@ -141,7 +176,7 @@ class LiveSend extends Component {
     render () {
         const {getFieldDecorator} = this.props.form
         const {liveInfo, guestList, zcrList} = this.props
-        const {previewVisible, previewImage, fileList, updateOrNot} = this.state
+        const {previewVisible, previewImage, fileList, updateOrNot, coverFileList} = this.state
         const formItemLayout = {
             labelCol: {span: 1},
             wrapperCol: {span: 15, offset: 1}
@@ -229,9 +264,12 @@ class LiveSend extends Component {
                     >
                         {getFieldDecorator('casterDesc', {
                             initialValue: (updateOrNot && liveInfo) ? `${emptyOrNot(liveInfo.casterDesc)}` : '',
-                            rules: [{required: true, message: '请输入直播简介！'}]
+                            rules: [
+                                {required: true, message: '请输入直播简介！', max: 300},
+                                {message: '简介最多300字！', max: 300}
+                            ]
                         })(
-                            <TextArea className="live-supply" placeholder="请输入直播简介"/>
+                            <TextArea rows={4} className="live-supply" placeholder="请输入直播简介"/>
                         )}
                     </FormItem>
 
@@ -260,6 +298,33 @@ class LiveSend extends Component {
                                 <img alt="example" style={{width: '100%'}} src={previewImage}/>
                             </Modal>
                             <span className="cover-img-tip">用于直播页面的背景图展示, 长宽比例: <font style={{color: 'red'}}>待定</font></span>
+                        </div>
+                    </FormItem>
+                    <FormItem
+                        {...formItemLayout}
+                        label="直播间封面: "
+                        className='upload-div'
+                    >
+                        <div className="dropbox">
+                            {getFieldDecorator('coverPic', {
+                                initialValue: (updateOrNot && liveInfo) ? coverFileList : '',
+                                rules: [{required: true, message: '请上传直播间封面！'}]
+                            })(
+                                <Upload
+                                    action={`${URL}/pic/upload`}
+                                    name='uploadFile'
+                                    listType="picture-card"
+                                    fileList={coverFileList}
+                                    onPreview={this.handlePreview}
+                                    onChange={this.handleCoverChange}
+                                >
+                                    {coverFileList.length >= 1 ? null : uploadButton}
+                                </Upload>
+                            )}
+                            <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                                <img alt="example" style={{width: '100%'}} src={previewImage}/>
+                            </Modal>
+                            <span className="cover-img-tip">用于直播间列表页面的封面图展示, 长宽比例: <font style={{color: 'red'}}>待定</font></span>
                         </div>
                     </FormItem>
                     <FormItem

@@ -6,7 +6,8 @@
 import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import { hashHistory } from 'react-router'
-import { Form, Input, Button, message, Icon, Upload, Modal, Spin } from 'antd'
+import { Form, Input, Button, message, Spin } from 'antd'
+// import { Form, Input, Button, message, Icon, Upload, Modal, Spin } from 'antd'
 
 import {axiosAjax} from '../../../public/index'
 
@@ -101,20 +102,21 @@ class LiveEditor extends Component {
     }
 
     render () {
-        const {icoInfo} = this.props
+        // const {icoInfo} = this.props
         const { getFieldDecorator } = this.props.form
         const { flashInfo } = this.props
-        const {content, previewVisible, previewImage, fileList, updateOrNot} = this.state
+        const {content, updateOrNot} = this.state
+        // const {content, previewVisible, previewImage, fileList, updateOrNot} = this.state
         const formItemLayout = {
-            labelCol: { span: 1 },
-            wrapperCol: { span: 15, offset: 1 }
+            labelCol: { span: 4 },
+            wrapperCol: { span: 19, offset: 1 }
         }
-        const uploadButton = (
-            <div>
-                <Icon type="plus"/>
-                <div className="ant-upload-text">上传图片</div>
-            </div>
-        )
+        // const uploadButton = (
+        //     <div>
+        //         <Icon type="plus"/>
+        //         <div className="ant-upload-text">上传图片</div>
+        //     </div>
+        // )
         return <div className="flash-send">
             <Spin spinning={this.state.loading} size="large">
                 <Form onSubmit={this.handleSubmit}>
@@ -162,6 +164,7 @@ class LiveEditor extends Component {
                             <TextArea className="flash" placeholder="请输入直播内容"/>
                         )}
                     </FormItem>
+                    {/*
                     <FormItem
                         {...formItemLayout}
                         label="图片: "
@@ -187,9 +190,9 @@ class LiveEditor extends Component {
                             </Modal>
                         </div>
                     </FormItem>
-
+                     */}
                     <FormItem
-                        wrapperCol={{ span: 12, offset: 2 }}
+                        wrapperCol={{ span: 12, offset: 5 }}
                     >
                         <Button type="primary" htmlType="submit" style={{marginRight: '10px'}}>发表</Button>
                         <Button type="primary" className="cancel" onClick={() => { hashHistory.goBack() }}>返回</Button>
