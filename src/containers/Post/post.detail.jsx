@@ -238,8 +238,8 @@ class PostDetail extends Component {
                         }}>
                             {isJsonString(info.audio) ? JSON.parse(info.audio).map(function (item, index) {
                                 return <li className="clearfix" key={index} style={{marginBottom: '10px'}}>
-                                    <span>{item.fileName}</span>
-                                    <audio src={item.fileUrl} controls="controls"></audio>
+                                    <span style={{verticalAlign: 'mioddle'}}>{item.fileName}</span>
+                                    <audio style={{verticalAlign: 'mioddle'}} src={item.fileUrl} controls="controls"></audio>
                                 </li>
                             }) : <span>暂无</span>}
                         </ul>

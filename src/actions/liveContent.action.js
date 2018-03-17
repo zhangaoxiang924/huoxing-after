@@ -20,10 +20,14 @@ export const getLiveContentList = (type, sendData, fn) => {
         axiosAjax('get', _url, !sendData ? {} : {...sendData}, function (res) {
             if (res.code === 1) {
                 const actionData = res.obj
-                dispatch(addLiveContentData({'list': actionData.inforList}))
-                dispatch(setPageData({'totalCount': actionData.recordCount, 'pageSize': actionData.pageSize, 'currentPage': actionData.currentPage}))
+                if (type === 'init') {
+                    dispatch(addLiveContentData({'list': actionData.inforList}))
+                } else if (type === 'more') {
+                    dispatch(moreLiveContentData({'list': actionData.inforList}))
+                }
+                dispatch(setPageData({'totalCount': actionData.recordCount, pageCount: actionData.pageCount, 'pageSize': actionData.pageSize, 'currentPage': actionData.currentPage}))
                 if (fn) {
-                    fn(actionData)
+                    fn(res)
                 }
             } else {
                 message.error(res.msg)
@@ -38,10 +42,10 @@ export const addNewLive = (sendData, fn) => {
         let _url = '/caster/room/content/add'
         axiosAjax('post', _url, sendData, (res) => {
             if (res.code === 1) {
-                const actionData = res.obj
+                const newLive = res.obj
                 dispatch({
                     type: LIVECONTENT.INSERT_LIVE,
-                    actionData
+                    newLive
                 })
                 if (fn) {
                     fn(res)
@@ -76,6 +80,29 @@ export const delLiveItem = (sendData, index, fn) => {
     }
 }
 
+// 修改直播
+export const updateLive = (sendData, index, fn) => {
+    return (dispatch) => {
+        let _url = '/caster/room/content/update'
+        axiosAjax('post', _url, sendData, (res) => {
+            if (res.code === 1) {
+                const actionData = res.obj
+                dispatch({
+                    type: LIVECONTENT.EDIT_LIST_ITEM,
+                    actionData,
+                    index
+                })
+                if (fn) {
+                    fn(res)
+                }
+                message.success('修改成功！')
+            } else {
+                message.error(res.msg)
+            }
+        })
+    }
+}
+
 // 帖子详情
 export const getLiveContentItemInfo = (sendData, fn) => {
     return (dispatch) => {
@@ -95,6 +122,10 @@ export const getLiveContentItemInfo = (sendData, fn) => {
 
 export const addLiveContentData = (data) => {
     return {type: LIVECONTENT.ADD_DATA, data}
+}
+
+export const moreLiveContentData = (data) => {
+    return {type: LIVECONTENT.MORE_DATA, data}
 }
 
 export const addLiveContentQuery = (data) => {

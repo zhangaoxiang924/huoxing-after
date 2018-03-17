@@ -49,7 +49,7 @@ class PostEditor extends Component {
         editor = new Simditor({
             textarea: $('.editor'),
             defaultImage: LargedefaultImg,
-            placeholder: '这里输入内容...',
+            // placeholder: '这里输入内容...',
             toolbar: this.EDITTOOLBAR,
             upload: {
                 // url: '/pic/upload', // 文件上传的接口地址
