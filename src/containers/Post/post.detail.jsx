@@ -231,15 +231,15 @@ class PostDetail extends Component {
                 </Row>
                 <Row className="news-summary">
                     <Col className="section">
-                        <span className="name">音频：</span>
+                        <span className="name" style={{verticalAlign: 'middle'}}>音频：</span>
 
                         <ul className="desc" style={{
                             display: 'inline-block'
                         }}>
                             {isJsonString(info.audio) ? JSON.parse(info.audio).map(function (item, index) {
                                 return <li className="clearfix" key={index} style={{marginBottom: '10px'}}>
-                                    <span style={{verticalAlign: 'mioddle'}}>{item.fileName}</span>
-                                    <audio style={{verticalAlign: 'mioddle'}} src={item.fileUrl} controls="controls"></audio>
+                                    <span style={{verticalAlign: 'middle'}}>{item.fileName}</span>
+                                    <audio style={{verticalAlign: 'middle'}} src={item.fileUrl} controls="controls"></audio>
                                 </li>
                             }) : <span>暂无</span>}
                         </ul>

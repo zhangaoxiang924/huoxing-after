@@ -11,7 +11,7 @@ import {Radio, Form, Input, Upload, Icon, Modal, Button, Tag, Tooltip, message, 
 import moment from 'moment'
 import {getPostItemInfo} from '../../actions/post.action'
 
-import {axiosAjax, URL, formatDate, channelIdOptions, isJsonString} from '../../public/index'
+import {axiosFormData, axiosAjax, URL, formatDate, channelIdOptions, isJsonString} from '../../public/index'
 import './post.scss'
 
 const FormItem = Form.Item
@@ -39,6 +39,9 @@ const cateIdOptions = [
  */
 
 // let mp3List = []
+let uploadId = ''
+let currIndex = 1
+let pause = false
 class PostSend extends Component {
     state = {
         updateOrNot: false,
@@ -58,7 +61,12 @@ class PostSend extends Component {
         mfileList: [],
         mcfileList: [],
         mp3fileList: [],
+        videofileList: [],
+        videoList: [],
         audioDefalutArr: [
+            // {uid: 123456789, fileName: '', fileUrl: ''}
+        ],
+        videoDefalutArr: [
             // {uid: 123456789, fileName: '', fileUrl: ''}
         ],
         coverImgUrl: '',
@@ -66,6 +74,10 @@ class PostSend extends Component {
         mcoverImgUrl: '',
         mccoverImgUrl: '',
         mp3Url: '',
+        uploadId: '',
+        currIndex: 1,
+        pause: false,
+        uploading: false,
         loading: true
     }
     componentWillMount () {
@@ -99,13 +111,14 @@ class PostSend extends Component {
                         status: 'done',
                         url: coverPic.wap_small
                     }],
-                    audioDefalutArr: data.audio ? JSON.parse(data.audio) : [],
                     mcfileList: [{
                         uid: 0,
                         name: 'xxx.png',
                         status: 'done',
                         url: coverPic.wap_big
                     }],
+                    audioDefalutArr: data.audio ? JSON.parse(data.audio) : [],
+                    videoDefalutArr: data.video ? JSON.parse(data.video) : [],
                     tags: data.tags.split(','),
                     newsContent: data.content,
                     coverImgUrl: coverPic.pc,
@@ -113,6 +126,7 @@ class PostSend extends Component {
                     mcoverImgUrl: coverPic.wap_small,
                     mccoverImgUrl: coverPic.wap_big,
                     mp3Url: data.audio,
+                    videoUrl: data.video,
                     loading: false
                 })
             }))
@@ -160,7 +174,7 @@ class PostSend extends Component {
         const inputValue = state.inputValue
         let tags = state.tags
         if (inputValue && tags.indexOf(inputValue) === -1) {
-            tags = [...tags, inputValue.slice(0, 5)]
+            tags = [...tags, inputValue.slice(0, 8)]
         }
         this.setState({
             tags,
@@ -305,6 +319,118 @@ class PostSend extends Component {
         }
     }
 
+    handleVideo = ({file, fileList}) => {
+        if (file.response) {
+            if (file.response.code === 1) {
+                this.setState({
+                    videofileList: fileList
+                }, function () {
+                })
+            }
+            if (file.status === 'error') {
+                message.error('网络错误，上传失败！')
+            }
+        }
+    }
+
+    /*
+    Upload = ({file}) => {
+        let totalSize = file.size // 文件大小
+        let blockSize = 1024 * 1024 * 2 // 块大小
+        let blockCount = Math.ceil(totalSize / blockSize) // 总块数
+
+        // 创建FormData对象
+        let formData = new FormData()
+        formData.append('fileName', file.name) // 文件名
+        formData.append('blockCount', blockCount) // 总块数
+        formData.append('currIndex', currIndex) // 当前上传的块下标
+        formData.append('uploadId', uploadId) // 上传编号
+        formData.append('uploadFile', null)
+        formData.append('type', 'video')
+        this.UploadPost(file, formData, totalSize, blockCount, blockSize)
+    }
+    */
+
+    start = () => {
+        this.setState({
+            currIndex: 1,
+            uploadId: ''
+        })
+        this.Upload()
+    }
+
+    Pause = () => {
+        pause = true
+    }
+
+    Continue = () => {
+        pause = false
+        this.Upload()
+    }
+
+    handleUpload = () => {
+        const { videoList } = this.state
+        let file = videoList[0]
+        let totalSize = file.size // 文件大小
+        let blockSize = 1024 * 1024 * 2 // 块大小
+        let blockCount = Math.ceil(totalSize / blockSize) // 总块数
+        // 创建FormData对象
+        let formData = new FormData()
+        formData.append('fileName', file.name) // 文件名
+        formData.append('blockCount', blockCount) // 总块数
+        formData.append('currIndex', currIndex) // 当前上传的块下标
+        formData.append('uploadId', uploadId) // 上传编号
+        formData.append('uploadFile', null)
+        formData.append('type', 'video')
+        this.setState({
+            uploading: true
+        })
+        this.UploadPost(file, formData, totalSize, blockCount, blockSize)
+    }
+
+    UploadPost = (file, formData, totalSize, blockCount, blockSize) => {
+        if (pause) {
+            return // 暂停
+        }
+        try {
+            let start = (currIndex - 1) * blockSize
+            let end = Math.min(totalSize, start + blockSize)
+            let uploadFile = file.slice(start, end)
+            formData.set('uploadFile', uploadFile)
+            formData.set('currIndex', currIndex)
+            formData.set('uploadId', uploadId)
+
+            axiosFormData('post', '/file/upload', formData, (res) => {
+                if (res.code === 1) {
+                    if (currIndex === 1) {
+                        uploadId = res.obj
+                    }
+                    // let num = currIndex / blockCount * 100
+                    // if ((currIndex + 1) === blockCount) {
+                    //     num = 100
+                    // }
+                    // $('#progress').text((num).toFixed(2) + '%')
+                    if (currIndex < blockCount) {
+                        currIndex = currIndex + 1
+                        this.UploadPost(file, formData, totalSize, blockCount, blockSize)
+                    }
+                } else if (res.code < 0) {
+                    console.log('code:' + res.code + ' msg:' + res.msg)
+                } else if (res.code === 2) {
+                    console.log(this.state.videoList)
+                    this.setState({
+                        videoList: [],
+                        uploading: false
+                    })
+                    message.success('upload successfully.')
+                    console.log('code:' + res.code + ' msg:' + res.msg + ' url:' + res.obj)
+                }
+            })
+        } catch (e) {
+            alert(e)
+        }
+    }
+
     newsVisibleHide = () => {
         this.setState({newsVisible: false})
     }
@@ -315,6 +441,14 @@ class PostSend extends Component {
 
     // 音频
     normFile = (e) => {
+        if (Array.isArray(e)) {
+            return e
+        }
+        return e && e.fileList
+    }
+
+    // 视频
+    videoNormFile = (e) => {
         if (Array.isArray(e)) {
             return e
         }
@@ -333,12 +467,25 @@ class PostSend extends Component {
         })
     }
 
+    delVideo = (uid) => {
+        let arr = this.state.videoDefalutArr
+        arr.map(function (item, index) {
+            if (item.uid.toString() === uid.toString()) {
+                arr.splice(index, 1)
+            }
+        })
+        this.setState({
+            videoDefalutArr: arr
+        })
+    }
+
     // 提交
     handleSubmit = (e) => {
         let status = e.target.getAttribute('data-status')
         e.preventDefault()
 
         let newArr = this.state.audioDefalutArr
+        let newVideoArr = this.state.videoDefalutArr
         this.state.mp3fileList.map(function (item, index) {
             newArr.push({
                 uid: item.uid,
@@ -346,8 +493,16 @@ class PostSend extends Component {
                 fileUrl: item.response.obj
             })
         })
+        this.state.videofileList.map(function (item, index) {
+            newVideoArr.push({
+                uid: item.uid,
+                fileName: item.name,
+                fileUrl: item.response.obj
+            })
+        })
         this.setState({
-            audioDefalutArr: newArr
+            audioDefalutArr: newArr,
+            videoDefalutArr: newVideoArr
         }, function () {
             this.props.form.setFieldsValue({
                 tags: this.state.tags.join(','),
@@ -356,7 +511,8 @@ class PostSend extends Component {
                 pc: this.state.coverImgUrl,
                 wap_small: this.state.mcoverImgUrl,
                 wap_big: this.state.mccoverImgUrl,
-                audio: JSON.stringify(this.state.audioDefalutArr)
+                audio: JSON.stringify(this.state.audioDefalutArr),
+                video: JSON.stringify(this.state.videoDefalutArr)
             })
             this.props.form.validateFieldsAndScroll((err, values) => {
                 if (!err) {
@@ -407,10 +563,30 @@ class PostSend extends Component {
         const This = this
         const {getFieldDecorator} = this.props.form
         const {newsInfo, location} = this.props
-        const {previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible, mp3fileList} = this.state
+        const {uploading, previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible, mp3fileList} = this.state
         const formItemLayout = {
             labelCol: {span: 1},
             wrapperCol: {span: 15, offset: 1}
+        }
+        const props = {
+            action: '/file/upload',
+            onRemove: (file) => {
+                this.setState(({ fileList }) => {
+                    const index = fileList.indexOf(file)
+                    const newFileList = fileList.slice()
+                    newFileList.splice(index, 1)
+                    return {
+                        videoList: newFileList
+                    }
+                })
+            },
+            beforeUpload: (file) => {
+                this.setState(({ fileList }) => ({
+                    videoList: [...fileList, file]
+                }))
+                return false
+            },
+            fileList: this.state.videoList
         }
         const uploadButton = (
             <div>
@@ -422,6 +598,7 @@ class PostSend extends Component {
         const hxContent = location.query.id ? JSON.parse(sessionStorage.getItem('hx_content')).content : ''
 
         return <div className="post-send">
+            <Button type="primary" onClick={this.Continue}>继续</Button>
             <Spin spinning={this.state.loading} size='large'>
                 <Form onSubmit={this.handleSubmit}>
                     <FormItem
@@ -534,6 +711,70 @@ class PostSend extends Component {
                         )}
                     </FormItem>
 
+                    {/*
+                    <FormItem
+                        {...formItemLayout}
+                        label="视频">
+                        <ul>{this.state.videoDefalutArr.map(function (item, index) {
+                            return <li key={index}>
+                                {item.fileName}
+                                <span style={{marginLeft: '10px', cursor: 'pointer'}} onClick={() => {
+                                    This.delVideo(item.uid)
+                                }}>删除</span>
+                            </li>
+                        })}</ul>
+                        {getFieldDecorator('video', {
+                            valuePropName: 'videofileList',
+                            getValueFromEvent: this.videoNormFile
+                        })(
+                            <Upload
+                                className='video-upload'
+                                defaultFileList={this.state.mp3fileList}
+                                action={`${URL}/file/upload`}
+                                name='uploadFile'
+                                filelist={videofileList}
+                                customRequest={this.Upload}
+                                showUploadList={false}
+                                onChange={this.handleVideo}>
+                                <Button>
+                                    <Icon type="upload"/> 点击上传视频
+                                </Button>
+                            </Upload>
+                        )}
+                        <Progress percent={50} size="small" status="active" />
+                    </FormItem>
+                    */}
+
+                    <FormItem
+                        {...formItemLayout}
+                        label="视频">
+                        {getFieldDecorator('video', {
+                            valuePropName: 'videofileList',
+                            getValueFromEvent: this.videoNormFile
+                        })(
+                            <Upload
+                                {...props}
+                                defaultFileList={this.state.videofileList}
+                                showUploadList={true}
+                                name='uploadFile'
+                            >
+                                <Button>
+                                    <Icon type="upload"/> 点击上传视频
+                                </Button>
+                            </Upload>
+                        )}
+                        <Button
+                            style={{marginTop: 16}}
+                            className="upload-demo-start"
+                            type="primary"
+                            onClick={this.handleUpload}
+                            disabled={this.state.videoList.length === 0}
+                            loading={uploading}
+                        >
+                            {uploading ? 'Uploading' : 'Start Upload' }
+                        </Button>
+                    </FormItem>
+
                     <FormItem
                         {...formItemLayout}
                         label="内容: "
@@ -561,12 +802,12 @@ class PostSend extends Component {
                         )}
                         <div>
                             {tags.map((tag, index) => {
-                                const isLongTag = tag.length > 5
+                                const isLongTag = tag.length > 8
                                 const tagElem = (
                                     <Tag
                                         color="blue" key={tag} closable={index !== -1}
                                         afterClose={() => this.handleClose(tag)}>
-                                        {isLongTag ? `${tag.slice(0, 5)}` : tag}
+                                        {isLongTag ? `${tag.slice(0, 8)}` : tag}
                                     </Tag>
                                 )
                                 return isLongTag ? <Tooltip title={tag} key={tag}>{tagElem}</Tooltip> : tagElem
@@ -576,7 +817,7 @@ class PostSend extends Component {
                                     ref={this.saveInputRef}
                                     type="text"
                                     size="small"
-                                    style={{width: 78}}
+                                    style={{width: 120}}
                                     value={inputValue}
                                     onChange={this.handleInputChange}
                                     onBlur={this.handleInputConfirm}
@@ -592,7 +833,7 @@ class PostSend extends Component {
                                 </Tag>
                             )}
                             <span>建议每篇新闻最多 <font style={{color: 'red'}}>3</font> 个标签, 每个标签最多<font
-                                style={{color: 'red'}}> 5 </font>个字</span>
+                                style={{color: 'red'}}> 8 </font>个字</span>
                         </div>
                     </FormItem>
 
