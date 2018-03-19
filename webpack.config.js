@@ -89,7 +89,7 @@ module.exports = {
         contentBase: ROOT_PATH,
         // host: '192.168.43.26',
         // host: '192.168.0.52',
-        host: '192.168.31.65',
+        host: '192.168.84.44',
         // host: '127.0.0.1',
         port: '3010',
         proxy: [{

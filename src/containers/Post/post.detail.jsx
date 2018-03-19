@@ -234,18 +234,79 @@ class PostDetail extends Component {
                         <span className="name" style={{verticalAlign: 'middle'}}>音频：</span>
 
                         <ul className="desc" style={{
-                            display: 'inline-block'
+                            display: 'inline-block',
+                            verticalAlign: 'middle'
                         }}>
-                            {isJsonString(info.audio) ? JSON.parse(info.audio).map(function (item, index) {
-                                return <li className="clearfix" key={index} style={{marginBottom: '10px'}}>
-                                    <span style={{verticalAlign: 'middle'}}>{item.fileName}</span>
-                                    <audio style={{verticalAlign: 'middle'}} src={item.fileUrl} controls="controls"></audio>
-                                </li>
-                            }) : <span>暂无</span>}
+                            {(() => {
+                                console.log(JSON.parse(info.audio))
+                                if (isJsonString(info.audio)) {
+                                    if (JSON.parse(info.audio).length !== 0) {
+                                        return JSON.parse(info.audio).map(function (item, index) {
+                                            return <li className="clearfix" key={index} style={{margin: '5px 0'}}>
+                                                <span style={{verticalAlign: 'middle'}}>{item.fileName}</span>
+                                                <audio style={{verticalAlign: 'middle'}} src={item.fileUrl} controls="controls"></audio>
+                                            </li>
+                                        })
+                                    } else {
+                                        return <span>暂无</span>
+                                    }
+                                } else {
+                                    return <span>暂无</span>
+                                }
+                            })()}
+                        </ul>
+                    </Col>
+                </Row>
+                <Row className="news-summary">
+                    <Col className="section">
+                        <span className="name" style={{verticalAlign: 'middle'}}>视频：</span>
+                        <ul className="desc" style={{
+                            display: 'inline-block',
+                            verticalAlign: 'middle'
+                        }}>
+                            {(() => {
+                                if (isJsonString(info.video)) {
+                                    if (JSON.parse(info.video).length !== 0) {
+                                        return JSON.parse(info.video).map(function (item, index) {
+                                            return <li className="clearfix" key={index} style={{margin: '5px 0'}}>
+                                                <video width="200" style={{verticalAlign: 'middle'}} src={item.fileUrl} preload="metadata" controls="controls"></video>
+                                            </li>
+                                        })
+                                    } else {
+                                        return <span>暂无</span>
+                                    }
+                                } else {
+                                    return <span>暂无</span>
+                                }
+                            })()}
                         </ul>
                     </Col>
                 </Row>
                 {isJsonString(info.coverPic) ? <div>
+                    {(() => {
+                        if (isJsonString(info.video)) {
+                            if (JSON.parse(info.video).length !== 0) {
+                                return <Row className="news-cover-img">
+                                    <Col className="section">
+                                        <span className="name">PC-视频封面：</span>
+                                        <img
+                                            className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).video_pc)}
+                                            src={`${JSON.parse(info.coverPic).video_pc}`}/>
+                                    </Col>
+                                    <Col className="section">
+                                        <span className="name">M-视频封面：</span>
+                                        <img
+                                            className="desc" onClick={() => this.showModal(JSON.parse(info.coverPic).video_m)}
+                                            src={`${JSON.parse(info.coverPic).video_m}`}/>
+                                    </Col>
+                                </Row>
+                            } else {
+                                return ''
+                            }
+                        } else {
+                            return ''
+                        }
+                    })()}
                     <Row className="news-cover-img">
                         <Col className="section">
                             <span className="name">PC-新闻封面：</span>

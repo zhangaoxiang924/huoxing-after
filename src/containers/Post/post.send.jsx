@@ -23,22 +23,6 @@ const cateIdOptions = [
     {label: '转载', value: '2'}
 ]
 
-/*
- const json = {
- update: true,
- author: '作者',
- channelId: '0',
- cateId: '0',
- coverPic: [],
- title: '标题',
- source: '新闻来源',
- synopsis: '摘要',
- tags: '标签',
- content: '<p>content</p>'
- }
- */
-
-// let mp3List = []
 let uploadId = ''
 let currIndex = 1
 let pause = false
@@ -56,6 +40,8 @@ class PostSend extends Component {
         previewImage: '',
         newsTitle: '',
         newsContent: '',
+        videoPcfileList: [],
+        videoMfileList: [],
         fileList: [],
         pcfileList: [],
         mfileList: [],
@@ -69,14 +55,14 @@ class PostSend extends Component {
         videoDefalutArr: [
             // {uid: 123456789, fileName: '', fileUrl: ''}
         ],
+        videoPccoverImgUrl: '',
+        videoMcoverImgUrl: '',
         coverImgUrl: '',
         pccoverImgUrl: '',
         mcoverImgUrl: '',
         mccoverImgUrl: '',
         mp3Url: '',
-        uploadId: '',
-        currIndex: 1,
-        pause: false,
+        videoUrl: '',
         uploading: false,
         loading: true
     }
@@ -88,7 +74,9 @@ class PostSend extends Component {
                     pc_recommend: '',
                     pc: '',
                     wap_big: '',
-                    wap_small: ''
+                    wap_small: '',
+                    video_pc: '',
+                    video_m: ''
                 }
                 let pcfileList = (coverPic.pc_recommend && coverPic.pc_recommend !== '') ? [{
                     uid: 0,
@@ -98,6 +86,18 @@ class PostSend extends Component {
                 }] : []
                 this.setState({
                     updateOrNot: true,
+                    videoPcfileList: [{
+                        uid: 0,
+                        name: 'xxx.png',
+                        status: 'done',
+                        url: coverPic.video_pc || ''
+                    }],
+                    videoMfileList: [{
+                        uid: 0,
+                        name: 'xxx.png',
+                        status: 'done',
+                        url: coverPic.video_m || ''
+                    }],
                     fileList: [{
                         uid: 0,
                         name: 'xxx.png',
@@ -118,7 +118,7 @@ class PostSend extends Component {
                         url: coverPic.wap_big
                     }],
                     audioDefalutArr: data.audio ? JSON.parse(data.audio) : [],
-                    videoDefalutArr: data.video ? JSON.parse(data.video) : [],
+                    videofileList: data.video ? JSON.parse(data.video) : [],
                     tags: data.tags.split(','),
                     newsContent: data.content,
                     coverImgUrl: coverPic.pc,
@@ -224,6 +224,60 @@ class PostSend extends Component {
         }
     }
 
+    handleVideoPcChange = ({file, fileList}) => {
+        this.setState({
+            videoPcfileList: fileList
+        })
+
+        if (file.status === 'removed') {
+            this.setState({
+                videoPccoverImgUrl: ''
+            })
+        }
+
+        if (file.response) {
+            if (file.response.code === 1 && file.status === 'done') {
+                this.setState({
+                    videoPccoverImgUrl: file.response.obj
+                })
+            }
+            if (file.status === 'error') {
+                message.error('网络错误，上传失败！')
+                this.setState({
+                    videoPccoverImgUrl: '',
+                    videoPcfileList: []
+                })
+            }
+        }
+    }
+
+    handleVideoMChange = ({file, fileList}) => {
+        this.setState({
+            videoMfileList: fileList
+        })
+
+        if (file.status === 'removed') {
+            this.setState({
+                videoMcoverImgUrl: ''
+            })
+        }
+
+        if (file.response) {
+            if (file.response.code === 1 && file.status === 'done') {
+                this.setState({
+                    videoMcoverImgUrl: file.response.obj
+                })
+            }
+            if (file.status === 'error') {
+                message.error('网络错误，上传失败！')
+                this.setState({
+                    videoMcoverImgUrl: '',
+                    videoMfileList: []
+                })
+            }
+        }
+    }
+
     handlePcChange = ({file, fileList}) => {
         this.setState({
             pcfileList: fileList
@@ -319,55 +373,7 @@ class PostSend extends Component {
         }
     }
 
-    handleVideo = ({file, fileList}) => {
-        if (file.response) {
-            if (file.response.code === 1) {
-                this.setState({
-                    videofileList: fileList
-                }, function () {
-                })
-            }
-            if (file.status === 'error') {
-                message.error('网络错误，上传失败！')
-            }
-        }
-    }
-
-    /*
-    Upload = ({file}) => {
-        let totalSize = file.size // 文件大小
-        let blockSize = 1024 * 1024 * 2 // 块大小
-        let blockCount = Math.ceil(totalSize / blockSize) // 总块数
-
-        // 创建FormData对象
-        let formData = new FormData()
-        formData.append('fileName', file.name) // 文件名
-        formData.append('blockCount', blockCount) // 总块数
-        formData.append('currIndex', currIndex) // 当前上传的块下标
-        formData.append('uploadId', uploadId) // 上传编号
-        formData.append('uploadFile', null)
-        formData.append('type', 'video')
-        this.UploadPost(file, formData, totalSize, blockCount, blockSize)
-    }
-    */
-
-    start = () => {
-        this.setState({
-            currIndex: 1,
-            uploadId: ''
-        })
-        this.Upload()
-    }
-
-    Pause = () => {
-        pause = true
-    }
-
-    Continue = () => {
-        pause = false
-        this.Upload()
-    }
-
+    // 大文件上传
     handleUpload = () => {
         const { videoList } = this.state
         let file = videoList[0]
@@ -405,29 +411,34 @@ class PostSend extends Component {
                     if (currIndex === 1) {
                         uploadId = res.obj
                     }
-                    // let num = currIndex / blockCount * 100
-                    // if ((currIndex + 1) === blockCount) {
-                    //     num = 100
-                    // }
-                    // $('#progress').text((num).toFixed(2) + '%')
                     if (currIndex < blockCount) {
                         currIndex = currIndex + 1
                         this.UploadPost(file, formData, totalSize, blockCount, blockSize)
                     }
                 } else if (res.code < 0) {
-                    console.log('code:' + res.code + ' msg:' + res.msg)
+                    message.error(res.msg)
                 } else if (res.code === 2) {
-                    console.log(this.state.videoList)
+                    let {videofileList} = this.state
+                    let newVideoFile = []
+                    videofileList.map((item, index) => {
+                        newVideoFile.push({
+                            uid: item.uid,
+                            fileName: item.name,
+                            name: item.name,
+                            fileUrl: res.obj
+                        })
+                    })
                     this.setState({
                         videoList: [],
+                        videofileList: newVideoFile,
                         uploading: false
                     })
-                    message.success('upload successfully.')
+                    message.success('文件上传成功!')
                     console.log('code:' + res.code + ' msg:' + res.msg + ' url:' + res.obj)
                 }
             })
         } catch (e) {
-            alert(e)
+            console.log(e)
         }
     }
 
@@ -467,25 +478,23 @@ class PostSend extends Component {
         })
     }
 
-    delVideo = (uid) => {
-        let arr = this.state.videoDefalutArr
-        arr.map(function (item, index) {
-            if (item.uid.toString() === uid.toString()) {
-                arr.splice(index, 1)
-            }
-        })
+    delVideo = () => {
+        // let arr = this.state.videofileList
         this.setState({
-            videoDefalutArr: arr
+            videofileList: []
         })
     }
 
     // 提交
     handleSubmit = (e) => {
+        if (this.state.uploading) {
+            message.warning('视频正在上传, 请稍候提交!')
+            return false
+        }
         let status = e.target.getAttribute('data-status')
         e.preventDefault()
 
         let newArr = this.state.audioDefalutArr
-        let newVideoArr = this.state.videoDefalutArr
         this.state.mp3fileList.map(function (item, index) {
             newArr.push({
                 uid: item.uid,
@@ -493,16 +502,8 @@ class PostSend extends Component {
                 fileUrl: item.response.obj
             })
         })
-        this.state.videofileList.map(function (item, index) {
-            newVideoArr.push({
-                uid: item.uid,
-                fileName: item.name,
-                fileUrl: item.response.obj
-            })
-        })
         this.setState({
-            audioDefalutArr: newArr,
-            videoDefalutArr: newVideoArr
+            audioDefalutArr: newArr
         }, function () {
             this.props.form.setFieldsValue({
                 tags: this.state.tags.join(','),
@@ -511,8 +512,10 @@ class PostSend extends Component {
                 pc: this.state.coverImgUrl,
                 wap_small: this.state.mcoverImgUrl,
                 wap_big: this.state.mccoverImgUrl,
+                video_pc: this.state.videoPccoverImgUrl,
+                video_m: this.state.videoMcoverImgUrl,
                 audio: JSON.stringify(this.state.audioDefalutArr),
-                video: JSON.stringify(this.state.videoDefalutArr)
+                video: this.state.videofileList[0] && this.state.videofileList[0].fileUrl ? JSON.stringify(this.state.videofileList) : '[]'
             })
             this.props.form.validateFieldsAndScroll((err, values) => {
                 if (!err) {
@@ -524,11 +527,16 @@ class PostSend extends Component {
                         pc_recommend: values.pc_recommend || '',
                         pc: values.pc,
                         wap_big: values.wap_big,
-                        wap_small: values.wap_small
+                        wap_small: values.wap_small,
+                        video_pc: this.state.videoPccoverImgUrl,
+                        video_m: this.state.videoMcoverImgUrl
                     })
                     delete values.pc
+                    delete values.pc_recommend
                     delete values.wap_big
                     delete values.wap_small
+                    delete values.video_pc
+                    delete values.video_m
                     values.id = this.props.location.query.id || ''
                     values.status = status || 1
                     !this.state.updateOrNot && delete values.id
@@ -563,7 +571,7 @@ class PostSend extends Component {
         const This = this
         const {getFieldDecorator} = this.props.form
         const {newsInfo, location} = this.props
-        const {uploading, previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible, mp3fileList} = this.state
+        const {videoPcfileList, videoMfileList, videofileList, uploading, previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible, mp3fileList} = this.state
         const formItemLayout = {
             labelCol: {span: 1},
             wrapperCol: {span: 15, offset: 1}
@@ -576,17 +584,20 @@ class PostSend extends Component {
                     const newFileList = fileList.slice()
                     newFileList.splice(index, 1)
                     return {
-                        videoList: newFileList
+                        videoList: newFileList,
+                        videofileList: newFileList
                     }
                 })
             },
             beforeUpload: (file) => {
-                this.setState(({ fileList }) => ({
-                    videoList: [...fileList, file]
-                }))
+                console.log(file)
+                this.setState({
+                    videoList: [file],
+                    videofileList: [file]
+                })
                 return false
             },
-            fileList: this.state.videoList
+            fileList: this.state.videofileList
         }
         const uploadButton = (
             <div>
@@ -598,7 +609,6 @@ class PostSend extends Component {
         const hxContent = location.query.id ? JSON.parse(sessionStorage.getItem('hx_content')).content : ''
 
         return <div className="post-send">
-            <Button type="primary" onClick={this.Continue}>继续</Button>
             <Spin spinning={this.state.loading} size='large'>
                 <Form onSubmit={this.handleSubmit}>
                     <FormItem
@@ -685,15 +695,6 @@ class PostSend extends Component {
                     <FormItem
                         {...formItemLayout}
                         label="音频">
-                        <ul>{this.state.audioDefalutArr.map(function (item, index) {
-                            return <li key={index}>
-                                {item.fileName}
-                                <span style={{marginLeft: '10px', cursor: 'pointer'}} onClick={() => {
-                                    This.delAudio(item.uid)
-                                }}>删除</span>
-                                {/* <audio src={item.fileUrl}/> */}
-                            </li>
-                        })}</ul>
                         {getFieldDecorator('audio', {
                             valuePropName: 'mp3fileList',
                             getValueFromEvent: this.normFile
@@ -709,60 +710,40 @@ class PostSend extends Component {
                                 </Button>
                             </Upload>
                         )}
-                    </FormItem>
-
-                    {/*
-                    <FormItem
-                        {...formItemLayout}
-                        label="视频">
-                        <ul>{this.state.videoDefalutArr.map(function (item, index) {
+                        <ul>{this.state.audioDefalutArr.map(function (item, index) {
                             return <li key={index}>
                                 {item.fileName}
                                 <span style={{marginLeft: '10px', cursor: 'pointer'}} onClick={() => {
-                                    This.delVideo(item.uid)
+                                    This.delAudio(item.uid)
                                 }}>删除</span>
+                                {/* <audio src={item.fileUrl}/> */}
                             </li>
                         })}</ul>
-                        {getFieldDecorator('video', {
-                            valuePropName: 'videofileList',
-                            getValueFromEvent: this.videoNormFile
-                        })(
-                            <Upload
-                                className='video-upload'
-                                defaultFileList={this.state.mp3fileList}
-                                action={`${URL}/file/upload`}
-                                name='uploadFile'
-                                filelist={videofileList}
-                                customRequest={this.Upload}
-                                showUploadList={false}
-                                onChange={this.handleVideo}>
-                                <Button>
-                                    <Icon type="upload"/> 点击上传视频
-                                </Button>
-                            </Upload>
-                        )}
-                        <Progress percent={50} size="small" status="active" />
                     </FormItem>
-                    */}
 
                     <FormItem
                         {...formItemLayout}
                         label="视频">
-                        {getFieldDecorator('video', {
-                            valuePropName: 'videofileList',
-                            getValueFromEvent: this.videoNormFile
-                        })(
+                        {getFieldDecorator('video')(
                             <Upload
                                 {...props}
-                                defaultFileList={this.state.videofileList}
-                                showUploadList={true}
                                 name='uploadFile'
                             >
                                 <Button>
-                                    <Icon type="upload"/> 点击上传视频
+                                    <Icon type="upload"/> 选择视频
                                 </Button>
                             </Upload>
                         )}
+                        {(() => {
+                            if (videofileList.length === 0) {
+                                return ''
+                            } else if (videofileList[0].fileName) {
+                                return <p>
+                                    <span>{videofileList[0].fileName}</span>
+                                    <span onClick={this.delVideo} style={{marginLeft: 15, color: '#52b8fc', cursor: 'pointer'}}>删除</span>
+                                </p>
+                            }
+                        })()}
                         <Button
                             style={{marginTop: 16}}
                             className="upload-demo-start"
@@ -771,9 +752,64 @@ class PostSend extends Component {
                             disabled={this.state.videoList.length === 0}
                             loading={uploading}
                         >
-                            {uploading ? 'Uploading' : 'Start Upload' }
+                            {uploading ? '上传中' : '开始上传' }
                         </Button>
                     </FormItem>
+
+                    {(videofileList[0] && videofileList[0].fileUrl) ? <div className="video-cover">
+                        <FormItem
+                            {...formItemLayout}
+                            label="视频PC封面: "
+                        >
+                            <div className="dropbox">
+                                {getFieldDecorator('video_pc', {
+                                    initialValue: (updateOrNot && newsInfo) ? videoPcfileList : '',
+                                    rules: [{required: true, message: '请上传视频PC端封面！'}]
+                                })(
+                                    <Upload
+                                        action={`${URL}/pic/upload`}
+                                        name='uploadFile'
+                                        listType="picture-card"
+                                        fileList={videoPcfileList}
+                                        onPreview={this.handlePreview}
+                                        onChange={this.handleVideoPcChange}
+                                    >
+                                        {videoPcfileList.length >= 1 ? null : uploadButton}
+                                    </Upload>
+                                )}
+                                <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                                    <img alt="example" style={{width: '100%'}} src={previewImage}/>
+                                </Modal>
+                                <span className="cover-img-tip">用于 PC 端新闻中视频封面展示, 建议尺寸: <font style={{color: 'red'}}>280px * 205px</font></span>
+                            </div>
+                        </FormItem>
+                        <FormItem
+                            {...formItemLayout}
+                            label="视频 M 端封面: "
+                        >
+                            <div className="dropbox">
+                                {getFieldDecorator('video_m', {
+                                    initialValue: (updateOrNot && newsInfo) ? videoMfileList : '',
+                                    rules: [{required: true, message: '请上传视频PC端封面！'}]
+                                })(
+                                    <Upload
+                                        action={`${URL}/pic/upload`}
+                                        name='uploadFile'
+                                        listType="picture-card"
+                                        fileList={videoMfileList}
+                                        onPreview={this.handlePreview}
+                                        onChange={this.handleVideoMChange}
+                                    >
+                                        {videoMfileList.length >= 1 ? null : uploadButton}
+                                    </Upload>
+                                )}
+                                <Modal visible={previewVisible} footer={null} onCancel={this.handleCancel}>
+                                    <img alt="example" style={{width: '100%'}} src={previewImage}/>
+                                </Modal>
+                                <span className="cover-img-tip">用于 M 端新闻中视频封面展示, 建议尺寸: <font style={{color: 'red'}}>280px * 205px</font></span>
+                            </div>
+                        </FormItem>
+                    </div> : ''}
 
                     <FormItem
                         {...formItemLayout}

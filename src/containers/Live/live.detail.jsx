@@ -163,8 +163,11 @@ class LiveDetail extends Component {
 
     // 编辑框文字替换
     showModal = (item, index) => {
+        let $simditor = $('.live-editor .simditor-body')
+        document.getElementsByClassName('shop-content')[0].scrollTop = 0
         this.props.actions.selectedData(item)
-        $('.live-editor .simditor-body').html(item.content)
+        $simditor.html(item.content)
+        $simditor.focus()
         this.setState({
             updateOrNot: true,
             visible: true,
@@ -199,7 +202,6 @@ class LiveDetail extends Component {
 
     changeLiveStatus = (e) => {
         let status = e.target.getAttribute('data-status')
-        const {dispatch} = this.props
         const _this = this
         confirm({
             title: '提示',
@@ -211,10 +213,11 @@ class LiveDetail extends Component {
                 }
                 axiosAjax('POST', '/caster/room/update/status', {...sendData}, (res) => {
                     if (res.code === 1) {
-                        this.setState({
+                        message.success('操作成功!')
+                        _this.setState({
                             radioValue: status === '1' ? '2' : '1'
                         })
-                        dispatch(setFilterData({'status': status === '1' ? '2' : '1'}))
+                        _this.props.actions.setFilterData({'status': status === '1' ? '2' : '1'})
                     } else {
                         message.error(res.msg)
                     }
@@ -228,7 +231,8 @@ class LiveDetail extends Component {
         const {contentList, pageData} = this.props
         const {content, loading, contentLoading, data, updateOrNot, radioValue} = this.state
         return <div className="live-detail-content">
-            <Button type="primary" data-status={radioValue} style={{marginRight: '50px'}} onClick={this.changeLiveStatus}>{radioValue === '1' ? '结束直播' : '开始直播'}</Button>
+            <Button type="primary" data-status={radioValue} style={{marginRight: '15px'}} onClick={this.changeLiveStatus}>{radioValue === '1' ? '结束直播' : '开始直播'}</Button>
+            <Button type="primary" className="cancel" onClick={() => { hashHistory.goBack() }}>返回</Button>
             <div className="live-detail-section">
                 <Col span={8} className="live-detail simditor">
                     <Spin spinning={contentLoading} size="large">
@@ -298,11 +302,6 @@ class LiveDetail extends Component {
                                     disabled={this.state.disabled}
                                     type="primary" data-status='1' htmlType="submit"
                                     style={{marginRight: '10px'}}>发表</Button>
-                                <Button
-                                    type="primary" className="cancel"
-                                    onClick={() => {
-                                        hashHistory.goBack()
-                                    }}>取消</Button>
                             </FormItem>
                         </Form>
                     </Spin>
@@ -313,7 +312,6 @@ class LiveDetail extends Component {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state.liveContent.pageData)
     return {
         info: state.liveInfo.info,
         contentList: state.liveContent.list,
@@ -323,7 +321,7 @@ const mapStateToProps = (state) => {
 
 const mapDispatchToProps = (dispatch) => {
     return {
-        actions: bindActionCreators({getLiveContentList, getLiveItemInfo, selectedData, addNewLive, delLiveItem, updateLive}, dispatch)
+        actions: bindActionCreators({setFilterData, getLiveContentList, getLiveItemInfo, selectedData, addNewLive, delLiveItem, updateLive}, dispatch)
     }
 }
 
