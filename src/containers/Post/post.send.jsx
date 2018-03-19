@@ -7,7 +7,7 @@ import React, {Component} from 'react'
 import {connect} from 'react-redux'
 import {hashHistory} from 'react-router'
 import PostEditor from '../../components/postEditor'
-import {Radio, Form, Input, Upload, Icon, Modal, Button, Tag, Tooltip, message, Row, Col, Spin, DatePicker} from 'antd'
+import {Radio, Form, Input, Upload, Icon, Modal, Button, Tag, Tooltip, message, Row, Col, Spin, DatePicker, Progress} from 'antd'
 import moment from 'moment'
 import {getPostItemInfo} from '../../actions/post.action'
 
@@ -49,12 +49,8 @@ class PostSend extends Component {
         mp3fileList: [],
         videofileList: [],
         videoList: [],
-        audioDefalutArr: [
-            // {uid: 123456789, fileName: '', fileUrl: ''}
-        ],
-        videoDefalutArr: [
-            // {uid: 123456789, fileName: '', fileUrl: ''}
-        ],
+        audioDefalutArr: [],
+        videoDefalutArr: [],
         videoPccoverImgUrl: '',
         videoMcoverImgUrl: '',
         coverImgUrl: '',
@@ -64,6 +60,7 @@ class PostSend extends Component {
         mp3Url: '',
         videoUrl: '',
         uploading: false,
+        progressNum: 0,
         loading: true
     }
     componentWillMount () {
@@ -84,20 +81,22 @@ class PostSend extends Component {
                     status: 'done',
                     url: coverPic.pc_recommend
                 }] : []
+                let videoPcfileList = (coverPic.video_pc && coverPic.video_pc !== '') ? [{
+                    uid: 0,
+                    name: 'xxx.png',
+                    status: 'done',
+                    url: coverPic.video_pc
+                }] : []
+                let videoMfileList = (coverPic.video_m && coverPic.video_m !== '') ? [{
+                    uid: 0,
+                    name: 'xxx.png',
+                    status: 'done',
+                    url: coverPic.video_m
+                }] : []
                 this.setState({
                     updateOrNot: true,
-                    videoPcfileList: [{
-                        uid: 0,
-                        name: 'xxx.png',
-                        status: 'done',
-                        url: coverPic.video_pc || ''
-                    }],
-                    videoMfileList: [{
-                        uid: 0,
-                        name: 'xxx.png',
-                        status: 'done',
-                        url: coverPic.video_m || ''
-                    }],
+                    videoPcfileList: videoPcfileList,
+                    videoMfileList: videoMfileList,
                     fileList: [{
                         uid: 0,
                         name: 'xxx.png',
@@ -117,8 +116,8 @@ class PostSend extends Component {
                         status: 'done',
                         url: coverPic.wap_big
                     }],
-                    audioDefalutArr: data.audio ? JSON.parse(data.audio) : [],
-                    videofileList: data.video ? JSON.parse(data.video) : [],
+                    audioDefalutArr: isJsonString(data.audio) ? JSON.parse(data.audio) : [],
+                    videofileList: isJsonString(data.video) ? JSON.parse(data.video) : [],
                     tags: data.tags.split(','),
                     newsContent: data.content,
                     coverImgUrl: coverPic.pc,
@@ -411,6 +410,13 @@ class PostSend extends Component {
                     if (currIndex === 1) {
                         uploadId = res.obj
                     }
+                    let num = currIndex / blockCount * 100
+                    if ((currIndex + 1) === blockCount) {
+                        num = 100
+                    }
+                    this.setState({
+                        progressNum: parseFloat(num.toFixed(2))
+                    })
                     if (currIndex < blockCount) {
                         currIndex = currIndex + 1
                         this.UploadPost(file, formData, totalSize, blockCount, blockSize)
@@ -571,7 +577,7 @@ class PostSend extends Component {
         const This = this
         const {getFieldDecorator} = this.props.form
         const {newsInfo, location} = this.props
-        const {videoPcfileList, videoMfileList, videofileList, uploading, previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible, mp3fileList} = this.state
+        const {progressNum, videoPcfileList, videoMfileList, videofileList, uploading, previewVisible, previewImage, fileList, pcfileList, mfileList, mcfileList, tags, inputVisible, inputValue, newsContent, updateOrNot, newsVisible, mp3fileList} = this.state
         const formItemLayout = {
             labelCol: {span: 1},
             wrapperCol: {span: 15, offset: 1}
@@ -590,7 +596,6 @@ class PostSend extends Component {
                 })
             },
             beforeUpload: (file) => {
-                console.log(file)
                 this.setState({
                     videoList: [file],
                     videofileList: [file]
@@ -754,6 +759,7 @@ class PostSend extends Component {
                         >
                             {uploading ? '上传中' : '开始上传' }
                         </Button>
+                        {uploading && <Progress strokeWidth='5' style={{width: 300, display: 'block'}} percent={`${progressNum}`} status="active" />}
                     </FormItem>
 
                     {(videofileList[0] && videofileList[0].fileUrl) ? <div className="video-cover">

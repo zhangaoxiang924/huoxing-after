@@ -86,7 +86,7 @@ class ArticleAuditIndex extends Component {
             dataIndex: 'tags',
             width: 200,
             key: 'tags',
-            render: (record) => ((record && record.trim()) !== '' ? record.split(',').map((item, index) => {
+            render: (record) => ((record && record.trim() !== '') ? record.split(',').map((item, index) => {
                 return <Tag key={index} color="blue" style={{margin: '5px'}}>{item}</Tag>
             }) : '无')
         }, {

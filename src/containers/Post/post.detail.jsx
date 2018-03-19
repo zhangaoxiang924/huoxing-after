@@ -238,7 +238,6 @@ class PostDetail extends Component {
                             verticalAlign: 'middle'
                         }}>
                             {(() => {
-                                console.log(JSON.parse(info.audio))
                                 if (isJsonString(info.audio)) {
                                     if (JSON.parse(info.audio).length !== 0) {
                                         return JSON.parse(info.audio).map(function (item, index) {
