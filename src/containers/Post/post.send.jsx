@@ -124,6 +124,8 @@ class PostSend extends Component {
                     pccoverImgUrl: coverPic.pc_recommend || '',
                     mcoverImgUrl: coverPic.wap_small,
                     mccoverImgUrl: coverPic.wap_big,
+                    videoMcoverImgUrl: coverPic.video_m,
+                    videoPccoverImgUrl: coverPic.video_pc,
                     mp3Url: data.audio,
                     videoUrl: data.video,
                     loading: false
@@ -759,7 +761,7 @@ class PostSend extends Component {
                         >
                             {uploading ? '上传中' : '开始上传' }
                         </Button>
-                        {uploading && <Progress strokeWidth='5' style={{width: 300, display: 'block'}} percent={`${progressNum}`} status="active" />}
+                        {uploading && <Progress strokeWidth={5} style={{width: 300, display: 'block'}} percent={progressNum} status="active" />}
                     </FormItem>
 
                     {(videofileList[0] && videofileList[0].fileUrl) ? <div className="video-cover">

@@ -73,6 +73,10 @@ class PostEditor extends Component {
             }
         })
 
+        if (this.props.setSimditor) {
+            this.props.setSimditor(editor)
+        }
+
         const {info} = this.props
         if (info.postContent) {
             editor.setValue(info.postContent)

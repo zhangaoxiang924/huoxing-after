@@ -33,7 +33,8 @@ class LiveDetail extends Component {
             editorContent: '',
             data: {},
             contentLoading: true,
-            currentPage: 1
+            currentPage: 1,
+            editor: ''
         }
     }
 
@@ -89,6 +90,16 @@ class LiveDetail extends Component {
         this.setState({...this.state, ..._data})
     }
 
+    setSimditor (editor) {
+        this.setState({
+            editor: editor
+        })
+    }
+
+    clear = () => {
+        this.state.editor.setValue('')
+    }
+
     // 提交
     handleSubmit = (e) => {
         e.preventDefault()
@@ -112,8 +123,7 @@ class LiveDetail extends Component {
                 !updateOrNot ? this.props.actions.addNewLive(values, (res) => {
                     if (res.code === 1) {
                         message.success('发表成功！')
-                        // 清空的editor 里的内容, 待优化
-                        $('.live-editor .simditor-body').html('')
+                        this.clear()
                         this.setState({
                             disabled: false,
                             content: '',
@@ -128,8 +138,7 @@ class LiveDetail extends Component {
                     }
                 }) : this.props.actions.updateLive(values, data.index, (res) => {
                     if (res.code === 1) {
-                        // 清空的editor 里的内容, 待优化
-                        $('.live-editor .simditor-body').html('')
+                        this.clear()
                         this.setState({
                             disabled: false,
                             content: '',
@@ -247,23 +256,6 @@ class LiveDetail extends Component {
                                     <Col span={9} className='item-date'>{formatDate(item.createTime)}</Col>
                                 </Row>
                             })}
-                            {/*
-                             <Row className="item-section">
-                             <Col className='item-content'>
-                             <p>好了, 本次发布会到此结束, 感谢您的陪伴, 我们下期再见, 好了, 本次发布会到此结束, 感谢您的陪伴, 我们下期再见, 火星财经出品!好了, 本次发布会到此结束, 感谢您的陪伴, 我们下期再见, 火星财经出品!好了, 本次发布会到此结束, 感谢您的陪伴, 我们下期再见, 火星财经出品!好了, 本次发布会到此结束, 感谢您的陪伴, 我们下期再见, 火星财经出品!</p>
-                             </Col>
-                             <Col className='item-img'>
-                             <img src={img} alt=""/>
-                             <img src={img} alt=""/>
-                             <img src={img} alt=""/>
-                             </Col>
-                             <Col span={6} className='item-date'>{formatDate(new Date())}</Col>
-                             <Col span={6} className='item-opts'>
-                             <a>编辑</a>
-                             <a>删除</a>
-                             </Col>
-                             </Row>
-                             */}
                             {(() => {
                                 if (contentList.length === 0) {
                                     return <div className="tips">直播好像还没开始哦~</div>
@@ -291,6 +283,7 @@ class LiveDetail extends Component {
                                     <Input className="news" style={{display: 'none'}}/>
                                 )}
                                 <PostEditor
+                                    setSimditor={(editor) => this.setSimditor(editor)}
                                     toolBar={['fontScale', 'image', 'title', 'bold', 'italic', 'underline', 'strikethrough', 'color', 'ol', 'ul', 'alignment']}
                                     info={{postContent: updateOrNot ? data.content : content}}
                                     subSend={(data) => this.sendPost(data)}
