@@ -142,7 +142,8 @@ class LiveDetail extends Component {
                         this.setState({
                             disabled: false,
                             content: '',
-                            loading: false
+                            loading: false,
+                            updateOrNot: false
                         })
                     } else {
                         this.setState({
